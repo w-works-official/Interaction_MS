@@ -1,0 +1,138 @@
+.title img { width:100%; padding-bottom:25px; } 
+
+/* 분류 카테고리 영역 */
+.product_category_wrap { padding:20px 2% 0px !important } 
+.product_category_wrap .cate1 { font-weight:500 !important; font-size: 19px !important; padding: 0px 0 15px !important; color:#111111 !important; text-align:center !important; } 
+.product_category_wrap .cate_child_wrap ul { display:flex; flex-wrap:wrap; gap:3px; justify-content:center; } 
+.product_category_wrap .cate_child_wrap ul li a { font-size: 12px !important; font-weight:400; padding:4px !important; } 
+.product_category_wrap .cate_child_wrap ul li a.sel { font-weight: 700; border-bottom: 2px solid #333;} 
+.product_category_wrap .cate_child_wrap ul li { position:relative; padding:0 !important; margin:0 !important; } 
+.product_category_wrap .cate_child_wrap ul li a { display:block; } 
+.product_list_wrap.list_st2 .product_item, .product_list_wrap.list_st3 .product_item { padding:0 0 15px !important } 
+.MS_prod_mobile_image { width:100%; } 
+.product_category_wrap .cate_child_wrap ul.cate3.on { padding-top:15px !important; margin:15px !important; border-top: 1px solid #dcdcdc; } 
+
+
+.shopbrand { } 
+.shopbrand h2 { text-align:center; font-size: 13px; font-weight:bold; padding:20px 0; }
+h2 { text-align:center; font-size: 13px; font-weight:bold; padding:20px 0; } 
+.shopbrand .MK_product_list { background-color:#f9f9f9; border-bottom:1px solid #ddd; } 
+.shopbrand .MK_product_list .items { padding: 10px 0; } 
+.shopbrand .MK_product_list .items #MK_best_product li { width:33.33%; } 
+.shopbrand .MK_product_list .items .paging-num { text-align: center; clear: both; margin:5px 0 10px; } 
+.shopbrand .MK_product_list .items .paging-num a { background-color:#fff; border:1px solid #393939; padding:5px 10px; margin:0 10px; } 
+.shopbrand .list_group { padding: 10px 1%; text-align:center; } 
+.shopbrand .list_group select { width:49%; height:28px; } 
+.shopbrand .more .more-title { color: #3b3b3b; } 
+.shopbrand .more .more-num { color: #aaaaaa; } 
+.shopbrand .shopbrandTitle img { max-width: 100%; } 
+.shopbrand .list_array .list_arrayRight img { width: 23px; height: auto; } 
+
+.list_array .list_arrayRight { margin:0; }
+.MS_select_sort {text-align:center !important;}
+
+
+.title .cateName { padding:20px 20px 0; font-size:18px; font-weight: 600; } 
+.title .cateName a { font-size:18px; font-weight: 600; } 
+
+.clearFix { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; text-align:center; justify-content:center;} 
+.clearFix li { text-align:left; margin-right:5px; } 
+.clearFix li a { font-size:11px; line-height:15px; color:#666; } 
+.clearFix h5 { width:100%; font-weight:600; font-size:12px; margin-top:15px; } 
+
+
+.cateSwiper { margin:0 0px 0 10px !important } 
+.cateSwiper .swiper-slide { text-align:center; width:auto !important; font-size:15px; margin-right:15px !important; } 
+.cateSwiper .swiper-slide a { color:#959393; font-weight:normal; } 
+.cateSwiper .swiper-slide a.is_cate { font-weight:800; color:#000; } 
+.list_array { border-bottom:0; border-top:0; text-align:center; padding:20px; } 
+.list_array select { font-size: 14px; border-bottom: 1px solid #2e2e2e !important; border: none; color: #2e2e2e; font-weight: 600; background: #fff; width: 150px; text-align: center; text-align-last: center;}
+
+/* 롤링상품 */
+
+.spProduct { position:relative; overflow: hidden; } 
+.spProduct .m_title h3 span { font-size: 13px; font-weight: normal; display:block; text-align:center; } 
+.spProduct .m_title h3 span:before { content:''; width:5%; height:1px; background:#000; display:block; margin:2% auto; } 
+.spProduct .mainSwiper { padding:10px 0; } 
+.spProduct .mainSwiper .swiper-slide { margin: 0; width:46% } 
+.spProduct .mainSwiper .swiper-slide .listPic { position:relative; } 
+.spProduct .mainSwiper .swiper-slide .listPic img { width:100% } 
+
+
+.spProduct .best-containe { width: 100%; height: 100%; margin-left: auto; margin-right: auto; } 
+.spProduct .mainSwiper .swiper-slide { height: calc((100% - 30px) / 2); } 
+.spProduct .mainSwiper .swiper-slide .list_shoppingInfo { display: inline-flex; background-color:#fff; box-shadow : 2px 2px 5px #eee; text-align:center; margin:0; min-height: 180px; width: 100%; flex-direction: column; height:180px; justify-content: flex-start; padding:15px 10px 15px; box-sizing:border-box; } 
+.spProduct .mainSwiper .swiper-slide .list_BestshoppingInfo { background-color:#fff; text-align:left; margin:0; width:100%; flex-direction: column; padding: 5px; box-sizing:border-box; height:130px; } 
+.spProduct .mainSwiper .swiper-pagination-fraction { top:0; height: 10px; width: auto; right: 0; text-align: right; } 
+
+.spProduct .mainSwiper .swiper-pagination-fraction .swiper-pagination-bullet { width:5px !important; height:5px !important; background: #fff; border: 2px solid; } 
+.spProduct .mainSwiper .swiper-pagination-fraction .swiper-pagination-bullet-active { background:#000; width:5px; height:5px; } 
+.spProduct .mainSwiper .swiper-horizontal>.swiper-pagination-bullets .swiper-pagination-bullet, .swiper-pagination-horizontal.swiper-pagination-bullets .swiper-pagination-bullet { width:5px !important; height:5px !important; background: #fff; border: 2px solid; } 
+.spProduct .mainSwiper.swiper-grid-column>.swiper-wrapper { flex-direction:row !important; align-items: baseline; } 
+.spProduct .mainSwiper .listPrice del { } 
+
+.spProduct#bestProduct .mainSwiper .swiper-slide .list_shoppingInfo { box-shadow:0px 0px 0px; } 
+.spProduct#bestProduct { text-align:center; } 
+.spProduct#bestProduct .mainSwiper { padding: 10px 0 0 15px; } 
+.spProduct#bestProduct .m_title h3 { color:#000; text-align:center; font-size:18px; font-weight:bold; letter-spacing:0px; } 
+.spProduct#bestProduct { background-color:#f6fabc; padding:20px 0; } 
+.spProduct#bestProduct .bestFigure { text-align:center; } 
+.spProduct#bestProduct .bestTop { color:#000; font-size:14px; font-weight:bold; } 
+
+.list_shopping2x .list_shoppingInfo { padding:12px 0 0 12px; } 
+
+
+.paging { margin-top:50px; padding-top: 10px; padding-bottom:10px; height: 17px; text-align: center; line-height: 0; vertical-align: top; } 
+.paging li { position:relative; display: inline-block; min-width: 25px; } 
+.paging li a { overflow: hidden; width: auto; height: 15px; font-size: 12px; padding: 0 8px; color: #959393; cursor: pointer; } 
+.paging li a:hover,
+.paging li.now a { font-weight: bold; letter-spacing: -1px; color:#050000; } 
+.paging li.now::after { content: ''; display: inline-block; position: absolute; width: 20px; top: 10px; left: 4px; height: 2px; background-color: #000; } 
+.paging li.first a,
+.paging li.prev a,
+.paging li.next a,
+.paging li.last a { padding: 0 3px; } 
+.paging li.prev { margin-right: 10px; } 
+.paging li.next { margin-left: 10px; } 
+.list_shopping2x .list_shoppingInfo { max-height:155px; height:fit-content; } 
+
+.page_counter { text-align:center; font-size:13px; } 
+.product_counter { text-align:left; font-size:13px; font-weight:400; position:relative; top:10px; } 
+
+/* 메인 상품 공통 */
+.sec-tit { padding-left:8px; } 
+.sec-tit h3 { font-size:15px; font-weight:600; padding-bottom:8px; } 
+.prdWrap .prd_inner { position:relative; } 
+.prdWrap .prd_inner .imgCont { position:relative; } 
+.prdWrap .prd_inner .imgCont img { max-width:100%; } 
+.prdWrap .my-wish-list { position: absolute; right: 8px; bottom: 10px; } 
+.prdWrap .my-wish-list img { width:18px; } 
+
+
+.prdWrap .listName { font-weight:400; padding:0; } 
+.prdWrap .listDiscount { color:#f93d8c; font-size:13px; font-weight:600; margin-right:3px; } 
+.prdWrap .listPrice { font-size:13px; } 
+.prdWrap .listPrice del { color:#999; font-size:12px; margin-left:2px; } 
+.prdWrap .listReview,
+.prdWrap .listOrderstock { color:#414141; font-size:11px; margin:3px 0 12px; } 
+.prdWrap .listColor { margin-bottom:0; } 
+.prdWrap .listSubname,
+.prdWrap .MK-product-icons { display:none; } 
+.listColor .prdColor { text-shadow:none; display:inline-block; width:7px; height:7px; border:1px solid #999; border-radius:50%; } 
+.listName { white-space: nowrap; text-overflow: ellipsis; overflow: hidden; font-size:12px; } 
+
+/* New arrival */
+.prd01 { padding-left:12px; overflow:hidden; } 
+.prd01 .sec-tit { } 
+.prd01 .listColor, .prd01 .listPrice { display:none; } 
+.prd01 .listBrand { font-size:10px; padding-top:6px; font-weight:600; } 
+.prd01 .listName { font-size:10px; font-weight:400; white-space: nowrap; } 
+.prd01 .listOrderstock, .prd01 .listReview {margin:0; width:100%; font-weight: 500; font-size: 11px;}
+
+
+.items li { display: inline-block; vertical-align: top; font-size: 12px; width: calc(50% - 3.5px); margin-bottom: 25px; } 
+
+
+.listReview, .listOrderstock { color: #414141; font-size: 11px; margin: 3px 0 12px; } 
+.clearFix .is_cate { font-weight:600; color:#000; } 
+

@@ -1,0 +1,51 @@
+/* 인스타 위젯 */
+.instaArea {display:none; margin:0 0 40px;}
+.ctitle.main {text-align:left; margin-bottom:10px;}
+.ctitle.main .title {font-size:15px; font-weight:600; line-height:1; }
+
+
+#footer { margin-top:45px; position:relative; border-top:1px solid #000;}
+#footer .footerInfo {text-align:center; font-size:0; padding:25px 12px 45px;}
+#footer .footerInfo:after { display:block; clear:both; content:'' }
+#footer .footerInfo dt {font-size:15px; color: #000; font-weight:600; }
+#footer .footerInfo dd {color:#000; word-break: keep-all; padding-top:3px;}
+#footer .footerInfo .tel { font-size:15px; font-weight:400;}
+#footer .footerInfo .tx {color:#000; padding:0;}
+#footer .footerInfo .InfoLeft {display:inline-block; width:50%; font-size:12px; vertical-align:top; text-align:left; }
+#footer .footerInfo .InfoLeft dl > p {margin-bottom:20px;}
+#footer .footerInfo .InfoRight {display:inline-block; width:50%; font-size:12px; text-align:right;}
+#footer .footerInfo .InfoRight dl:first-child {margin-bottom:12px;}
+
+#footer .footerMiddle { margin:50px 20px 0; position:relative; overflow:hidden }
+#footer .footerMiddle ul { padding:10px 0; *zoom:1 }
+#footer .footerMiddle ul:after { display:block; clear:both; content:'' }
+#footer .footerMiddle ul li { float:left; width:18%; }
+#footer .footerMiddle ul li.b { width:32% }
+#footer .footerMiddle ul li a { display:block; font-size:11px; line-height:13px }
+#footer .footerMiddle .sns {margin-bottom:50px;}
+#footer .footerMiddle .sns a { display:inline-block; width:10%; margin: 0 5px;}
+#footer .footerMiddle .sns a img {width:100%;}
+#footer .footerBottom { position:relative; border-top:1px solid #000; }
+#footer .footerBottom address {text-align:center;}
+#footer .footerBottom address p {display:inline-block; font-size:10px;}
+#footer .footerBottom strong {}
+#footer .footerBottom .footerTab {display: flex; justify-content: center;margin:40px 0 20px;}
+#footer .footerBottom .footerTab li{float: left; }
+#footer .footerBottom .footerTab li:after {content:''; display:inline-block; width:1px; height:10px; background:#000; margin: 0 7px; }
+#footer .footerBottom .footerTab li:last-child:after {display:none;}
+#footer .footerBottom .footerTab li a{font-size:12px;}
+#footer .footerCopy {text-align:center; padding:20px 0 50px; position:relative; font-size:11px;}
+
+.btn_toggle_area { position: fixed; bottom: 12px; right: 10px; z-index: 999;}
+.btn_toggle_area a { display: block; width: 25px; height: 25px; position:absolute; }
+.btn_toggle_area a:nth-of-type(1) {right:0; bottom:90px;}
+.btn_toggle_area a:nth-of-type(2) {right:0; bottom:60px;}
+.btn_toggle_area a:last-child {width: 40px; height: 40px; right:0; bottom:12px;}
+
+
+.btn_toggle_area img{width:100%;}
+
+
+
+
+adding:10px 11px; text-align:right; color:#666; font-size:11px; }
