@@ -1,0 +1,7 @@
+asset-work/*
+!asset-work/sources.json
+!asset-work/fetch_assets.py
+!asset-work/extra_assets.py
+node_modules/
+*.tar.gz
+*.tgz
