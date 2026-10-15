@@ -1,0 +1,130 @@
+[
+  {
+    "variant": "pc",
+    "name": "common.css",
+    "id": "12l6TxTYCvLr-btk8Oxir1uw0Np_nV780",
+    "url": "https://drive.google.com/file/d/12l6TxTYCvLr-btk8Oxir1uw0Np_nV780/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "footer.1.css",
+    "id": "1cptfowr1BOFMnZxHv8UR-CkYO7ZJhTvL",
+    "url": "https://drive.google.com/file/d/1cptfowr1BOFMnZxHv8UR-CkYO7ZJhTvL/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "footer.1.html",
+    "id": "1_94pjQEc7YvPu8dYiTW-rtLULX70Yf9q",
+    "url": "https://drive.google.com/file/d/1_94pjQEc7YvPu8dYiTW-rtLULX70Yf9q/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "header.1.css",
+    "id": "1MKwFYdFAeImGYzxOYlUe070gv8JWSrfX",
+    "url": "https://drive.google.com/file/d/1MKwFYdFAeImGYzxOYlUe070gv8JWSrfX/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "header.1.html",
+    "id": "1vxAv-o9iO5p4QqWAKyEuQ6_i7dE6TtGS",
+    "url": "https://drive.google.com/file/d/1vxAv-o9iO5p4QqWAKyEuQ6_i7dE6TtGS/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "main.css",
+    "id": "1H7rIddEDxxObr1O31EGCq2vGh0KJm19-",
+    "url": "https://drive.google.com/file/d/1H7rIddEDxxObr1O31EGCq2vGh0KJm19-/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "main.html",
+    "id": "11ATrpGup3KRMqFmKFmpW3yrH_D4YfcOl",
+    "url": "https://drive.google.com/file/d/11ATrpGup3KRMqFmKFmpW3yrH_D4YfcOl/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "pc",
+    "name": "shopbrand.css",
+    "id": "195tXVmhrL9W3r9fqUvhIpZoDMmClLdkB",
+    "url": "https://drive.google.com/file/d/195tXVmhrL9W3r9fqUvhIpZoDMmClLdkB/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:53:34.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "shopbrand.css",
+    "id": "1O2HK1zyz0aScJYzlZq8c3S_DOQErmHPt",
+    "url": "https://drive.google.com/file/d/1O2HK1zyz0aScJYzlZq8c3S_DOQErmHPt/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:51:53.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "common.css",
+    "id": "1TjHVTGQIatT6G4bvT6Hgf6fTPfXfk-hi",
+    "url": "https://drive.google.com/file/d/1TjHVTGQIatT6G4bvT6Hgf6fTPfXfk-hi/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "footer.1.css",
+    "id": "12JvVVvL9sC8OlOtf4Gwd55mOXMnoNYZu",
+    "url": "https://drive.google.com/file/d/12JvVVvL9sC8OlOtf4Gwd55mOXMnoNYZu/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "footer.1.html",
+    "id": "1TN2bGYaBsKfzEMXjCzW0xslmkoUDz-7L",
+    "url": "https://drive.google.com/file/d/1TN2bGYaBsKfzEMXjCzW0xslmkoUDz-7L/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "header.1.css",
+    "id": "1cU7BvRDotrjT0iQgOfOJB7qol2fXAs9_",
+    "url": "https://drive.google.com/file/d/1cU7BvRDotrjT0iQgOfOJB7qol2fXAs9_/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "header.1.html",
+    "id": "1Y6KURfRldX7Zw2yiqjPEVUycz3-trfik",
+    "url": "https://drive.google.com/file/d/1Y6KURfRldX7Zw2yiqjPEVUycz3-trfik/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "main.css",
+    "id": "16eCzIO2y4l5Y3Zk3Di3O4BkLpL2W5z5Q",
+    "url": "https://drive.google.com/file/d/16eCzIO2y4l5Y3Zk3Di3O4BkLpL2W5z5Q/view?usp=drivesdk",
+    "mime_type": "text/css",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  },
+  {
+    "variant": "mobile",
+    "name": "main.html",
+    "id": "11G27WlsrQdfLZOLxz5WrurvE2e4oL2wV",
+    "url": "https://drive.google.com/file/d/11G27WlsrQdfLZOLxz5WrurvE2e4oL2wV/view?usp=drivesdk",
+    "mime_type": "text/html",
+    "modified_time": "2026-10-15T04:51:52.000Z"
+  }
+]
