@@ -1,0 +1,22 @@
+{
+  "repository": "https://github.com/kakamail80-cell/pinkrocket-quick-browse",
+  "commit": "e6078f86492ca6a3cf8057a8c10e458c28a2566c",
+  "sourcePath": "index.html",
+  "sourceSha256": "7e4ec776f09e6c7ced2e4b1efba4996b8b25a1e74972524f371d264c0aa6c91d",
+  "collectedAt": "2026-10-13",
+  "dateEvidence": "source HTML comment; not independently verified",
+  "totalSource": 2449,
+  "accepted": 2379,
+  "excluded": 70,
+  "unclassified": 38,
+  "categoryCounts": {
+    "피어싱": 1833,
+    "귀걸이": 270,
+    "반지": 79,
+    "목걸이": 104,
+    "팔찌": 42,
+    "헤어": 66
+  },
+  "ranking": "Existing reviewed gallery examples first, remaining IDs descending. Demo curation only. No release date, review, sales or stock feed.",
+  "imagePolicy": "Existing verified local galleries preserved by ID; all other products have one remote representative image."
+}
