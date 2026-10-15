@@ -1,0 +1,600 @@
+<!-- Uneedcomms Keepgrow Script -->
+<div id="kg-service-data" data-member="<!--/if_login/--><!--/user_id/--><!--/end_if/-->" style="display:none !important"></div>
+<script id="kg-service-init" data-hosting="makeshop" src="//storage.keepgrow.com/admin/keepgrow-service/keepgrow-service_2222dd0b-9ecc-4aa6-9c9f-9fb11f3c4720.js"></script>
+<!-- Uneedcomms Keepgrow Script -->
+
+<!-- GA4 유저 정보 -->
+<script>
+dataLayer.push({
+ 'user_id': '<!--/user_id/-->'
+ });
+</script>
+
+
+<meta name="naver-site-verification" content="0c754df4a6945351be5de06197b58c5b46566f4c" />
+<meta name="google-site-verification" content="d-75RzVGKedGrhS29bSmLQC4NR6qjlFhTlKhX6nuAOU" />
+
+
+
+<link rel="stylesheet" href="/design/curiouswiz/plugin/xeicon/xeicon.min.css">
+<script src="/js/jquery.bxslider.min.js"></script>
+<script type="text/javascript" src="/js/jquery.cookie.js"></script>
+<script src="/js/util-min.js"></script>
+<meta name="user_id" content="<!--/user_id/-->" />
+
+<div id="header">
+
+
+	<div id="header_in">
+    
+    
+     
+    <div class="headerWrap">
+
+
+     <!-- 상단 gnb::fix-->
+        <div id="Logo"><a href="<!--/link_home/-->"><img src="/design/curiouswiz/phps/img/logo_b.png"></a></div>
+        <div class="leftArea">
+            <ul>
+
+                <li><a href="/shop/bestseller.html?xcode=BEST">BEST</a>
+                </li> 
+
+                 <li><a href="/shop/shopbrand.html?xcode=001&type=Y">피어싱</a>
+                </li>
+                
+                <li><a href="/shop/shopbrand.html?xcode=019&type=X">귀걸이</a>
+                </li>
+
+
+                <li><a href="/shop/shopbrand.html?xcode=010&type=X">반지/토우링</a>
+                </li>
+
+
+                <li><a href="/shop/shopbrand.html?xcode=060&type=X">목걸이</a>
+
+                </li>  
+
+                <li><a href="/shop/shopbrand.html?xcode=054&type=X">팔찌</a>
+
+                </li>
+                
+
+                <li><a href="/shop/shopbrand.html?xcode=041&type=X">헤어</a>
+
+                </li>
+
+
+                
+            </ul>
+        </div>
+        
+         <!-- //상단 gnb::fix-->
+
+    
+        
+
+        <div class="rightArea">
+            <ul>
+
+                <!--/if_login/-->
+                <li class="first"  style="width:45px;background:none;" ><a href="<!--/link_logout/-->">LOGOUT</a></li>
+                <!--/else/-->
+                <li class="first"  style="width:45px;background:none;" ><a href="<!--/link_login/-->">LOGIN</a></li>
+                <!--/end_if/-->
+                <li><a href="<!--/link_mypage/-->">MY PAGE</a></li>	
+
+
+
+                <li style="opacity:0.95;"><!-- 다찾다 검색 파인더 -->
+<!--/if_form_smart_finder/-->
+    <div id="allfinder-ctr"><a href="javascript:;"><img src="/design/curiouswiz/phps/pc/search.png"/></a></div>
+    <div id="allfinder-layer" class="all-finder-layer">
+
+        <div class="finder-body">
+            <a href="#allfinder-layer" class="fa fa-close finder-close"></a>
+            <div class="finder-tbl">
+                <!--/form_smart_finder/-->
+                    <table summary="카테고리, 굽높이, 컬러, 사이즈, 가격대, 상품명, 적용">
+                        <caption>검색 목록</caption>
+                        <colgroup>
+                            <col style="width: 150px">
+                            <col />
+                        </colgroup>
+                        <tbody>
+                        <!--/loop_smart_finder/-->
+                            <tr>
+                                <th><div class="txt-l"><!--/smart_finder@title/-->  <!--/if_smart_finder@tooltip/--><a href="javascript:;" class="finder-tooltip-btn finder-layer-open">?</a><!--/end_if/--> <!--/smart_finder@icon/-->
+                                        <!-- (레이어) 항목 설명 -->
+                                        <div class="finder-comm-layer">
+                                            <a href="javascript:;" class="finder-btn-close fa fa-close finder-layer-close"></a>
+                                            <div class="finder-layer-tit"><!--/smart_finder@title/--></div>
+                                            <div class="finder-layer-cnt">
+                                                <!--/smart_finder@tooltip/-->
+                                            </div>
+                                    </div>
+                                    <!-- //(레이어) 항목 설명 -->
+                                </div></th>
+                                <td>
+                                    <div class="<!--/smart_finder@class_name/-->">
+                                        <!--/loop_smart_finder@items(20)/-->
+                                            <!--/smart_finder@items@name/-->
+                                        <!--/end_loop/-->
+                                    </div>
+                                </td>
+                            </tr>
+                            <!--/if_smart_finder@is_category/-->
+                            <tr class="finder-child-category">
+                                <th><div class='txt-l'></div></th>
+                                <td><div class='finder-category2'></div></td>
+                            </tr>
+                            <!--/end_if/-->
+                        <!--/end_loop/-->
+                            <tr>
+                                <th><div class="txt-l">적용 키워드</div></th>
+                                <td>
+                                    <span class="finder-search-data"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="finder-btn-c">
+                        <a href="#none" class="reset">초기화</a>
+                        <button type="submit">
+                            <span class="ico-search"></span><span class="finder-count-toggle"><span class="finder-count"></span>개</span> 상품검색
+                        </button>
+                    </div><!-- .finder-btn-c -->
+                <!--/end_form/-->
+            </div><!-- .finder-tbl -->
+        </div><!-- .finder-body -->
+    </div><!-- #allfinder-layer -->
+<!--/end_if/-->
+<!-- 다찾다 검색 파인더 --></li>
+                <li><a href="/shop/mypage.html?mypage_type=mywishlist"><img src="/design/curiouswiz/phps/pc/heart.png"/></a></li>
+
+
+                <li >
+                    <a href="<!--/link_basket/-->"><img src="/design/curiouswiz/phps/pc/cart.png"><p class="basketCount"><!--/user_basket_quantity/--></p></a>
+                </li>
+                <li class="hide_left">
+                    <a href="#">
+                    <img src="/design/curiouswiz/phps/pc/ham.png" />
+                    </a>
+                </li>
+            </ul>
+            
+        </div><!-- .rightArea -->
+
+        </div>
+        </div><!-- #header_in -->
+    </div><!-- #header -->
+
+
+
+
+
+
+
+
+
+    
+    <div class="hide_left1_bg"></div>
+    <div class="hide_left1">
+          <a href="#" class="btn_close_left"><span class="xi-close-thin"></span></a>
+         
+         
+                        <div class="inner">
+                        
+                        <div class="sidelogo"><a href="<!--/link_home/-->"><img src="/design/curiouswiz/phps/img/logo_b.png"></a></div>
+                        <div class="loginInfo">
+                        <!--/if_login/-->
+                            <strong><!--/user_name/--></strong>님 환영합니다.<br />즐거운 쇼핑 되세요!
+                        <!--/else/-->
+                            <span>고객님은 지금 로그아웃 중입니다.</span>
+                        <!--/end_if/-->
+                        </div>
+                        <div class="asideTop2">
+                            <ul>
+                            <!--/if_login/-->
+                                <li><a href="<!--/link_logout/-->" class="black">LOGOUT</a></li>
+                                <li><a href="<!--/link_join/-->">MODIFY</a></li>
+                            <!--/else/-->
+                                <li><a href="<!--/link_login/-->" class="black">LOGIN</a></li>
+                                <li><a href="<!--/if_link_join/--><!--/link_join/--><!--/else/-->javascript:alert('모바일에서는 회원가입을 지원하지 않습니다.');<!--/end_if/-->">JOIN US</a></li>
+                            <!--/end_if/-->  
+                            </ul> 
+                        </div>
+                        <div class="asideQuick">
+                            <ul>
+                                <li class="basket"><a href="<!--/link_basket/-->"><img src="/design/curiouswiz/phps/img/side_cart.png"><!--/if_user_basket_count(+1)/--><span class="count"><!--/user_basket_quantity/--></span><!--/end_if/--><br />CART</a></li>
+                                <li><a href="<!--/link_mypage/-->"><img src="/design/curiouswiz/phps/img/side_mypage.png"><br />MY</a></li>
+                                <li><a href="<!--/link_mypage/-->"><img src="/design/curiouswiz/phps/img/side_wish.png"><br />WISH</a></li>
+                                <li><a href="/m/today_product.html"><img src="/design/curiouswiz/phps/img/side_today.png"><br />TODAY</a></li>
+                            </ul>
+                        </div>
+                         </div>
+        
+       
+ <!-- PC header AllMenu -->   
+    
+          <div class="asideTop">
+                   <a href="#" id="category" class="act">CATEGORY</a><a href="#" id="community">COMMUNITY</a>
+          </div>
+    <div class="navCategory" style="border-right:1px solid #ddd;">
+        <nav>
+            <ul>
+
+
+                <li>
+                    <a href="/shop/bestseller.html?xcode=BEST">
+                        <dl>
+                            <dt>BEST</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=044&type=P">
+                        <dl>
+                            <dt>NEW</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/shop/shopbrand.html?type=P&xcode=069">
+                        <dl>
+                            <dt style="color:#e7364e; font-weight:700;">첫구매 특가존 50%</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+
+
+
+                <br />
+                <br />
+            
+            
+               <li>
+                    <a href="/shop/shopbrand.html?xcode=001&type=Y">
+                        <dl>
+                            <dt>피어싱</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=001&mcode=001&type=Y">볼피어싱</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=001&mcode=002&type=Y">링피어싱</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=001&mcode=003&type=Y">라블렛</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=001&mcode=004&type=Y">드롭/투핀</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=001&mcode=005&type=Y">etc.</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=001&mcode=006&type=Y">피어싱 세트</a></li>
+                         <br>
+                         <li><a href="/shop/shopbrand.html?xcode=001&mcode=007&type=Y">바변경 피어싱</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=048&type=Y">부위별 추천</a></li>
+                         <br>
+                         <li><a href="/shop/shopbrand.html?xcode=011&mcode=001&type=Y">써지컬 피어싱</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=020&mcode=001&type=Y">925실버 피어싱</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=026&mcode=001&type=Y">14K 피어싱</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=004&mcode=001&type=Y">etc.</a></li>
+                    </ul>
+                </li>  
+
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=019&type=X">
+                        <dl>
+                            <dt>귀걸이/이어커프</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                       <li><a href="/shop/shopbrand.html?xcode=019&mcode=005&type=X">침형</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=019&mcode=006&type=X">링귀걸이</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=019&mcode=007&type=X">etc.</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=019&mcode=009&type=X">귀걸이세트</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=019&mcode=008&type=X">이어커프</a></li>
+                         <br>
+                        <li><a href="/shop/shopbrand.html?xcode=011&mcode=002&type=Y">써지컬 귀걸이/이어커프</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=020&mcode=002&type=Y">925실버 귀걸이/이어커프</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=026&mcode=002&type=Y">14K골드 귀걸이/이어커프</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=004&mcode=002&type=Y">etc.</a></li>
+                    </ul>
+                </li>  
+ 
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=010&type=X">
+                        <dl>
+                            <dt>반지/토우링</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=010&mcode=005&type=X">반지</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=010&mcode=006&type=X">토우링</a></li>
+                         <br>
+                        <li><a href="/shop/shopbrand.html?xcode=011&mcode=006&type=Y">써지컬 반지/토우링</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=020&mcode=006&type=Y">925실버 반지/토우링</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=026&mcode=006&type=Y">14K 반지/토우링</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=004&mcode=006&type=Y">etc.</a></li>
+                    </ul>
+                </li>                
+
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=060&type=X">
+                        <dl>
+                            <dt>목걸이</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=060&mcode=005&type=X">롱</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=060&mcode=006&type=X">미들</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=060&mcode=007&type=X">쵸커</a></li>
+                         <br>
+                        <li><a href="/shop/shopbrand.html?xcode=011&mcode=003&type=Y">써지컬 목걸이</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=020&mcode=003&type=Y">925실버 목걸이</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=026&mcode=003&type=Y">14K 목걸이</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=004&mcode=003&type=Y">etc.</a></li>
+                    </ul>
+                </li>  
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=054&type=X">
+                        <dl>
+                            <dt>팔찌/발찌</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=054&mcode=005&type=X">팔찌</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=054&mcode=006&type=X">발찌</a></li>
+                        <br>
+                        <li><a href="/shop/shopbrand.html?xcode=011&mcode=004&type=Y">써지컬 팔찌/발찌</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=020&mcode=004&type=Y">925실버 팔찌/발찌</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=026&mcode=004&type=Y">14K 팔찌/발찌</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=004&mcode=004&type=Y">etc.</a></li>
+                    </ul>
+                </li>  
+
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=041&type=X">
+                        <dl>
+                            <dt>헤어</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=041&mcode=001&type=X">집게핀/바나나</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=041&mcode=002&type=X">머리핀/클립/똑딱핀</a></li>
+                         <li><a href="/shop/shopbrand.html?xcode=041&mcode=003&type=X">스크런치/머리끈</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=041&mcode=004&type=X">머리띠</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=041&mcode=005&type=X">비녀</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=041&mcode=006&type=X">etc.</a></li>
+                    </ul>
+                </li> 
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=014&type=X">
+                        <dl>
+                            <dt>부속품/관리용품</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=014&mcode=001&type=X">부속품</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=014&mcode=002&type=X">관리용품</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=014&mcode=003&type=X">etc.</a></li>
+                    </ul>
+                </li> 
+
+                <br />
+                <br />
+
+                 <li>
+                      <a>
+                        <dl>
+                            <dt>소재별 상품보기</dt>
+                            
+                        </dl>
+                      </a>
+                    <ul>
+                        <li style="margin-top:7px;"><a href="/shop/shopbrand.html?xcode=011&type=Y">써지컬스틸</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=020&type=Y">925실버</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=026&type=Y">14K</a></li>
+                        <li style="padding-bottom:0px;"><a href="/shop/shopbrand.html?xcode=004&type=Y">etc.</a></li>
+                    </ul>
+                </li> 
+
+
+                
+               <br />
+            
+            
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=023&type=P">
+                        <dl>
+                            <dt>아울렛</dt>
+                            
+                        </dl>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/shop/shopbrand.html?xcode=015&type=Y">
+                        <dl>
+                            <dt>알러지 등급별</dt>
+                            
+                        </dl>
+                    </a>
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul style="display: none;">
+                        <li><a href="/shop/shopbrand.html?xcode=015&mcode=001&type=Y">민감도1</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=015&mcode=002&type=Y">민감도2</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=015&mcode=003&type=Y">민감도3</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=015&mcode=004&type=Y">민감도4</a></li>
+                    </ul>
+                </li>
+
+
+                
+
+                <br />
+                <br />
+
+                  <li>
+                     <a href="">
+                        <dl>
+                            <dt>BRAND</dt>
+                            
+                        </dl>
+                      </a>
+
+                    <span class="fa xi-angle-down xi" flag="off"></span>
+                    <ul class="drop" style="display:none;">
+                        <li><a href="/shop/shopbrand.html?xcode=038&mcode=001&type=Y">PINKROCKET</a></li> 
+                        <li><a href="/shop/shopbrand.html?xcode=038&mcode=002&type=Y">ST.CREAM</a></li>
+                        <li><a href="/shop/shopbrand.html?xcode=038&mcode=003&type=Y">THE GOLDEN PLANET</a></li>
+                    </ul>
+                </li>  
+
+            
+
+              
+
+                
+
+
+            </ul>
+        </nav>
+    </div>
+    
+   <!-- <div class="navCategory" style="border-left:1px solid #c2c2c2; height:830px; width:1px !important; ">
+    </div> -->
+    <div class="navCategory">
+        <nav>
+            <ul>
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board2">
+                        <dl>
+                            <dt>NOTICE</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board3">
+                        <dl>
+                            <dt>REVIEW</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/board/board.html?code=curiouswiz">
+                        <dl>
+                            <dt>Q&A</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board10">
+                        <dl>
+                            <dt>FAQ 자주 묻는 질문</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+
+                
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board12">
+                        <dl>
+                            <dt>EVENT</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+                
+                <br />
+                <br />
+                
+
+                
+                
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board7">
+                        <dl>
+                            <dt>도매문의</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="/board/board.html?code=curiouswiz_board13">
+                        <dl>
+                            <dt>협찬문의</dt>
+                           
+                        </dl>
+                    </a>
+                </li>
+                
+                
+                  <!-- 고객센터 정보 시작 -->
+        <dl class="cscenter">
+            <dt class="shoptel">카카오톡: 핑크로켓</dt>
+            <dd>OPEN / AM10:00~PM5:00</dd>
+            <dd>LUNCH / PM12:30~PM1:30</dd>
+            <dd>OFF / SAT,SUN,HOLIDAY</dd>
+            <br>
+            
+        </dl>
+        
+        <dl class="SnsArea">
+            <dd><a href="http://bit.ly/3YohuIA" class="snsBtn"><img src="/design/curiouswiz/phps/img/kakao_icon.png"></a></dd>
+            <dd><a href="https://talk.naver.com/app/bridge/ct/WC3SK8" class="snsBtn"><img src="/design/curiouswiz/phps/img/talk_icon.png"></a></dd>
+        </dl>
+        <!-- 고객센터 정보 끝 -->
+        
+  <!-- // PC header AllMenu -->      
+              
+            </ul>
+        </nav>
+    </div>
+        </div>
+    
+    <div class="hd-search">
+    <div class="hd-search-wrap">
+        <!--/form_search/-->
+            <fieldset>
+                <legend>검색 폼</legend>
+                <!--/input_search_word/-->
+                <a class="search-btn" href="<!--/link_search_button/-->"><input type="image" src="/design/curiouswiz/onedesign/images/hd_sch.png" alt="검색" title="검색" /></a>
+            </fieldset>
+        <!--/end_form/-->
+    </div>
+    <div class="search-r"></div>
+    </div>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M4WLQSX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
