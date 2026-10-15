@@ -1,0 +1,1453 @@
+.swiper-container {
+
+    overflow: hidden;
+
+    position: relative;
+
+}
+
+
+
+.swiper-container .swiper-slide {
+
+    position: relative;
+
+}
+
+
+
+.swiper-container .swiper-slide a {
+
+    display: block;
+
+}
+
+
+
+
+.swiper-container .swiper-slide img {
+
+    width: 100%;
+
+}
+
+
+
+
+
+
+
+#mainBnr .swiper-pagination-wrap {
+
+    bottom: 7% !important;
+
+    left: 0;
+
+    right: 0;
+
+    text-align: center;
+
+    position: absolute;
+
+    display: flex;
+
+    align-items: center;
+
+    width: 100%;
+
+    z-index: 2;
+
+    justify-content: center;
+
+}
+
+
+
+#mainBnr .swiper-pagination {
+
+    width: 200px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    /* 페이지네이션을 꽉 채우기 위해 추가 */
+
+    position: relative;
+
+    bottom: auto !important;
+
+    left: auto !important;
+
+    right: auto !important;
+
+    top: auto !important;
+
+}
+
+
+
+#mainBnr .swiper-pagination .swiper-pagination-bullet {
+
+    background: #fff;
+
+    opacity: 0.2;
+
+    border-radius: 0;
+
+    margin: 0;
+
+    height: 2px;
+
+    width: auto;
+
+    /* 기본 너비 초기화 */
+
+    flex-grow: 1;
+
+    /* 유연한 너비를 허용 */
+
+}
+
+
+
+#mainBnr .swiper-pagination .swiper-pagination-bullet-active {
+
+    opacity: 1;
+
+}
+
+
+
+#mainBnr .txt {
+
+    text-align: center;
+
+    position: absolute;
+
+    top: 22%;
+
+    left: 0;
+
+    right: 0;
+
+    color: #fff;
+
+}
+
+
+
+#mainBnr .txt h1 {
+
+    font-size: 56px;
+
+    font-weight: 500;
+
+    color: #fff;
+
+}
+
+
+
+#mainBnr .txt p {
+
+    font-size: 24px;
+
+    font-weight: 500;
+
+    line-height: 28px;
+
+    margin-bottom: 10px;
+
+}
+
+
+
+
+
+#mainBnr .page-numbers {
+
+    color: #fff;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    margin-left: 6px;
+
+}
+
+
+
+.marquee-container {
+
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    width: 100%;
+
+    color: #000;
+
+    position: relative;
+
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+
+    cursor: default;
+
+}
+
+
+
+.marquee {
+
+    display: flex;
+
+    animation: scroll 50s linear infinite;
+
+    /* 끊김 없이 반복 애니메이션 */
+
+    font-size: 15px;
+
+    font-weight: 400;
+
+
+
+}
+
+
+
+.marquee span {
+
+    padding: 0 60px 0 0;
+
+}
+
+
+
+.marquee span::before{
+
+    content:"●";
+
+    font-size:7px;
+
+    margin-right:60px;
+
+
+
+}
+
+
+
+
+
+@keyframes scroll {
+
+    from {
+
+        transform: translateX(0);
+
+    }
+
+
+
+    to {
+
+        transform: translateX(-50%);
+
+        /* 절반만 이동 */
+
+    }
+
+}
+
+
+
+#cateSwiper {
+
+    width: 100%;
+
+    max-width: 920px;
+
+    margin: 100px auto 0;
+
+    padding-bottom: 20px;
+
+}
+
+
+
+#cateSwiper h5 {
+
+    text-align: center;
+
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    font-weight: 400;
+
+    color: #000;
+
+}
+
+
+
+.banner {
+
+    margin-top: 100px;
+
+}
+
+
+
+.banner img {
+
+    width: 100%;
+
+}
+
+
+
+/* [PC 버전] 타이틀 영역 정렬 */
+.mainTitle { 
+    display: flex;
+    justify-content: space-between; /* 양쪽 끝 배치 */
+    align-items: flex-end;         /* 하단 라인 맞춤 */
+    font-size: 18px; 
+    font-weight: 600; 
+    line-height: 1.2;              /* 고정 행간 줄임 */
+    margin: 100px 20px 30px; 
+}
+.mainTitle .title-txt {
+    text-align: left;
+}
+.mainTitle p { 
+    font-size: 14px; 
+    font-weight: 400; 
+    line-height: 1.4; 
+    color: #121212; 
+    margin-top: 5px;               /* 서브타이틀 간격 조정 */
+}
+
+/* 우측 더보기 버튼 디자인 */
+.mainTitle .title-more-btn {
+    font-size: 13px;
+    font-weight: 500;
+    color: #121212;
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #121212; /* 심플한 하단 언더라인 스타일 */
+    transition: opacity 0.3s ease;
+}
+.mainTitle .title-more-btn:hover {
+    opacity: 0.7;
+}
+.mainTitle .title-more-btn i {
+    margin-left: 4px;
+    font-size: 14px;
+    vertical-align: -1px;
+}
+
+
+
+
+
+.banner .banner-title-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 20px;
+}
+
+.banner .banner-title-wrap .title-txt {
+    text-align: left;
+}
+
+/* 기존 h5, p 마진/간격 미세 조정 */
+.flexProduct>div .banner h5 {
+    margin-top: 0 !important; /* 위에서 고정으로 주던 마진 초기화 */
+}
+.flexProduct>div .banner p {
+    margin-top: 6px !important;
+}
+
+/* 배너용 우측 더보기 버튼 스타일 */
+.banner .banner-more-btn {
+    font-size: 15px;
+    font-weight: 500;
+    color: #121212;
+    padding-bottom: 3px;
+    border-bottom: 1px solid #121212;
+    transition: opacity 0.3s ease;
+    display: inline-block;
+    flex-shrink: 0; /* 글자가 모바일에서 찌그러지지 않도록 방어 */
+    margin-left: 4px;
+    vertical-align: -1px;
+}
+.banner .banner-title-wrap:hover .banner-more-btn {
+    opacity: 0.7;
+}
+
+
+
+
+
+.flexProduct {
+
+    display: flex;
+
+    gap: 30px;
+
+    margin: 60px 16px; 0 16px
+
+}
+
+
+
+.flexProduct>div {
+
+    flex: 1;
+
+    width: calc(50% - 15px);
+
+}
+
+
+
+.flexProduct>div .banner {
+
+    margin-top: 0;
+
+}
+
+
+
+.flexProduct>div .banner h5 {
+
+    margin-top: 20px;
+
+    font-size: 24px;
+
+    font-weight: 500;
+
+    line-height: 28.13px;
+
+    text-align: left;
+
+}
+
+
+
+.flexProduct>div .banner p {
+
+    margin-top: 10px;
+
+    font-size: 16px;
+
+    font-weight: 400;
+
+    line-height: 18.75px;
+
+    text-align: left;
+
+}
+
+
+
+.flexProductList {
+
+    margin-top: 40px;
+
+}
+
+
+
+.flexProductList .itemList {
+
+    width: 100%;
+
+    margin-bottom: 0;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+
+
+.flexProductList .itemList+.itemList {
+
+    margin-top: 10px;
+
+}
+
+
+
+.flexProductList .itemList .thumb {
+
+    width: 200px;
+
+}
+
+
+
+.flexProductList .itemList .info {
+
+    padding-left: 15px;
+
+    width: 380px;
+
+}
+
+
+
+.flexProductList .itemList .info .prd-name {
+
+    margin-top: 0;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish {
+
+    width: 70px;
+
+    text-align: center;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish a {
+
+    font-family: 'malgun gothic';
+
+    font-size: 14px;
+
+    color: #000;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish i.fa {
+
+    color: #c8c8c8;
+
+    font-size: 0;
+
+    vertical-align: text-top;
+
+    cursor: pointer;
+
+    background: url('//skin.makeshop.co.kr/skin/enough/images/btn_wish.png') no-repeat;
+
+    width: 20px;
+
+    height: 18px;
+
+    background-size: contain;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish i.fa-heart {
+
+    display: none;
+
+    color: #f41f3a;
+
+    background: url(//skin.makeshop.co.kr/skin/enough/images/btn_wish_on.png) no-repeat;
+
+    width: 20px;
+
+    height: 18px;
+
+    background-size: contain;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish .wish-on i.fa-heart {
+
+    display: inline-block;
+
+}
+
+
+
+.flexProductList .itemList .prd-wish .wish-on i.fa-heart-o {
+
+    display: none;
+
+}
+
+
+
+.flexProductList.ranking {
+
+    display: flex;
+
+    margin-top: 0;
+
+    flex-wrap: wrap;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+
+
+}
+
+
+
+.flexProductList.ranking .itemList {
+
+    width: calc(50% - 20px);
+
+}
+
+
+
+.flexProductList.ranking .itemList+.itemList {
+
+    margin-top: 0;
+
+
+
+
+
+}
+
+
+
+.flexProductList.ranking .itemList .number {
+
+    font-size: 30px;
+
+    font-style: italic;
+
+    font-weight: 400;
+
+    width: 43px;
+
+    text-align: center;
+
+    vertical-align: top;
+
+    align-self: flex-start;
+
+}
+
+
+
+.flexProductList.ranking .itemList .thumb {
+
+    overflow: hidden;
+    border-radius: 200px;
+
+}
+
+
+
+.flexProductList.ranking .itemList .info {
+
+    width: 315px;
+
+}
+
+
+
+.flexProductList.ranking .itemList .prd-wish {
+
+    width: 44px;
+
+    text-align: right;
+
+}
+
+
+
+
+
+@media (max-width:1024px) {
+
+
+
+    .swiper-container {
+
+        overflow: hidden;
+
+        position: relative;
+
+    }
+
+
+
+    .swiper-container .swiper-slide {
+
+        position: relative;
+
+    }
+
+
+
+    .swiper-container .swiper-slide a {
+
+        display: block;
+
+    }
+
+
+
+    .swiper-container .swiper-slide img {
+
+        width: 100%;
+
+    }
+
+
+
+
+
+    #mainBnr .swiper-pagination-wrap {
+
+        bottom: 20px !important;
+
+        left: 0;
+
+        right: 0;
+
+        text-align: center;
+
+        position: absolute;
+
+        display: flex;
+
+        align-items: center;
+
+        width: 100%;
+
+        z-index: 2;
+
+        justify-content: center;
+
+    }
+
+
+
+    #mainBnr .swiper-pagination {
+
+        width: 200px;
+
+        display: flex;
+
+        justify-content: space-between;
+
+        /* 페이지네이션을 꽉 채우기 위해 추가 */
+
+        position: relative;
+
+        bottom: auto !important;
+
+        left: auto !important;
+
+        right: auto !important;
+
+        top: auto !important;
+
+    }
+
+
+
+    #mainBnr .swiper-pagination .swiper-pagination-bullet {
+
+        background: #fff;
+
+        opacity: 0.2;
+
+        border-radius: 0;
+
+        margin: 0;
+
+        height: 2px;
+
+        width: auto;
+
+        /* 기본 너비 초기화 */
+
+        flex-grow: 1;
+
+        /* 유연한 너비를 허용 */
+
+    }
+
+
+
+    #mainBnr .swiper-pagination .swiper-pagination-bullet-active {
+
+        opacity: 1;
+
+    }
+
+
+
+    #mainBnr .txt {
+
+        text-align: center;
+
+        position: absolute;
+
+        top: 22%;
+
+        left: 0;
+
+        right: 0;
+
+        color: #fff;
+
+    }
+
+
+
+    #mainBnr .txt h1 {
+
+        color: #fff;
+
+        font-size: 32px;
+
+        font-weight: 500;
+
+        line-height: 37.5px;
+
+        word-break: keep-all;
+
+    }
+
+
+
+    #mainBnr .txt p {
+
+        font-size: 20px;
+
+        font-weight: 500;
+
+        line-height: 23.44px;
+
+        margin-bottom: 10px;
+
+        word-break: keep-all;
+
+    }
+
+
+
+
+
+    #mainBnr .page-numbers {
+
+        color: #fff;
+
+        font-size: 12px;
+
+        font-weight: 500;
+
+        margin-left: 6px;
+
+    }
+
+
+
+    .marquee-container {
+
+        overflow: hidden;
+
+        white-space: nowrap;
+
+        width: 100%;
+
+        color: #000;
+
+        position: relative;
+
+        height: 42px;
+
+        display: flex;
+
+        align-items: center;
+
+        cursor: default;
+
+    }
+
+
+
+    .marquee {
+
+        display: flex;
+
+        animation: scroll 50s linear infinite;
+
+        /* 끊김 없이 반복 애니메이션 */
+
+        font-size: 13px;
+
+        font-weight: 400;
+
+
+
+    }
+
+
+
+    .marquee span {
+
+        padding: 0 30px 0 0;
+
+    }
+
+    .marquee span::before {
+
+        margin-right:30px
+
+    }
+
+
+
+
+    @keyframes scroll {
+
+        from {
+
+            transform: translateX(0);
+
+        }
+
+
+
+        to {
+
+            transform: translateX(-50%);
+
+            /* 절반만 이동 */
+
+        }
+
+    }
+
+
+
+    #cateSwiper {
+
+        margin: 20px auto 0;
+
+        padding: 0 20px 20px;
+
+    }
+
+
+
+    #cateSwiper h5 {
+
+        text-align: center;
+
+        margin-top: 10px;
+
+        font-size: 12px;
+
+        font-weight: 400;
+
+        color: #000;
+
+    }
+
+    #cateSwiper .swiper-wrapper {
+
+        transition-timing-function: linear;
+
+    }
+
+    #cateSwiper .swiper-slide {
+
+        width: 20% !important;
+
+        margin: 0 1.5%;
+
+    }
+
+
+
+    .banner {
+
+        margin-top: 60px;
+
+    }
+
+
+
+    .banner img {
+
+        width: 100%;
+
+    }
+
+
+
+    .mainTitle { 
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 1rem;            /* 모바일 크기 감안 */
+        font-weight: 600; 
+        line-height: 1.2; 
+        margin: 40px 20px 20px; 
+    }
+    .mainTitle p { 
+        font-size: 0.75rem; 
+        font-weight: 400; 
+        line-height: 1.3; 
+        text-align: left; 
+        color: #121212; 
+        margin-top: 4px;
+    }
+    .mainTitle .title-more-btn {
+        font-size: 0.75rem;
+
+    }
+    
+
+.banner .banner-title-wrap {
+        margin-top: 15px; /* 모바일에서 배너 이미지와의 간격 */
+    }
+    .flexProduct>div .banner h5 {
+        margin-top: 0 !important;
+    }
+    .banner .banner-more-btn {
+        font-size: 0.75rem;
+        padding-bottom: 2px;
+    }
+
+
+    .flexProduct {
+
+        display: flex;
+
+        gap: 60px;
+
+        flex-direction: column;
+
+        padding: 60px 20px 0 20px;
+
+        margin: 0;
+
+    }
+
+
+
+    .flexProduct>div {
+
+        flex: 1;
+
+        width: 100%;
+
+    }
+
+
+
+    .flexProduct>div .banner {
+
+        margin-top: 0;
+
+    }
+
+
+
+    .flexProduct>div .banner h5 {
+
+        margin-top: 20px;
+
+        font-size: 18px;
+
+        font-weight: 500;
+
+        line-height: 21.09px;
+
+        text-align: left;
+
+    }
+
+
+
+    .flexProduct>div .banner p {
+
+        margin-top: 6px;
+
+        color: #999;
+
+        font-size: 13px;
+
+        font-weight: 400;
+
+        line-height: 15.23px;
+
+        text-align: left;
+
+    }
+
+
+
+    .flexProductList {
+
+        margin-top: 20px;
+
+    }
+
+
+
+    .flexProductList .itemList {
+
+        width: 100%;
+
+        margin-bottom: 0;
+
+        display: flex;
+
+        align-items: center;
+
+    }
+
+
+
+    .flexProductList .itemList+.itemList {
+
+        margin-top: 20px;
+
+    }
+
+
+
+    .flexProductList .itemList .thumb {
+
+        width: 90px;
+
+    }
+
+
+
+    .flexProductList .itemList .info {
+
+        padding-left: 10px;
+
+        width: calc(100% - 90px - 18px);
+
+        box-sizing: border-box;
+
+    }
+
+
+
+    .flexProductList .itemList .info .prd-name {
+
+        margin-top: 0;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish {
+
+        width: 18px;
+
+        text-align: center;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish a {
+
+        font-family: 'malgun gothic';
+
+        font-size: 14px;
+
+        color: #000;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish i.fa {
+
+        color: #c8c8c8;
+
+        font-size: 0;
+
+        vertical-align: text-top;
+
+        cursor: pointer;
+
+        background: url('//skin.makeshop.co.kr/skin/enough/images/heart.svg') no-repeat;
+
+        width: 20px;
+
+        height: 18px;
+
+        background-size: contain;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish i.fa-heart {
+
+        display: none;
+
+        color: #f41f3a;
+
+        background: url(//skin.makeshop.co.kr/skin/enough/images/heart_on.svg) no-repeat;
+
+        width: 20px;
+
+        height: 18px;
+
+        background-size: contain;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish .wish-on i.fa-heart {
+
+        display: inline-block;
+
+    }
+
+
+
+    .flexProductList .itemList .prd-wish .wish-on i.fa-heart-o {
+
+        display: none;
+
+    }
+
+
+
+    .flexProductList.ranking {
+
+        display: flex;
+
+        margin-top: 0;
+
+        flex-wrap: wrap;
+
+        justify-content: space-between;
+
+        gap: 10px;
+
+    }
+
+
+
+    .flexProductList.ranking .itemList {
+
+        width: 100%;
+
+    }
+
+
+
+    .flexProductList.ranking .itemList {padding: 0 20px;box-sizing: border-box;}
+
+
+
+    .flexProductList.ranking .itemList+.itemList {
+
+        margin-top: 0;
+
+    }
+
+
+
+    .flexProductList.ranking .itemList .number {
+
+        font-style: italic;
+
+        font-weight: 400;
+
+        width: 21px;
+
+        text-align: center;
+
+        vertical-align: top;
+
+        align-self: flex-start;
+
+        font-size: 18px;
+
+    }
+
+
+
+    .flexProductList.ranking .itemList .thumb {
+
+        border-radius: 200px;
+
+        overflow: hidden;
+
+    }
+
+    .flexProductList.ranking .itemList .info {
+
+        width: calc(100% - 34px - 90px - 21px);
+
+    }
+
+
+
+    .flexProductList.ranking .itemList .prd-wish {
+
+        width: 34px;
+
+        text-align: right;
+
+    }
+
+
+
+
+
+    .flexProductList .itemList .thumb .soldout_badge,
+
+    .flexProductList.ranking .itemList .thumb .soldout_badge {font-size:13px;}
+
+
+
+}
+
+
+
+
+
+
+
+.more-btn-wrap {
+
+    text-align: center;
+
+    margin: 40px 0 60px 0;
+
+    width: 100%;
+
+}
+
+#btnMoreMdsPick {
+
+    display: inline-block;
+
+    padding: 14px 45px;
+
+    border: 1px solid #121212;
+
+    color: #121212;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    font-family: 'Montserrat', sans-serif;
+
+    letter-spacing: 1px;
+
+    transition: all 0.3s ease;
+
+    text-decoration: none;
+
+}
+
+#btnMoreMdsPick:hover {
+
+    background-color: #121212;
+
+    color: #ffffff;
+
+}
+
+#btnMoreMdsPick i {
+
+    margin-left: 5px;
+
+    font-size: 14px;
+
+    vertical-align: -1px;
+
+}
+
+.more-view-item {
+
+    display: none;
+
+}
+
+
+
+
+/* ==========================================================================
+   메인 목록형 상품 다중 이미지 bxSlider 롤링 컴포넌트 세팅
+   ========================================================================== */
+/* 썸네일 박스 밖으로 도트가 삐져나가는 현상 방지 */
+.item-wrap2 .item-cont2 .itemList .thumb { 
+    overflow: visible !important; 
+    position: relative;
+}
+
+.item-wrap2 .item-cont2 .itemList .thumb .bx-wrapper { 
+    position: relative; 
+    margin: 0 auto;
+}
+
+/* 하단 원형 도트(페이저) 커스텀 정렬 */
+.item-wrap2 .item-cont2 .itemList .thumb .bx-pager { 
+    position: absolute; 
+    left: 50%; 
+    bottom: 8%; 
+    transform: translateX(-50%); 
+    display: flex; 
+    gap: 6px; 
+    align-items: center; 
+    justify-content: center; 
+    z-index: 5;
+}
+
+.item-wrap2 .item-cont2 .itemList .thumb .bx-pager a { 
+    display: inline-block; 
+    width: 6px; 
+    height: 6px; 
+    border-radius: 50%; 
+    background: rgba(255, 255, 255, 0.4); 
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0; 
+    text-indent: -9999px;
+}
+
+/* 활성화된 슬라이드 도트 색상 강조 */
+.item-wrap2 .item-cont2 .itemList .thumb .bx-pager a.active { 
+    background: #121212; 
+}
+
+/* 좌우 컨트롤 화살표 기본 위치 보정 및 숨김 처리 (기획에 따라 사용 가능) */
+.item-wrap2 .item-cont2 .itemList .thumb .bx-controls-direction {
+    display: none; /* 깔끔한 썸네일을 위해 도트만 남기고 좌우 화살표는 숨김 처리 권장 */
+}
+
+
+.swiper-backface-hidden .cate a img {border-radius:100%;}
