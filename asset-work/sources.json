@@ -1,0 +1,550 @@
+{
+  "sourcePage": "https://www.pink-rocket.com/",
+  "fetchedAt": "2026-10-15",
+  "products": [
+    {
+      "id": "2085891",
+      "name": "쁘띠 볼륨 솔리드 원터치 링 피어싱 귓볼 귓바퀴 이너컨츠 데일리피어싱",
+      "price": 6100,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310080004413.gif?1791450849",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085891",
+      "images": [
+        "assets/product-2085891-1.jpg",
+        "assets/product-2085891-2.jpg",
+        "assets/product-2085891-3.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "기타",
+      "source": "pinkrocket",
+      "branduid": "2085891",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310080004412.gif?1791450849",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03558-261007-04,05_03.jpg",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03558-261007-04,05_03.jpg"
+      ],
+      "displayName": "쁘띠 볼륨 솔리드 원터치 링 피어싱"
+    },
+    {
+      "id": "2085889",
+      "name": "써지컬 바 피어싱 루나 오로라 얇은 바변경 가능 귓바퀴 귓볼 이너컨츠 연골피어싱",
+      "price": 9500,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310070016853.gif?1791450742",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889",
+      "images": [
+        "assets/product-2085889-1.jpg",
+        "assets/product-2085889-2.jpg",
+        "assets/product-2085889-3.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085889",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310070016852.gif?1791450742",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03561-261007-08_03.jpg",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03561-261007-08_03.jpg"
+      ],
+      "displayName": "써지컬 바 피어싱 루나 오로라 얇은 바변경 가능"
+    },
+    {
+      "id": "2085879",
+      "name": "써지컬 바 피어싱 자개 하트 얇은 바변경 가능 귓볼 이너컨츠 귓바퀴 귀여운피어싱",
+      "price": 5700,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310070016813.jpg?1790676335",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085879",
+      "images": [
+        "assets/product-2085879-1.jpg",
+        "assets/product-2085879-2.jpg",
+        "assets/product-2085879-3.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085879",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310070016812.jpg?1790676335",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03542-260903-16_03.jpg",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03542-260903-16_03.jpg"
+      ],
+      "displayName": "써지컬 바 피어싱 자개 하트 얇은 바변경 가능"
+    },
+    {
+      "id": "2085871",
+      "name": "써지컬 바 피어싱 크리스탈 하트빔 드롭 피어싱 귓바퀴 귓볼 이너컨츠 데일리",
+      "price": 6900,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310100003293.gif?1790932096",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085871",
+      "images": [
+        "assets/product-2085871-1.jpg",
+        "assets/product-2085871-2.jpg",
+        "assets/product-2085871-3.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085871",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310100003292.gif?1790932096",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03541-260903-15_03.jpg",
+        "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03541-260903-15_03.jpg"
+      ],
+      "displayName": "써지컬 바 피어싱 크리스탈 하트빔 드롭 피어싱"
+    },
+    {
+      "id": "2085674",
+      "name": "실버 925 라인 아이콘 미니 피어싱 귓볼 귓바퀴 이너컨츠",
+      "price": 14000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310070014683.gif?1774000971",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085674",
+      "images": [
+        "assets/product-2085674-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "실버925",
+      "source": "pinkrocket",
+      "branduid": "2085674",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310070014682.gif?1774000971"
+      ],
+      "displayName": "실버 925 라인 아이콘 미니 피어싱"
+    },
+    {
+      "id": "2085683",
+      "name": "써지컬 피어싱 화이트 데이지 원터치 링피어싱 귀걸이 귓볼 귀 아웃컨츠 귓바퀴",
+      "price": 12000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310080004083.jpg?1775209285",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085683",
+      "images": [
+        "assets/product-2085683-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085683",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310080004082.jpg?1775209285"
+      ],
+      "displayName": "써지컬 피어싱 화이트 데이지 원터치 링피어싱 귀걸이"
+    },
+    {
+      "id": "2085731",
+      "name": "실버 925 드롭 하트 체인 미니 피어싱 귓볼 귓바퀴 아웃컨츠",
+      "price": 19300,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310100002913.gif?1778751986",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085731",
+      "images": [
+        "assets/product-2085731-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "실버925",
+      "source": "pinkrocket",
+      "branduid": "2085731",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310100002912.jpg?1778751986"
+      ],
+      "displayName": "실버 925 드롭 하트 체인 미니 피어싱"
+    },
+    {
+      "id": "2085780",
+      "name": "피어싱 세트 스타 스파클 써지컬 바 피어싱 [4개]",
+      "price": 20070,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0310130000963.gif?1781865025",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085780",
+      "images": [
+        "assets/product-2085780-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "피어싱",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085780",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0310130000962.jpg?1781865025"
+      ],
+      "displayName": "피어싱 세트 스타 스파클 써지컬 바 피어싱 [4개]"
+    },
+    {
+      "id": "2085758",
+      "name": "써지컬귀걸이 위글 레터링 원터치 링 귀걸이",
+      "price": 13500,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0190060001713.jpg?1780656439",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085758",
+      "images": [
+        "assets/product-2085758-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "귀걸이",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085758",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0190060001713.jpg?1780656439"
+      ],
+      "displayName": "써지컬귀걸이 위글 레터링 원터치 링 귀걸이"
+    },
+    {
+      "id": "2084924",
+      "name": "[실버925] 스파클 링 귀걸이",
+      "price": 48000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0190060001553.jpg?1695716867",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2084924",
+      "images": [
+        "assets/product-2084924-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "귀걸이",
+      "material": "실버925",
+      "source": "pinkrocket",
+      "branduid": "2084924",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0190060001553.jpg?1695716867"
+      ],
+      "displayName": "[실버925] 스파클 링 귀걸이"
+    },
+    {
+      "id": "2084048",
+      "name": "[써지컬스틸] 드랍렛 귀걸이",
+      "price": 9900,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0190050001133.jpg?1758274857",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2084048",
+      "images": [
+        "assets/product-2084048-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "귀걸이",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2084048",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0190050001133.jpg?1758274857"
+      ],
+      "displayName": "[써지컬스틸] 드랍렛 귀걸이"
+    },
+    {
+      "id": "2084730",
+      "name": "써지컬 리플 반지",
+      "price": 9500,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0100050001603.jpg?1763005488",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2084730",
+      "images": [
+        "assets/product-2084730-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "반지",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2084730",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0100050001602.gif?1763003874"
+      ],
+      "displayName": "써지컬 리플 반지"
+    },
+    {
+      "id": "2085628",
+      "name": "써지컬 반지 리니어 스파클 써지컬스틸 반지 레이어드링",
+      "price": 12000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0100050002963.jpg?1769045404",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085628",
+      "images": [
+        "assets/product-2085628-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "반지",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085628",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0100050002963.jpg?1769045404"
+      ],
+      "displayName": "써지컬 반지 리니어 스파클 써지컬스틸 반지 레이어드링"
+    },
+    {
+      "id": "2085782",
+      "name": "써지컬목걸이 블랙 비즈 도트 짧은 목걸이",
+      "price": 13500,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0600070000033.gif?1782098525",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085782",
+      "images": [
+        "assets/product-2085782-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "목걸이",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085782",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0600070000032.gif?1782098525"
+      ],
+      "displayName": "써지컬목걸이 블랙 비즈 도트 짧은 목걸이"
+    },
+    {
+      "id": "2085723",
+      "name": "써지컬 스타리오 Y 드롭 슬라이드 목걸이",
+      "price": 14000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0600050000103.gif?1777023605",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085723",
+      "images": [
+        "assets/product-2085723-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "목걸이",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085723",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0600050000103.gif?1777023605"
+      ],
+      "displayName": "써지컬 스타리오 Y 드롭 슬라이드 목걸이"
+    },
+    {
+      "id": "2085781",
+      "name": "써지컬목걸이 물결 스타 볼 체인 목걸이",
+      "price": 15000,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0600060001923.gif?1781865091",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085781",
+      "images": [
+        "assets/product-2085781-1.jpg"
+      ],
+      "originalImageSize": [
+        320,
+        400
+      ],
+      "category": "목걸이",
+      "material": "써지컬스틸",
+      "source": "pinkrocket",
+      "branduid": "2085781",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0600060001923.gif?1781865091"
+      ],
+      "displayName": "써지컬목걸이 물결 스타 볼 체인 목걸이"
+    },
+    {
+      "id": "2084324",
+      "name": "트위스티 스틱 비녀",
+      "price": 9800,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0410050000083.jpg?1667367101",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2084324",
+      "images": [
+        "assets/product-2084324-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "헤어",
+      "material": "기타",
+      "source": "pinkrocket",
+      "branduid": "2084324",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0410050000082.jpg?1667367101"
+      ],
+      "displayName": "트위스티 스틱 비녀"
+    },
+    {
+      "id": "2085272",
+      "name": "셀룰로오스 플라워 라운드 헤어 집게핀 5종",
+      "price": 12500,
+      "thumb": "https://www.pink-rocket.com/shopimages/curiouswiz/0410010000333.jpg?1717404613",
+      "detailUrl": "https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085272",
+      "images": [
+        "assets/product-2085272-1.jpg"
+      ],
+      "originalImageSize": [
+        850,
+        1005
+      ],
+      "category": "헤어",
+      "material": "기타",
+      "source": "pinkrocket",
+      "branduid": "2085272",
+      "metadataSource": "public storefront home",
+      "sourceFetchedAt": "2026-10-15",
+      "imageUrls": [
+        "https://www.pink-rocket.com/shopimages/curiouswiz/0410010000332.jpg?1717404613"
+      ],
+      "displayName": "셀룰로오스 플라워 라운드 헤어 집게핀 5종"
+    }
+  ],
+  "photoExtractions": [
+    {
+      "asset": "assets/product-2085891-2.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03558-261007-04,05_03.jpg",
+      "sourceRect": [
+        0,
+        450,
+        950,
+        1900
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085891-3.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03558-261007-04,05_03.jpg",
+      "sourceRect": [
+        0,
+        2008,
+        950,
+        3458
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085889-2.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03561-261007-08_03.jpg",
+      "sourceRect": [
+        0,
+        450,
+        950,
+        1900
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085889-3.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03561-261007-08_03.jpg",
+      "sourceRect": [
+        0,
+        2008,
+        950,
+        3458
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085879-2.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03542-260903-16_03.jpg",
+      "sourceRect": [
+        0,
+        346,
+        950,
+        1796
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085879-3.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03542-260903-16_03.jpg",
+      "sourceRect": [
+        0,
+        1904,
+        950,
+        3354
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085871-2.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03541-260903-15_03.jpg",
+      "sourceRect": [
+        0,
+        367,
+        950,
+        1817
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    },
+    {
+      "asset": "assets/product-2085871-3.jpg",
+      "sourceUrl": "http://pink_rocket.cooljem.com/pinkrocket/item/piercing/PR03541-260903-15_03.jpg",
+      "sourceRect": [
+        0,
+        1925,
+        950,
+        3375
+      ],
+      "note": "Original photograph extracted at white-separator boundaries from official product detail composite; no alteration to photo content."
+    }
+  ],
+  "notes": [
+    "Names, prices, product IDs and detail URLs extracted from the public storefront.",
+    "Category/material are inferred from official product names, for prototype filtering.",
+    "Product price is a snapshot, not a live price feed.",
+    "Additional thumbnails are real different photographs extracted from bounded official detail pages."
+  ]
+}
