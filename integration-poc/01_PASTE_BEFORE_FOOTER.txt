@@ -44,6 +44,15 @@
   const nativeWishLink = root.querySelector('[data-native-wishlist]');
   const nativeCartLink = root.querySelector('[data-native-cart]');
   const channel = 'pinkrocket-preview-v1';
+  const makeshopDetailUrl = function makeshopDetailUrl(productId,platform='pc') {
+  if(typeof productId==='number'){
+    if(!Number.isSafeInteger(productId)||productId<=0)return null;
+    productId=String(productId);
+  }
+  if(typeof productId!=='string'||!/^[1-9]/.test(productId)||/\D/.test(productId))return null;
+  const path=platform==='pc'?'/shop/shopdetail.html':platform==='mobile'?'/m/product.html':null;
+  return path?`https://www.pink-rocket.com${path}?branduid=${productId}`:null;
+};
   if (!window.crypto || !crypto.getRandomValues || location.origin === 'null') {
     status.textContent = '메이크샵 HTTPS 메인 미리보기에서 실행하세요.'; return;
   }
@@ -75,6 +84,26 @@
       return /^https?:$/.test(url.protocol) && url.origin === location.origin ? url : null;
     } catch (_) { return null; }
   }
+  function detailUrlFor(uid) {
+    const canonical = makeshopDetailUrl(uid, mobile ? 'mobile' : 'pc');
+    if (!canonical) return null;
+    const url = new URL(canonical);
+    return safeSameOrigin(new URL(url.pathname + url.search, location.origin).href);
+  }
+  function connectedProduct(product) {
+    return !!product && product.node.isConnected && product.node.getAttribute('data-uid') === product.uid;
+  }
+  function verifiedDetailDocument() {
+    if (!connectedProduct(activeProduct)) return null;
+    try {
+      const expected = detailUrlFor(activeProduct.uid);
+      const current = safeSameOrigin(detail.contentWindow.location.href);
+      if (!expected || !current || current.pathname !== expected.pathname ||
+          current.searchParams.getAll('branduid').length !== 1 ||
+          current.searchParams.get('branduid') !== activeProduct.uid) return null;
+      return detail.contentDocument;
+    } catch (_) { return null; }
+  }
   function state(node) {
     const image = node.querySelector('img');
     const src = image ? image.getAttribute('src') || '' : '';
@@ -83,28 +112,22 @@
     return '판별 불가';
   }
   function readProducts() {
+    if (activeProduct) closeOptions();
     observer.disconnect(); products.clear();
     document.querySelectorAll('.my-wish-list[data-uid]').forEach(node => {
       if (root.contains(node) || products.size >= 3) return;
       const uid = node.getAttribute('data-uid');
-      if (!/^\d+$/.test(uid || '') || products.has(uid)) return;
+      if (!detailUrlFor(uid) || products.has(uid)) return;
       const card = node.closest('.productWrap') || node.closest('li');
       const pic = node.closest('.listPic');
       if (!card || !pic) return;
-      const anchor = Array.from(pic.querySelectorAll('a[href]')).find(a => {
-        const url = safeSameOrigin(a.getAttribute('href'));
-        return url && /\/(shopdetail|product)\.html$/.test(url.pathname);
-      });
-      if (!anchor) return;
-      const url = safeSameOrigin(anchor.getAttribute('href'));
-      if (url.searchParams.get('branduid') !== uid) return;
       const title = card.querySelector('.listName');
       const image = Array.from(pic.querySelectorAll('img')).find(img => !img.closest('.my-wish-list'));
       let imageUrl = null;
       try { const u = new URL(image && (image.currentSrc || image.src), location.href);
         if (/^https?:$/.test(u.protocol)) imageUrl = u.href;
       } catch (_) {}
-      products.set(uid,{uid,node,url:url.href,image:imageUrl,
+      products.set(uid,{uid,node,image:imageUrl,
         name:title ? title.textContent.trim() : '상품 '+uid});
       observer.observe(node,{subtree:true,childList:true,attributes:true});
     });
@@ -121,15 +144,21 @@
       ({uid:p.uid,name:p.name,image:p.image,wish:state(p.node)}))});
   }
   function updateWishStates() {
-    products.forEach(p => send({action:'wish-state',uid:p.uid,wish:state(p.node)}));
+    products.forEach(p => {
+      if (connectedProduct(p)) send({action:'wish-state',uid:p.uid,wish:state(p.node)});
+    });
   }
   function closeOptions() {
     dialog.hidden = true; executeCart.disabled = true;
     activeProduct = null; activeCart = null; detail.src = 'about:blank';
   }
   function openOptions(product) {
+    const url = detailUrlFor(product.uid);
+    if (!url || !connectedProduct(product)) {
+      closeOptions(); note('상품 ID 또는 기존 상품 버튼이 유효하지 않습니다. 상품을 다시 읽으세요.'); return;
+    }
     activeProduct = product; activeCart = null; executeCart.disabled = true;
-    dialog.hidden = false; detail.src = product.url;
+    dialog.hidden = false; detail.src = url.href;
     root.querySelector('[data-close-options]').focus();
     note('기존 상세를 열었습니다. 상세 안에서 옵션·수량을 선택한 뒤 담기 요청 버튼을 누르세요.');
   }
@@ -137,12 +166,10 @@
     if (!activeProduct) return;
     activeCart = null; executeCart.disabled = true;
     try {
-      const url = safeSameOrigin(detail.contentWindow.location.href);
-      if (!url || url.searchParams.get('branduid') !== activeProduct.uid ||
-          !/\/(shopdetail|product)\.html$/.test(url.pathname)) {
+      const doc = verifiedDetailDocument();
+      if (!doc) {
         note('상세가 다른 페이지로 이동했습니다. 장바구니 목록에서 결과를 확인하세요.'); return;
       }
-      const doc = detail.contentDocument;
       const button = doc.querySelector('a#cartBtn, .shopdetailButtonTop a.cart');
       if (!button || !button.closest('form')) {
         note('기존 상세의 장바구니 버튼·상품 폼을 찾지 못했습니다. 품절 또는 스킨 구조를 확인하세요.'); return;
@@ -154,7 +181,12 @@
     }
   });
   executeCart.addEventListener('click', () => {
-    if (!activeProduct || !activeCart || !activeCart.isConnected) return;
+    const doc = verifiedDetailDocument();
+    if (!doc || !activeCart || !activeCart.isConnected ||
+        activeCart.ownerDocument !== doc || !activeCart.closest('form')) {
+      activeCart = null; executeCart.disabled = true;
+      note('상품 상세 또는 옵션 폼이 변경됐습니다. 상세를 다시 열어 확인하세요.'); return;
+    }
     if (Date.now()-lastAction < 1200) return;
     lastAction = Date.now();
     try {
@@ -163,7 +195,8 @@
     } catch (_) { note('기존 장바구니 버튼 호출이 실패했습니다. 원본 상세에서 확인하세요.'); }
   });
   root.querySelector('[data-open-detail]').addEventListener('click', () => {
-    if (activeProduct) window.open(activeProduct.url,'_blank','noopener');
+    const url = connectedProduct(activeProduct) && detailUrlFor(activeProduct.uid);
+    if (url) window.open(url.href,'_blank','noopener');
   });
   root.querySelector('[data-close-options]').addEventListener('click',closeOptions);
   root.querySelector('[data-refresh]').addEventListener('click',readProducts);
@@ -177,7 +210,7 @@
         data.requestId <= lastRequest || !['ready','wish','options'].includes(data.action)) return;
     if (data.action === 'ready') { lastRequest = data.requestId; childReady = true; readProducts(); return; }
     const product = products.get(data.uid);
-    if (!product || !product.node.isConnected) return;
+    if (!connectedProduct(product)) return;
     lastRequest = data.requestId;
     if (data.action === 'options') { openOptions(product); return; }
     if (Date.now()-lastAction < 1200) { note('연속 클릭을 피하도록 잠시 기다린 뒤 다시 눌러주세요.'); return; }

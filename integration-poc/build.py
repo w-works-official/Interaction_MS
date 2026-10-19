@@ -1,12 +1,23 @@
 from pathlib import Path
 import json
+import re
 import zipfile
 
-base = Path(__file__).parent
+base = Path(__file__).resolve().parent
 out = base.parent / 'outputs' / 'makeshop-preview-test'
-out.mkdir(parents=True, exist_ok=True)
-child = (base / 'child.js').read_text()
-parent = (base / 'parent.js').read_text().replace('CHILD_SOURCE_PLACEHOLDER', json.dumps(child, ensure_ascii=False).replace('<', '\\u003c'))
+child = (base / 'child.js').read_text(encoding='utf-8')
+model = (base.parent / 'dist' / 'model.js').read_text(encoding='utf-8')
+# Exported functions in model.js end with an unindented closing brace.
+# Fail visibly if that source layout changes instead of duplicating the URL rule.
+helper_match = re.search(r'^export (function makeshopDetailUrl\([^\n]*\)\s*\{\n.*?^\})$', model, re.M | re.S)
+if helper_match is None:
+    raise ValueError('Cannot extract exported makeshopDetailUrl from dist/model.js')
+parent = (base / 'parent.js').read_text(encoding='utf-8')
+for placeholder in ['DETAIL_URL_HELPER_PLACEHOLDER', 'CHILD_SOURCE_PLACEHOLDER']:
+    if parent.count(placeholder) != 1:
+        raise ValueError(f'Expected exactly one {placeholder} in parent.js')
+parent = parent.replace('DETAIL_URL_HELPER_PLACEHOLDER', helper_match.group(1))
+parent = parent.replace('CHILD_SOURCE_PLACEHOLDER', json.dumps(child, ensure_ascii=False).replace('<', '\\u003c'))
 shell = '''<!-- PINKROCKET_PREVIEW_TEST_START -->
 <style>
 #pr-preview-test-v1{clear:both;box-sizing:border-box;width:100%;padding:20px;background:#fff7fb;border:2px dashed #bc4c82;color:#25212a;font:14px/1.6 sans-serif;text-align:left}
@@ -44,14 +55,17 @@ PARENT_SCRIPT
 <!-- PINKROCKET_PREVIEW_TEST_END -->
 '''
 snippet = shell.replace('PARENT_SCRIPT', parent)
-(out / '01_PASTE_BEFORE_FOOTER.txt').write_text(snippet, encoding='utf-8')
+files = {'01_PASTE_BEFORE_FOOTER.txt': snippet}
 for label in ['pc', 'mobile']:
-    original = (base.parent / 'skin-analysis' / f'{label}_main.html').read_bytes().decode('cp949', errors='strict')
+    original_bytes = (base.parent / 'reference-current-skin' / label / 'main.html').read_bytes()
+    original = original_bytes.decode('utf-8')
     marker = '<!--/include_footer(1)/-->'
-    assert original.count(marker) == 1
+    if original.count(marker) != 1:
+        raise ValueError(f'Expected exactly one footer virtual tag in {label}/main.html')
     patched = original.replace(marker, snippet+'\n'+marker)
-    assert patched.replace(snippet+'\n','',1) == original
-    (out / f'02_{label.upper()}_MAIN_PREVIEW_ONLY.txt').write_text(patched, encoding='utf-8')
+    if patched.replace(snippet+'\n','',1).encode('utf-8') != original_bytes:
+        raise ValueError(f'Original main changed while inserting preview snippet: {label}')
+    files[f'02_{label.upper()}_MAIN_PREVIEW_ONLY.txt'] = patched
 readme = '''메이크샵 찜·장바구니 미리보기 테스트 v1
 
 사용법
@@ -69,10 +83,16 @@ readme = '''메이크샵 찜·장바구니 미리보기 테스트 v1
 - 02_PC/02_MOBILE은 2026-10-15 드라이브 백업 메인 전체에 같은 코드를 추가한 편의 파일입니다.
   이후 다른 수정이 있었다면 전체 교체하지 말고 01만 사용하세요. 이 파일들은 미리보기 전용이며 자동 적용되지 않습니다.
 - 텍스트는 UTF-8입니다. 파일을 열어 복사·붙여넣기 하세요. 메이크샵 업로드용 tar 파일은 아닙니다.
+- 이 저장소에서 python integration-poc/build.py를 실행하면 현재 참고 PC·모바일 메인을 기준으로 다시 생성합니다.
+  현재 작업 폴더에 관계없이 스크립트 위치에서 경로를 찾습니다. integration-poc의 00/01과 outputs의 번들 파일은 함께 갱신됩니다.
 
 확인된 소스 재사용
 - 찜: 원래 메인의 .my-wish-list[data-uid] 요소 자체를 클릭합니다. API/비공개 함수명을 추측하지 않습니다.
-- 상품: 기존 .listPic의 링크·이미지와 .listName을 읽습니다. 숫자 상품 ID와 상세 URL의 branduid가 일치하는 것만 사용합니다.
+- 상품: 기존 찜 요소의 유효한 상품 ID와 .listPic의 이미지, .listName을 읽으며 최대 3개만 사용합니다.
+- 상세 주소: dist/model.js의 makeshopDetailUrl(productId, platform) 규칙을 빌드 시 부모 코드 안에 그대로 넣습니다.
+  PC는 /shop/shopdetail.html?branduid=상품ID, 모바일은 /m/product.html?branduid=상품ID입니다.
+  공유 함수가 생성한 경로·쿼리를 메이크샵 부모의 현재 location.origin에 붙입니다. 상품별 저장 URL이나 메인 상품 링크 주소를 읽어 상세 주소로 사용하지 않습니다.
+  상품 ID·PC/모바일 구분이 잘못되면 실행하지 않습니다. 외부 스크립트를 동적으로 가져오지 않습니다.
 - 장바구니: PC 상세 #cartBtn 또는 모바일 .shopdetailButtonTop a.cart와 실제 상품 폼을 사용합니다.
 - 옵션: 기존 상세 iframe 안에서 직접 선택합니다. 필수옵션·수량·가격·품절 검증을 새로 구현하거나 우회하지 않습니다.
 - 목록: 찜 경로는 확인한 PC/모바일 헤더 경로를 사용하고, 장바구니 경로는 현재 헤더의 실제 링크를 읽습니다.
@@ -81,12 +101,13 @@ readme = '''메이크샵 찜·장바구니 미리보기 테스트 v1
 - 대표님 GitHub 목업의 버튼은 수정하지 않았으며 자동 연결되지 않습니다. 이 파일은 연결 가능성을 시험하는 독립 테스트 iframe입니다.
 - 테스트 iframe은 srcdoc와 sandbox를 사용합니다. 서로 다른 출처 사이의 메시지 전달과 기존 메이크샵 버튼 호출을 시험합니다.
   실제 GitHub 주소에 연결할 때는 목업 쪽도 수정하고 정확한 origin과 프레임 검증으로 전환해야 합니다.
+- 부모는 해당 iframe의 source, sandbox 자식의 null origin, 무작위 token, channel, 증가하는 요청 ID와 등록된 상품 ID를 검증합니다.
+  자식도 부모 source·origin·token을 검증하고, 실제 상세를 제어할 때는 현재 부모와 같은 origin 및 요청한 상품 ID를 다시 확인합니다.
 - 실행 직후 자동으로 찜/장바구니를 변경하지 않습니다. 직접 누른 요청만 처리하며 자동 재시도하지 않습니다.
 - ‘클릭 전달’이나 하트 이미지 변화는 서버 저장 성공의 증거가 아닙니다. 실제 목록의 상품/옵션/수량으로 판정합니다.
 - 백업에는 메이크샵이 서버에서 생성하는 실제 처리 함수와 전체 런타임이 없어, 실제 연결 성공은 상점 미리보기에서 확인해야 합니다.
-- 로컬에서는 JavaScript 문법과 원본 메인 보존·가상태그 보존을 검사했습니다.
-  브라우저 실행 파일을 설치할 수 없었고 원격 브라우저도 로컬 서버에 연결할 수 없어 브라우저 실행 검증은 완료하지 못했습니다.
-  실제 상점이나 사용자 계정의 찜/장바구니에는 접근하거나 쓰지 않았습니다. 실제 미리보기 시험이 남아 있습니다.
+- 생성기는 참고 PC·모바일 메인의 include_footer(1) 바로 앞에 시험 코드만 추가하고 원본 메인·가상태그 보존을 확인합니다.
+  이 생성 검사는 실제 상점의 로그인·옵션·찜·장바구니 서버 반영을 검증하지 않습니다. 실제 계정의 쓰기 시험은 별도 요청과 테스트 계정으로 진행합니다.
 - 상세를 iframe으로 열 수 없는 정책, 다른 도메인 이동, 메인 상품 미노출, 달라진 스킨 구조는 실패 이유로 표시됩니다.
 - 기존 상세를 재사용하므로 ‘상세를 전혀 거치지 않는 독자 옵션 UI’까지 검증한 것은 아닙니다.
 - 모바일은 메이크샵 모바일 미리보기에서도 확인하고 가능하면 실제 휴대폰에서도 시험하세요.
@@ -98,8 +119,18 @@ Mobile main: https://drive.google.com/file/d/11G27WlsrQdfLZOLxz5WrurvE2e4oL2wV/v
 PC detail: https://drive.google.com/file/d/1KITJgbRqniomv_1Y9BdS3yK2XXNfUfLD/view
 Mobile detail: https://drive.google.com/file/d/1o-4-H6yVj7f7I1siu97FAnXPYOb3K7nZ/view
 '''
-(out / '00_README_KO.txt').write_text(readme,encoding='utf-8')
-# The archive is the sole delivery file; rebuild after verification.
+files['00_README_KO.txt'] = readme
+out.mkdir(parents=True, exist_ok=True)
+for name, content in files.items():
+    (out / name).write_text(content, encoding='utf-8', newline='\n')
+for name in ['00_README_KO.txt', '01_PASTE_BEFORE_FOOTER.txt']:
+    (base / name).write_text(files[name], encoding='utf-8', newline='\n')
+# Bundle only this generation's four files, never unrelated old output files.
 with zipfile.ZipFile(out.parent/'pinkrocket_makeshop_preview_test_v1.zip','w',zipfile.ZIP_DEFLATED) as z:
-    for f in sorted(out.iterdir()): z.write(f, f.name)
+    for name in sorted(files):
+        entry = zipfile.ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))
+        entry.compress_type = zipfile.ZIP_DEFLATED
+        entry.create_system = 3
+        entry.external_attr = 0o100644 << 16
+        z.writestr(entry, files[name].encode('utf-8'))
 print(out)
