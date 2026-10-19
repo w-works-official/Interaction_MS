@@ -1,9 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {initialConfig,normalizeCatalog,resolveList,reorder,togglePin,autoArrange,composeFeed,filterList,validateConfig,validDetail,removeStarterBanners,migrateSavedConfig} from '../dist/model.js';
+import {initialConfig,normalizeCatalog,resolveList,reorder,togglePin,autoArrange,composeFeed,filterList,validateConfig,validDetail,makeshopDetailUrl,removeStarterBanners,migrateSavedConfig} from '../dist/model.js';
 const withBanners=()=>({...initialConfig(),banners:[{id:'custom-edit',type:'editorial',title:'Edit',subtitle:'Description',after:6,span:2,tabs:['추천'],enabled:true,tone:'ink',image:'',link:''},{id:'custom-notice',type:'notice',title:'Notice',subtitle:'Description',after:12,span:1,tabs:['추천'],enabled:true,tone:'cream',image:'',link:''}]});
-const data=normalizeCatalog(JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url))));
+const rawCatalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
+const data=normalizeCatalog(rawCatalog);
+test('Makeshop detail URLs follow the approved PC and mobile rules by product ID',()=>{
+ assert.equal(makeshopDetailUrl('2085889'),'https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889');
+ assert.equal(makeshopDetailUrl('2085889','pc'),'https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889');
+ assert.equal(makeshopDetailUrl(2085889,'mobile'),'https://www.pink-rocket.com/m/product.html?branduid=2085889');
+});
+test('detail URL construction rejects malformed IDs and unsupported platforms',()=>{
+ for(const id of [undefined,null,'',0,'0',-1,'-1',1.5,'1.5',NaN,Infinity,Number.MAX_SAFE_INTEGER+1,true,{},[],['2085889'],' 2085889','2085889 ','2085889\n','2085889\r\n','02085889','2e6','2085889&x=1','2085889#x','2085889/other','https://evil.example'])assert.equal(makeshopDetailUrl(id),null);
+ for(const platform of ['desktop','m','PC','',null,{},0])assert.equal(makeshopDetailUrl('2085889',platform),null);
+});
+test('catalog derives details from IDs when legacy URLs are missing, stale or untrusted',()=>{
+ const product={id:2085889,name:'Legacy product',price:1000,images:[],customField:'retained'};
+ for(const legacyUrl of [undefined,null,'https://www.pink-rocket.com/shop/shopdetail.html?branduid=1','https://pink-rocket.com/m/product.html?branduid=2085889','https://evil.example/shop/shopdetail.html?branduid=2085889']){
+  const input={...product,...(legacyUrl===undefined?{}:{detailUrl:legacyUrl})},before=structuredClone(input);
+  for(const wrapped of [[input],{products:[input]},{items:[input]}]){
+   const [result]=normalizeCatalog(wrapped);
+   assert.equal(result.id,'2085889');assert.equal(result.detailUrl,'https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889');assert.equal(result.customField,'retained');
+  }
+  assert.deepEqual(input,before);
+ }
+ assert.equal(normalizeCatalog([{...product,id:'not-a-product',detailUrl:'https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889'}])[0].detailUrl,null);
+});
+test('all 2379 catalog links match the former per-product PC URLs without storing them',()=>{
+ assert.equal(rawCatalog.length,2379);assert.equal(data.length,rawCatalog.length);
+ rawCatalog.forEach((raw,index)=>{
+  assert.equal(Object.hasOwn(raw,'detailUrl'),false);
+  assert.equal(data[index].id,raw.id);
+  assert.equal(data[index].detailUrl,'https://www.pink-rocket.com/shop/shopdetail.html?branduid='+raw.id);
+  assert.equal(makeshopDetailUrl(raw.id,'mobile'),'https://www.pink-rocket.com/m/product.html?branduid='+raw.id);
+ });
+});
 test('actual product snapshot has valid images, distinct IDs and approved detail links',()=>{
  assert.equal(data.length,2379);assert.equal(new Set(data.map(p=>p.id)).size,2379);
  for(const p of data){assert.ok(p.price>0);assert.ok(validDetail(p.detailUrl));for(const image of p.images){if(image.startsWith('assets/'))assert.ok(fs.existsSync(new URL('../dist/'+image,import.meta.url)));else assert.match(image,/^https:\/\/www\.pink-rocket\.com\/shopimages\/curiouswiz\/[\w.%-]+$/);}}
