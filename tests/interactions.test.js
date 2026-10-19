@@ -4,17 +4,20 @@ import fs from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\n/,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const tick=()=>new Promise(r=>setTimeout(r,25));
-async function boot({historyDenied=false,oldBanners=false}={}){
+async function boot({historyDenied=false,oldBanners=false,animate=false,reducedMotion=false}={}){
  const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const dom=new JSDOM(html,{url:'https://mockup.example/',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
- const w=dom.window;
+ const w=dom.window,animations=[],scrollCalls=[];
+ w.matchMedia=()=>({matches:reducedMotion});
+ if(animate)w.Element.prototype.animate=function(frames,options){const animation={frames,options,cancelled:false,cancel(){this.cancelled=true;},finished:new Promise(()=>{})};animations.push(animation);return animation;};
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});
  w.scrollTo=()=>{};if(historyDenied)w.history.replaceState=()=>{throw new w.DOMException('Blocked in embedded page','SecurityError');};if(oldBanners){const config={schema:1,tabs:Object.fromEntries(['추천','신상','피어싱','귀걸이','반지','목걸이','헤어'].map(t=>[t,{sort:'recommended',manual:[],pins:[],excluded:[],hideSoldout:false}])),banners:[{id:'edit-01',type:'editorial',title:'Old banner',subtitle:'Old',after:6,span:2,tabs:['추천'],enabled:true,tone:'ink',image:'',link:''}]};w.localStorage.setItem('pr-studio-published-v1',JSON.stringify(config));w.localStorage.setItem('pr-studio-draft-v1',JSON.stringify(config));}w.CSS??={};w.CSS.escape=s=>String(s).replace(/[^\w-]/g,'');
+ w.scrollTo=(...args)=>scrollCalls.push(args);
  w.eval(`(()=>{${model}\n${app}\n})();`);
- await tick();return {dom,w,d:w.document,errors};
+ await tick();return {dom,w,d:w.document,errors,animations,scrollCalls};
 }
 test('real app category clicks update active tab, count and actual product IDs',async()=>{
  const {dom,d,errors}=await boot();
@@ -42,6 +45,8 @@ test('gallery navigation never changes category',async()=>{
 test('operator navigation and draft preview remain connected',async()=>{
  const {dom,d}=await boot();try{
   d.querySelector('[data-action="view-admin"]').click();await tick();
+  assert.equal(d.querySelector('.studio-heading h1').textContent,'메인 운영');assert.ok(d.querySelector('#direction-form'));assert.equal(d.querySelector('.product-table'),null);
+  d.querySelector('[data-action="admin-page"][data-page="list"]').click();await tick();
   assert.ok(d.querySelector('.product-table'));
   d.querySelector('[data-action="admin-tab"][data-tab="반지"]').click();await tick();
   assert.equal(d.querySelectorAll('[data-row-id]').length,60);
@@ -52,6 +57,7 @@ test('operator navigation and draft preview remain connected',async()=>{
 
 
 function swipe(w,node,dx,dy=0){node.dispatchEvent(new w.MouseEvent('pointerdown',{bubbles:true,button:0,clientX:180,clientY:180}));node.dispatchEvent(new w.MouseEvent('pointerup',{bubbles:true,button:0,clientX:180+dx,clientY:180+dy}));}
+function assertPhotoDots(gallery,index,count=3){const dots=gallery.querySelector('.photo-dots');assert.ok(dots);assert.equal(dots.getAttribute('role'),'img');assert.equal(dots.getAttribute('aria-label'),`사진 ${count}장 중 ${index+1}번째`);assert.equal(dots.children.length,count);assert.equal(dots.querySelectorAll('.on').length,1);assert.equal([...dots.children].findIndex(dot=>dot.classList.contains('on')),index);assert.equal(gallery.querySelector('.photo-counter'),null);}
 test('horizontal category swipe changes tab; vertical gesture does not',async()=>{
  const {dom,w,d}=await boot();try{
   swipe(w,d.querySelector('.catalog-heading'),-100);await tick();
@@ -122,8 +128,8 @@ test('long photo gestures cycle photos in both directions without changing categ
  const {dom,w,d}=await boot();try{
   const photo=()=>d.querySelector('[data-gallery="2085891"]');
   for(let i=0;i<3;i++){swipe(w,photo(),-500);await tick();assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');}
-  assert.match(photo().querySelector('.photo-counter').textContent,/1 \/ 3/);
-  swipe(w,photo(),500);await tick();assert.match(photo().querySelector('.photo-counter').textContent,/3 \/ 3/);
+  assertPhotoDots(photo(),0);
+  swipe(w,photo(),500);await tick();assertPhotoDots(photo(),2);
  }finally{dom.window.close();}
 });
 test('search controls, overlays and operator view do not switch customer tabs',async()=>{
@@ -137,6 +143,8 @@ test('search controls, overlays and operator view do not switch customer tabs',a
   assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');
   d.querySelector('.close-button').click();
   d.querySelector('[data-action="view-admin"]').click();await tick();
+  assert.equal(d.querySelector('.studio-heading h1').textContent,'메인 운영');assert.ok(d.querySelector('#direction-form'));assert.equal(d.querySelector('.product-table'),null);
+  d.querySelector('[data-action="admin-page"][data-page="list"]').click();await tick();
   swipe(w,d.querySelector('.studio-main'),-100);await tick();
   assert.ok(d.querySelector('.product-table'));assert.ok(!d.querySelector('.shop-header'));
  }finally{dom.window.close();}
@@ -167,7 +175,9 @@ test('full snapshot counts, price sort, cross-catalog search and progressive rev
 });
 test('operator rows are bounded but search and ranks address the whole catalog',async()=>{
  const {dom,w,d}=await boot();try{
-  d.querySelector('[data-action="view-admin"]').click();await tick();assert.equal(d.querySelectorAll('[data-row-id]').length,60);
+  d.querySelector('[data-action="view-admin"]').click();await tick();
+  assert.equal(d.querySelector('.studio-heading h1').textContent,'메인 운영');assert.ok(d.querySelector('#direction-form'));assert.equal(d.querySelector('.product-table'),null);
+  d.querySelector('[data-action="admin-page"][data-page="list"]').click();await tick();assert.equal(d.querySelectorAll('[data-row-id]').length,60);
   d.querySelector('[data-action="admin-more"]').click();await tick();assert.equal(d.querySelectorAll('[data-row-id]').length,120);
   const wanted=catalog.at(-1),search=d.querySelector('#admin-search');search.value=wanted.id;search.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();
   const rank=d.querySelector(`[data-rank="${wanted.id}"]`);assert.ok(rank);rank.value='1';rank.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();
@@ -192,18 +202,18 @@ test('drag follows the finger, previews the actual next photo and distinguishes 
   assert.ok(photo().classList.contains('swiping'));
   assert.match(photo().querySelector('.photo-link img').style.transform,/-50px/);
   assert.notEqual(photo().querySelector('.gesture-neighbor').src,photo().querySelector('.photo-link img').src);
-  fire('pointerup',130);await tick();assert.match(photo().querySelector('.photo-counter').textContent,/2 \/ 3/);
+  fire('pointerup',130);await tick();assertPhotoDots(photo(),1);
   assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');assert.equal(d.querySelectorAll('.gesture-neighbor').length,0);
   photo().getBoundingClientRect=()=>({width:200});fire('pointerdown',180);fire('pointermove',40);
   assert.match(photo().querySelector('.swipe-cue').textContent,/사진 넘기기/);
-  fire('pointerup',40);await tick();assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');assert.match(photo().querySelector('.photo-counter').textContent,/3 \/ 3/);
+  fire('pointerup',40);await tick();assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');assertPhotoDots(photo(),2);
  }finally{dom.window.close();}
 });
 test('short drags on a single photo do not switch tabs or open quickview',async()=>{
  const {dom,w,d}=await boot();try{
   const photo=d.querySelector('[data-gallery="2085674"] .photo-link');swipe(w,photo,-60);await tick();
   assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');photo.click();assert.equal(d.querySelector('#overlay-root').children.length,0);
-  assert.match(photo.parentElement.querySelector('.photo-counter').textContent,/사진 1장/);
+  assert.equal(photo.parentElement.querySelector('.photo-counter'),null);assert.equal(photo.parentElement.querySelector('.photo-dots'),null);
  }finally{dom.window.close();}
 });
 test('tags rerank immediately, strict matching filters, price bounds and reset compose',async()=>{
@@ -249,7 +259,7 @@ test('a drag started on a thumbnail and released over the page cannot switch cat
   photo.dispatchEvent(new w.MouseEvent('pointerdown',{bubbles:true,button:0,clientX:400,clientY:180}));
   d.body.dispatchEvent(new w.MouseEvent('pointerup',{bubbles:true,button:0,clientX:10,clientY:180}));await tick();
   assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'추천');
-  assert.match(d.querySelector('[data-gallery="2085891"] .photo-counter').textContent,/2 \/ 3/);
+  assertPhotoDots(d.querySelector('[data-gallery="2085891"]'),1);
  }finally{dom.window.close();}
 });
 test('filter sheet opens, keeps selections, applies and closes with focus restored',async()=>{
@@ -264,5 +274,29 @@ test('filter sheet opens, keeps selections, applies and closes with focus restor
   assert.equal(d.querySelector('[data-group="motif"][data-tag="하트"]').getAttribute('aria-pressed'),'true');
   d.querySelector('[data-action="open-filters"]').click();await tick();
   d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));await tick();assert.equal(d.querySelector('.discovery').open,false);
+ }finally{dom.window.close();}
+});
+
+test('category motion follows navigation direction and rapid taps cancel stale animation and scroll work',async()=>{
+ const {dom,d,animations,scrollCalls}=await boot({animate:true});
+ try{
+  d.querySelector('[data-action="tab"][data-tab="신상"]').click();await tick();
+  assert.equal(animations.length,1);assert.match(animations[0].frames[0].transform,/translateX\([1-9]/);assert.equal(animations[0].options.duration,240);
+  d.querySelector('[data-action="tab"][data-tab="추천"]').click();await tick();
+  assert.equal(animations[0].cancelled,true);assert.equal(animations.length,2);assert.match(animations[1].frames[0].transform,/translateX\(-/);
+  const scrollBefore=scrollCalls.length;
+  for(const tab of ['신상','피어싱','귀걸이'])d.querySelector(`[data-action="tab"][data-tab="${tab}"]`).click();
+  await tick();assert.equal(animations[1].cancelled,true);assert.equal(animations.length,3);
+  assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'귀걸이');assert.equal(scrollCalls.length,scrollBefore+1);
+  assert.ok(d.querySelectorAll('[data-product]').length>0);
+ }finally{dom.window.close();}
+});
+
+test('reduced motion keeps category updates immediate without scheduling a slide animation',async()=>{
+ const {dom,d,animations}=await boot({animate:true,reducedMotion:true});
+ try{
+  d.querySelector('[data-action="tab"][data-tab="반지"]').click();
+  assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'반지');assert.ok(d.querySelectorAll('[data-product]').length>0);
+  await tick();assert.equal(animations.length,0);assert.equal(d.querySelector('#app').classList.contains('category-transition'),false);
  }finally{dom.window.close();}
 });
