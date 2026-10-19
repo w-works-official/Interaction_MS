@@ -37,7 +37,7 @@ for row in rows:
   classification='previous-preview-inference' if uid in by_id else 'unclassified'
  materials=[material_map.get(x,x) for x in labels['material']] or ['기타']
  images=by_id.get(uid,{}).get('images') or ['https://www.pink-rocket.com/shopimages/curiouswiz/'+quote(image)]
- accepted.append({'id':uid,'name':name,'price':price,'listPrice':list_price,'images':images,'detailUrl':'https://www.pink-rocket.com/shop/shopdetail.html?branduid='+uid,'category':categories[0],'categories':categories,'classificationSource':classification,'material':materials[0],'materials':materials,'tags':labels,'colors':colors,'source':'quick-browse-snapshot','sourceCollectedAt':'2026-10-13','stockStatus':'unknown'})
+ accepted.append({'id':uid,'name':name,'price':price,'listPrice':list_price,'images':images,'category':categories[0],'categories':categories,'classificationSource':classification,'material':materials[0],'materials':materials,'tags':labels,'colors':colors,'source':'quick-browse-snapshot','sourceCollectedAt':'2026-10-13','stockStatus':'unknown'})
 # Keep the already reviewed gallery examples at the front; this is demo curation, not sales rank.
 order={p['id']:i for i,p in enumerate(overrides)}
 accepted.sort(key=lambda p:(0,order[p['id']]) if p['id'] in order else (1,-int(p['id'])))
