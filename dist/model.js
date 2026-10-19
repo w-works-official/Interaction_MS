@@ -81,10 +81,25 @@ export function filterList(items,{query='',material='전체',sort='curated',favo
   return sort==='curated'?out:sortProducts(out,sort);
 }
 export function reorder(config,catalog,tab,id,targetIndex) {
-  const c=config.tabs[tab];const ids=resolveList(catalog,tab,config).map(p=>p.id);
+  if(!Number.isSafeInteger(targetIndex))return config;
+  const c=config.tabs[tab],ids=resolveList(catalog,tab,config).map(p=>p.id);
   const index=ids.indexOf(id);if(index<0)return config;
-  ids.splice(index,1);ids.splice(Math.max(0,Math.min(ids.length,targetIndex)),0,id);
-  c.manual=ids;c.pins=ids.filter(x=>c.pins.includes(x));return config;
+  const pinSet=new Set(c.pins),pinCount=ids.filter(value=>pinSet.has(value)).length;
+  const first=pinSet.has(id)?0:pinCount,last=pinSet.has(id)?pinCount-1:ids.length-1;
+  const target=Math.max(first,Math.min(last,targetIndex));if(target===index)return config;
+  ids.splice(index,1);ids.splice(target,0,id);
+
+  // Reorder only visible slots; excluded and hidden products keep their latent positions.
+  const fullConfig={...config,tabs:{...config.tabs,[tab]:{...c,excluded:[],hideSoldout:false}}};
+  const fullIds=resolveList(catalog,tab,fullConfig).map(p=>p.id),visible=new Set(ids);
+  let cursor=0;
+  const fullOrder=fullIds.map(value=>visible.has(value)?ids[cursor++]:value);
+  // Retain manual entries outside this category too, in case classification changes later.
+  const fullSet=new Set(fullIds),manualBase=[...new Set([...c.manual,...fullIds])];
+  cursor=0;c.manual=manualBase.map(value=>fullSet.has(value)?fullOrder[cursor++]:value);
+  const visiblePins=ids.filter(value=>pinSet.has(value));cursor=0;
+  c.pins=c.pins.map(value=>visible.has(value)?visiblePins[cursor++]:value);
+  return config;
 }
 export function togglePin(config,tab,id) {
   const c=config.tabs[tab];c.pins=c.pins.includes(id)?c.pins.filter(x=>x!==id):[...c.pins,id];return config;
