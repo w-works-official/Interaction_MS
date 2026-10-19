@@ -107,16 +107,66 @@ export function togglePin(config,tab,id) {
 export function autoArrange(config,tab,sort,resetManual=false) {
   const c=config.tabs[tab];c.sort=sort;if(resetManual)c.manual=[];return config;
 }
-export function composeFeed(items,banners,tab) {
-  const active=banners.filter(b=>b.enabled&&b.tabs.includes(tab));
+export function normalizeContentBlock(b) {
+  if(!b||typeof b!=='object'||Array.isArray(b))throw Error('콘텐츠 블록 설정이 올바르지 않습니다.');
+  const get=(key,fallback)=>b[key]===undefined?fallback:b[key];
+  const type=b.type,title=get('title',''),subtitle=get('subtitle',''),image=get('image',''),link=get('link',''),tag=get('tag','');
+  if(typeof b.id!=='string'||!b.id.trim()||b.id.length>120||!['editorial','notice','image','text','spacer','divider'].includes(type)||
+    typeof title!=='string'||title.length>160||!title.trim()||
+    typeof subtitle!=='string'||subtitle.length>300||typeof tag!=='string'||tag.length>70||
+    typeof image!=='string'||typeof link!=='string'||!Array.isArray(b.tabs)||!b.tabs.length||b.tabs.some(tab=>!TABS.includes(tab)))throw Error('콘텐츠 블록 설정이 올바르지 않습니다.');
+  if(image){
+    if(!/^(assets\/|data:image\/(?:png|jpeg|webp);base64,|https:\/\/)/i.test(image))throw Error('지원하지 않는 이미지 주소입니다.');
+    if(/^https:/i.test(image)){try{if(new URL(image).protocol!=='https:')throw Error();}catch{throw Error('지원하지 않는 이미지 주소입니다.');}}
+  }
+  if(type==='image'&&!image)throw Error('이미지 블록에는 이미지가 필요합니다.');
+  if(link){try{if(new URL(link).protocol!=='https:')throw Error();}catch{throw Error('블록 링크는 https 주소여야 합니다.');}}
+  const zone=get('zone','feed'),placement=get('placement','count'),anchorId=get('anchorId',''),anchorSide=get('anchorSide','after'),overflow=get('overflow','end'),after=get('after',0);
+  if(!['top','after-tabs','before-feed','feed','bottom'].includes(zone)||!['count','product'].includes(placement)||
+    !['before','after'].includes(anchorSide)||!['end','hide'].includes(overflow)||
+    !Number.isSafeInteger(after)||after<0||after>100000||typeof anchorId!=='string'||
+    (anchorId!==''&&(!/^[1-9]/.test(anchorId)||/\D/.test(anchorId)))||
+    (placement==='product'&&(!anchorId||zone!=='feed')))throw Error('블록 배치 설정이 올바르지 않습니다.');
+  const span=b.span===2?2:1,widthPc=get('widthPc',type==='notice'?'full':String(span)),widthMobile=get('widthMobile',type==='notice'||span===2?'full':'1');
+  const newRow=get('newRow',false),showWhenFiltered=get('showWhenFiltered',true);
+  if(!['1','2','full'].includes(widthPc)||!['1','2','full'].includes(widthMobile)||typeof newRow!=='boolean'||typeof showWhenFiltered!=='boolean')throw Error('블록 너비·노출 설정이 올바르지 않습니다.');
+  const tone=get('tone','cream'),palette=['ink','blush','cream'].includes(tone)?({ink:'#252a21',blush:'#e9dcd6',cream:'#eef0e6'})[tone]:'#eef0e6';
+  const background=get('background',type==='notice'?'#eef0e6':palette),textColor=get('textColor',type!=='notice'&&tone==='ink'?'#ffffff':'#171918');
+  const padding=get('padding',20),radius=get('radius',0),align=get('align','left'),imageFit=get('imageFit','cover'),imageRatio=get('imageRatio','auto');
+  if(typeof background!=='string'||background.length!==7||!/^#[\da-f]{6}$/i.test(background)||typeof textColor!=='string'||textColor.length!==7||!/^#[\da-f]{6}$/i.test(textColor)||
+    !Number.isSafeInteger(padding)||padding<0||padding>64||!Number.isSafeInteger(radius)||radius<0||radius>48||
+    !['left','center','right'].includes(align)||!['contain','cover'].includes(imageFit)||!['auto','3/4','1/1','16/9','21/9'].includes(imageRatio))throw Error('블록 스타일 설정이 올바르지 않습니다.');
+  return {...b,type,title,subtitle,tag,image,link,tabs:[...b.tabs],enabled:!!b.enabled,span,tone,zone,placement,anchorId,anchorSide,overflow,after,widthPc,widthMobile,newRow,showWhenFiltered,background,textColor,padding,radius,align,imageFit,imageRatio};
+}
+function normalizedBlockPosition(items,b) {
+  if(b.zone!=='feed')return null;
+  if(b.placement==='product'){
+    const index=items.findIndex(product=>String(product.id)===b.anchorId);
+    return index<0?null:index+(b.anchorSide==='after'?1:0);
+  }
+  return b.after>items.length&&b.overflow==='hide'?null:Math.min(b.after,items.length);
+}
+export function blockPosition(items,b) {
+  return normalizedBlockPosition(items,normalizeContentBlock(b));
+}
+export function blocksForZone(items,banners,tab,zone,{filtered=false}={}) {
+  return banners.map(normalizeContentBlock).filter(b=>b.enabled&&b.tabs.includes(tab)&&b.zone===zone&&(!filtered||b.showWhenFiltered)&&(zone!=='feed'||normalizedBlockPosition(items,b)!==null));
+}
+export function composeFeed(items,banners,tab,{filtered=false}={}) {
+  const positions=new Map();
+  for(const b of blocksForZone(items,banners,tab,'feed',{filtered})){
+    const position=normalizedBlockPosition(items,b);
+    if(!positions.has(position))positions.set(position,[]);
+    positions.get(position).push(b);
+  }
   const result=[];
   for(let i=0;i<=items.length;i++){
-    active.filter(b=>Math.min(b.after,items.length)===i).forEach(b=>result.push({kind:'banner',data:b}));
+    for(const b of positions.get(i)||[])result.push({kind:'banner',data:b});
     if(i<items.length)result.push({kind:'product',data:items[i]});
   }return result;
 }
 export function validateConfig(value,catalog) {
-  if(!value||value.schema!==1||!value.tabs||!Array.isArray(value.banners)||value.banners.length>30)throw Error('지원하지 않는 구성 파일입니다.');
+  if(!value||value.schema!==1||!value.tabs||!Array.isArray(value.banners)||value.banners.length>100)throw Error('지원하지 않는 구성 파일입니다.');
   const config=clone(value);const ids=new Set(catalog.map(p=>p.id));
   for(const tab of TABS){
     const c=config.tabs[tab];if(!c||!SORTS[c.sort])throw Error('탭 정렬 설정이 올바르지 않습니다.');
@@ -126,12 +176,11 @@ export function validateConfig(value,catalog) {
     }c.hideSoldout=!!c.hideSoldout;
   }
   const bannerIds=new Set();
-  for(const b of config.banners){
-    if(!b||typeof b.id!=='string'||bannerIds.has(b.id)||!['notice','editorial'].includes(b.type)||typeof b.title!=='string'||!b.title.trim()||b.title.length>160||typeof b.subtitle!=='string'||b.subtitle.length>300||!Array.isArray(b.tabs)||b.tabs.some(t=>!TABS.includes(t))||!Number.isInteger(b.after)||b.after<0||b.after>500)throw Error('배너 설정이 올바르지 않습니다.');
-    bannerIds.add(b.id);b.enabled=!!b.enabled;b.span=b.span===2?2:1;
-    if(b.image&&!/^(assets\/|data:image\/(?:png|jpeg|webp);base64,|https:\/\/)/i.test(b.image))throw Error('지원하지 않는 이미지 주소입니다.');
-    if(b.link){try{const u=new URL(b.link);if(u.protocol!=='https:')throw Error();}catch{throw Error('배너 링크는 https 주소여야 합니다.');}}
-  }return config;
+  config.banners=config.banners.map(value=>{
+    const b=normalizeContentBlock(value);
+    if(bannerIds.has(b.id))throw Error('블록 ID가 중복됩니다.');
+    bannerIds.add(b.id);return b;
+  });return config;
 }
 
 export function swipeThresholds(width=240) {
