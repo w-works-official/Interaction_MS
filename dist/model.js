@@ -47,13 +47,14 @@ export function migrateSavedConfig(value,catalog) {
     config.tabs[tab]??=defaults.tabs[tab];
     for(const key of ['pins','manual','excluded'])if(Array.isArray(config.tabs[tab][key]))config.tabs[tab][key]=config.tabs[tab][key].filter(id=>ids.has(id));
   }
+  if(config.productEdits&&typeof config.productEdits==='object'&&!Array.isArray(config.productEdits))config.productEdits=Object.fromEntries(Object.entries(config.productEdits).filter(([id])=>ids.has(id)));
   return validateConfig(config,catalog);
 }
 export function validDetail(url) {
   try {const u=new URL(url);return u.protocol==='https:'&&['www.pink-rocket.com','pink-rocket.com'].includes(u.hostname)&&/^\/(shop\/shopdetail|m\/product)\.html$/.test(u.pathname);}catch{return false;}
 }
 export function initialConfig() {
-  return {schema:1,tabs:Object.fromEntries(TABS.map(tab=>[tab,{sort:tab==='신상'?'newest':'recommended',manual:[],pins:[],excluded:[],hideSoldout:false}])),banners:[]};
+  return {schema:1,tabs:Object.fromEntries(TABS.map(tab=>[tab,{sort:tab==='신상'?'newest':'recommended',manual:[],pins:[],excluded:[],hideSoldout:false}])),banners:[],ranking:Object.fromEntries(TABS.map(tab=>[tab,defaultRanking()])),productEdits:{}};
 }
 export function removeStarterBanners(config) {
   return {...config,banners:config.banners.filter(b=>!['edit-01','notice-01'].includes(b.id))};
@@ -67,13 +68,16 @@ export function sortProducts(items,sort='recommended') {
     return difference||a.id.localeCompare(b.id);
   });
 }
-export function resolveList(catalog,tab,config) {
+function curationList(catalog,tab,config) {
   const c=config.tabs[tab]||initialConfig().tabs[tab];
   const sorted=sortProducts(poolFor(catalog,tab).filter(p=>!c.excluded.includes(p.id)&&(!c.hideSoldout||!p.soldout)),c.sort);
   const byId=new Map(sorted.map(p=>[p.id,p]));
   const ids=[...c.pins,...c.manual,...sorted.map(p=>p.id)];
   const seen=new Set();
   return ids.filter(id=>byId.has(id)&&!seen.has(id)&&seen.add(id)).map(id=>byId.get(id));
+}
+export function resolveList(catalog,tab,config) {
+  return rankProducts(curationList(effectiveCatalog(catalog,config),tab,config),tab,config);
 }
 export function filterList(items,{query='',material='전체',sort='curated',favoritesOnly=false,favorites=[]}={}) {
   const q=query.trim().toLocaleLowerCase(),exactId=items.some(p=>p.id===q);
@@ -175,6 +179,9 @@ export function validateConfig(value,catalog) {
       c[key]=[...new Set(c[key])];
     }c.hideSoldout=!!c.hideSoldout;
   }
+  if(config.ranking!==undefined&&(!config.ranking||typeof config.ranking!=='object'||Array.isArray(config.ranking)||Object.keys(config.ranking).some(tab=>!TABS.includes(tab))))throw Error('점수 정렬 카테고리 설정이 올바르지 않습니다.');
+  config.ranking=Object.fromEntries(TABS.map(tab=>[tab,normalizeRanking(config.ranking?.[tab])]));
+  config.productEdits=normalizeProductEdits(config.productEdits,ids);
   const bannerIds=new Set();
   config.banners=config.banners.map(value=>{
     const b=normalizeContentBlock(value);
@@ -202,9 +209,11 @@ export const TAG_GROUPS = [
   {key:'shape',label:'피어싱 형태',options:['볼피어싱','링피어싱','라블렛피어싱','드롭/투핀','세트']},
   {key:'motif',label:'모양',options:['큐빅','진주','하트','리본','별','달','꽃','나비','체인','도형','원석','십자가','스마일']},
   {key:'spot',label:'착용 부위',options:['귓볼','귓바퀴','아웃컨츠','이너컨츠','트라거스','헬릭스']},
-  {key:'bar',label:'바 옵션',options:['바길이 변경 가능','얇은바','라블렛 변경 가능','두꺼운바']}
+  {key:'bar',label:'바 옵션',options:['바길이 변경 가능','얇은바','라블렛 변경 가능','두꺼운바']},
+  {key:'style',label:'스타일',options:['심플','화려','데일리','포인트','레이어드']},
+  {key:'size',label:'크기',options:['작은','중간','큰']}
 ];
-export const TAG_WEIGHTS={item:5,material:3,color:2,shape:3,motif:3,spot:3,bar:3};
+export const TAG_WEIGHTS={item:5,material:3,color:2,shape:3,motif:3,spot:3,bar:3,style:2,size:2};
 export function emptyDiscovery(){return {tags:{},min:'',max:'',strict:false,cap:0,photoTone:null,photoPreview:''};}
 export function hasDiscovery(d){return TAG_GROUPS.some(g=>d.tags[g.key]?.length)||d.min!==''||d.max!==''||!!d.photoTone;}
 export function colorTone(colors=[]) {
@@ -222,11 +231,93 @@ export function tagScore(p,d) {
   if(d.photoTone){const tone=colorTone(p.colors);if(d.photoTone.grey){if(tone.grey)score+=4;}else if(!tone.grey){let distance=Math.abs(tone.hue-d.photoTone.hue);distance=Math.min(distance,360-distance);score+=Math.max(0,5-distance/12);}}
   return score;
 }
-export function discoverProducts(items,d,{sort='curated'}={}) {
+function discoveryCandidates(items,d) {
   const min=d.min===''?null:Number(d.min),max=d.max===''?null:Number(d.max);
   if((min!==null&&!Number.isFinite(min))||(max!==null&&!Number.isFinite(max))||(min!==null&&max!==null&&min>max))return [];
-  let rows=items.filter(p=>(min===null||p.price>=min)&&(max===null||p.price<=max)&&(!d.strict||TAG_GROUPS.every(g=>!d.tags[g.key]?.length||d.tags[g.key].some(tag=>(p.tags?.[g.key]||[]).includes(tag)))));
+  return items.filter(p=>(min===null||p.price>=min)&&(max===null||p.price<=max)&&(!d.strict||TAG_GROUPS.every(g=>!d.tags[g.key]?.length||d.tags[g.key].some(tag=>(p.tags?.[g.key]||[]).includes(tag)))));
+}
+export function discoverProducts(items,d,{sort='curated'}={}) {
+  let rows=discoveryCandidates(items,d);
   if(sort==='match'||sort==='curated'&&hasDiscovery(d))rows=rows.map((p,i)=>({p,i,score:tagScore(p,d)})).sort((a,b)=>b.score-a.score||a.i-b.i).map(x=>x.p);
   else if(sort!=='curated')rows=sortProducts(rows,sort);
   return d.cap>0?rows.slice(0,d.cap):rows;
+}
+
+export function defaultRanking(){return {enabled:false,brief:'',diversity:0,respectPins:true,rules:[],combinations:[]};}
+function validRankingId(id){return typeof id==='string'&&!!id.trim()&&id.length<=120;}
+function validTagCondition(condition){return !!condition&&TAG_GROUPS.some(group=>group.key===condition.group&&group.options.includes(condition.tag));}
+export function normalizeRanking(value) {
+  if(value===undefined)return defaultRanking();
+  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('점수 정렬 설정이 올바르지 않습니다.');
+  const result={...defaultRanking(),...value};
+  if(typeof result.enabled!=='boolean'||typeof result.respectPins!=='boolean'||typeof result.brief!=='string'||result.brief.length>1200||!Number.isSafeInteger(result.diversity)||result.diversity<0||result.diversity>10||!Array.isArray(result.rules)||result.rules.length>100||!Array.isArray(result.combinations)||result.combinations.length>30)throw Error('점수 정렬 설정이 올바르지 않습니다.');
+  const ids=new Set(),weightValid=weight=>Number.isSafeInteger(weight)&&weight>=-100&&weight<=100;
+  result.rules=result.rules.map(rule=>{
+    if(!rule||!validRankingId(rule.id)||ids.has(rule.id)||!validTagCondition(rule)||!weightValid(rule.weight))throw Error('가중치 규칙이 올바르지 않습니다.');
+    ids.add(rule.id);return {...rule};
+  });
+  result.combinations=result.combinations.map(combination=>{
+    if(!combination||!validRankingId(combination.id)||ids.has(combination.id)||!weightValid(combination.weight)||!Array.isArray(combination.conditions)||combination.conditions.length<2||combination.conditions.length>8||combination.conditions.some(condition=>!validTagCondition(condition)))throw Error('태그 조합 규칙이 올바르지 않습니다.');
+    ids.add(combination.id);return {...combination,conditions:combination.conditions.map(condition=>({...condition}))};
+  });return result;
+}
+function normalizeProductEdits(value,ids) {
+  if(value===undefined)return {};
+  if(!value||typeof value!=='object'||Array.isArray(value))throw Error('상품 태그 편집 설정이 올바르지 않습니다.');
+  return Object.fromEntries(Object.entries(value).map(([id,edit])=>{
+    if(!ids.has(id)||!edit||typeof edit!=='object'||Array.isArray(edit))throw Error('편집 상품 ID가 현재 목록과 맞지 않습니다.');
+    const tags=edit.tags===undefined?{}:edit.tags,note=edit.note===undefined?'':edit.note,reviewStatus=edit.reviewStatus===undefined?'unreviewed':edit.reviewStatus;
+    if(!tags||typeof tags!=='object'||Array.isArray(tags)||typeof note!=='string'||note.length>600||!['unreviewed','reviewed','needs-review'].includes(reviewStatus))throw Error('상품 태그·검토 설정이 올바르지 않습니다.');
+    const normalizedTags=Object.fromEntries(Object.entries(tags).map(([key,values])=>{
+      const group=TAG_GROUPS.find(group=>group.key===key);
+      if(!group||!Array.isArray(values)||values.some(tag=>!group.options.includes(tag)))throw Error('알 수 없는 상품 분류 태그입니다.');
+      return [key,[...new Set(values)]];
+    }));
+    return [id,{...edit,tags:normalizedTags,note,reviewStatus}];
+  }));
+}
+export function effectiveCatalog(catalog,config) {
+  const edits=config.productEdits||{};if(!Object.keys(edits).length)return catalog;
+  return catalog.map(product=>{
+    const edit=edits[product.id];if(!edit)return product;
+    const tags={...(product.tags||{})};for(const [group,values] of Object.entries(edit.tags||{}))tags[group]=[...values];
+    return {...product,tags,note:edit.note||'',reviewStatus:edit.reviewStatus||'unreviewed'};
+  });
+}
+export function rankProducts(items,tab,config,{discovery=null}={}) {
+  const ranking=normalizeRanking(config.ranking?.[tab]);if(!ranking.enabled)return items;
+  const context=discovery?{...emptyDiscovery(),...discovery,tags:discovery.tags||{}}:null;
+  const entries=items.map((product,index)=>{
+    const reasons=[];
+    for(const rule of ranking.rules)if((product.tags?.[rule.group]||[]).includes(rule.tag)&&rule.weight!==0)reasons.push({label:`규칙 · ${TAG_GROUPS.find(group=>group.key===rule.group).label} ${rule.tag}`,points:rule.weight});
+    for(const combination of ranking.combinations)if(combination.weight!==0&&combination.conditions.every(condition=>(product.tags?.[condition.group]||[]).includes(condition.tag)))reasons.push({label:'조합 · '+combination.conditions.map(condition=>condition.tag).join(' + '),points:combination.weight});
+    const discoveryScore=context?tagScore(product,context):0;if(discoveryScore)reasons.push({label:context.photoTone?'탐색 태그·사진 색감':'탐색 태그 일치',points:discoveryScore});
+    return {product,index,baseScore:reasons.reduce((sum,reason)=>sum+reason.points,0),reasons};
+  });
+  const pinnedIds=ranking.respectPins?[...new Set(config.tabs?.[tab]?.pins||[])]:[],pinSet=new Set(pinnedIds),byId=new Map(entries.map(entry=>[entry.product.id,entry]));
+  const pinned=pinnedIds.filter(id=>byId.has(id)).map(id=>byId.get(id));
+  const normal=entries.filter(entry=>!pinSet.has(entry.product.id)).sort((a,b)=>b.baseScore-a.baseScore||a.index-b.index),recent=[],result=[];
+  const penaltyFor=entry=>ranking.diversity*recent.reduce((sum,previous)=>sum+['motif','shape','style'].filter(group=>(entry.product.tags?.[group]||[]).some(tag=>(previous.tags?.[group]||[]).includes(tag))).length,0);
+  const emit=(entry,penalty)=>{
+    const reasons=entry.reasons.map(reason=>({...reason}));if(penalty)reasons.push({label:'최근 3개 상품과 모양·형태·스타일 중복',points:-penalty});
+    const product={...entry.product,_rank:{score:entry.baseScore-penalty,baseScore:entry.baseScore,penalty,reasons}};
+    result.push(product);recent.push(product);if(recent.length>3)recent.shift();
+  };
+  for(const entry of pinned)emit(entry,penaltyFor(entry));
+  if(!ranking.diversity){for(const entry of normal)emit(entry,0);return result;}
+  const window=normal.slice(0,40);let next=window.length;
+  while(window.length){
+    let best=0,penalty=penaltyFor(window[0]),score=window[0].baseScore-penalty;
+    for(let i=1;i<window.length;i++){const candidatePenalty=penaltyFor(window[i]),candidateScore=window[i].baseScore-candidatePenalty;if(candidateScore>score||(candidateScore===score&&window[i].index<window[best].index)){best=i;penalty=candidatePenalty;score=candidateScore;}}
+    emit(window.splice(best,1)[0],penalty);if(next<normal.length)window.push(normal[next++]);
+  }return result;
+}
+export function browseProducts(catalog,tab,config,options={}) {
+  const {sort='curated'}=options,discovery=options.discovery||emptyDiscovery();
+  const base=filterList(curationList(effectiveCatalog(catalog,config),tab,config),{...options,sort:'curated'});
+  if(config.ranking?.[tab]?.enabled&&['curated','match'].includes(sort)){
+    const rows=rankProducts(discoveryCandidates(base,discovery),tab,config,{discovery});
+    return discovery.cap>0?rows.slice(0,discovery.cap):rows;
+  }
+  return discoverProducts(base,discovery,{sort});
 }
