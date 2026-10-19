@@ -7,7 +7,8 @@ Customer browse feed and curation admin prototype. Built from the interaction re
 - Customer view: root URL. Category tabs (including bracelets/anklets), search, material filters, price sort, favorites, progressive product reveal and image galleries.
 - Admin view: top bar → 운영자 화면, or `?view=admin`.
 - Edit a category list with rank inputs, move buttons, drag/drop, pins and exclusions. Applying a sorting criterion preserves manual edits; the explicit reset action resets manual order while retaining pins/exclusions.
-- Banners: edit notice/editorial blocks, placement by number of products, tab visibility, tone, image upload and https link.
+- Content blocks: image + copy, notice, image, text, spacer and divider. Place them above the header, below categories, above/between/below products; use product count or a product ID anchor in the feed. Edit PC/mobile width, new-row placement, colors, padding, radius, alignment and image fit/ratio, with tab and filter visibility.
+- Use the inline properties editor and immediate preview, then apply the block and save the draft. Priority inputs, move buttons, numeric placement buttons, duplicate/hide/delete and a separate 20-step block undo stack support browser AI without requiring drag. The editor previews 24/48/up to 60 products; later positions use count/ID inputs and the full customer draft preview. Shared storage is deferred; cross-browser drafts still use JSON export/import.
 - Save draft; use preview (full width or mobile width); publish to the local mockup. Recent versions can be restored to a draft. Export/import configuration JSON is supported.
 
 ## Data and boundaries
@@ -29,6 +30,8 @@ Actual product detail buttons open the existing Makeshop product page. No shoppi
 The 14 original CP949 attachments are preserved under `reference-skin/`. Their product loops and category/header/footer structure inform the new UI. The old shared product list (`item-cont2`, `itemList`), fixed 1024px visibility modes, duplicated search presentation and slider initialization are replaced with a single responsive browsing view. The new 3:4 image stage preserves source images with object-fit contain; no distorted stretching.
 
 ## Verification
+
+2026-10-19: JavaScript syntax checks and all 89 model/DOM tests pass. Actual Chrome QA on isolated local port 4175 covered pending-edit preview/apply, preserving input during placement, duplicate/undo, ID anchors, JPEG upload and draft preview. The customer iframe was checked at actual CSS widths 1528px and 390px: 4/2 product columns, 2/1 image-block spans, 16:9 block images, 3:4 product photos and no document overflow. The embedded editor mobile container measured 390px. Physical touch and native mouse drag remain unverified. QA example blocks are browser-local and are not shipped as starter content. Older managed-environment limitations below describe earlier revisions.
 
 ### Current design revision
 
