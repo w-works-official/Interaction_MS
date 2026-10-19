@@ -2,6 +2,15 @@ export const TABS = ['추천','신상','피어싱','귀걸이','반지','목걸�
 export const MATERIALS = ['전체','써지컬','925 실버','골드','티타늄','진주','큐빅','기타'];
 export const SORTS = {recommended:'추천순',newest:'신상순',priceAsc:'낮은 가격순',priceDesc:'높은 가격순',reviews:'리뷰 많은 순'};
 export const clone = value => JSON.parse(JSON.stringify(value));
+export function makeshopDetailUrl(productId,platform='pc') {
+  if(typeof productId==='number'){
+    if(!Number.isSafeInteger(productId)||productId<=0)return null;
+    productId=String(productId);
+  }
+  if(typeof productId!=='string'||!/^[1-9]/.test(productId)||/\D/.test(productId))return null;
+  const path=platform==='pc'?'/shop/shopdetail.html':platform==='mobile'?'/m/product.html':null;
+  return path?`https://www.pink-rocket.com${path}?branduid=${productId}`:null;
+}
 export function categoryOf(name='') {
   if (/귀걸이|이어커프/.test(name)) return '귀걸이';
   if (/반지|토우링/.test(name)) return '반지';
@@ -28,7 +37,7 @@ export function normalizeCatalog(raw) {
       // Demo curation order only; release dates, sales and stock are not supplied by this snapshot.
       score:Number.isFinite(p.score)?p.score:100000-i,reviewCount:Number(p.reviewCount)||0,
       newOrder:i,isNew:!!p.isNew,soldout:!!p.soldout,
-      detailUrl:validDetail(p.detailUrl)?p.detailUrl:null};
+      detailUrl:makeshopDetailUrl(p.id)};
   });
 }
 export function migrateSavedConfig(value,catalog) {
