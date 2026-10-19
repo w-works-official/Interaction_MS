@@ -5,3 +5,5 @@ asset-work/*
 node_modules/
 *.tar.gz
 *.tgz
+/outputs/makeshop-preview-test/
+/outputs/pinkrocket_makeshop_preview_test_v1.zip
