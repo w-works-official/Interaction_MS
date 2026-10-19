@@ -45,6 +45,61 @@ test('manual changes never modify the published snapshot',()=>{
  reorder(draft,data,'추천',data[3].id,0);togglePin(draft,'추천',data[2].id);
  assert.equal(JSON.stringify(published),before);assert.notEqual(JSON.stringify(draft),before);
 });
+const orderFixture=()=>normalizeCatalog([1,2,3,4,5,6,9].map(id=>({id:String(id),name:'상품 '+id,price:id*100,score:20-id,category:id===9?'반지':'피어싱',soldout:id===3,images:[]})));
+const orderIds=(catalog,config,tab='추천')=>resolveList(catalog,tab,config).map(product=>product.id);
+test('rank moves stay within pinned or normal groups and preserve the other group',()=>{
+ const catalog=orderFixture().filter(product=>product.id!=='9'),c=initialConfig();c.tabs['추천'].pins=['2','4'];
+ reorder(c,catalog,'추천','6',0);
+ assert.deepEqual(orderIds(catalog,c),['2','4','6','1','3','5']);
+ assert.deepEqual(c.tabs['추천'].pins,['2','4']);
+ reorder(c,catalog,'추천','2',99);
+ assert.deepEqual(orderIds(catalog,c),['4','2','6','1','3','5']);
+ assert.deepEqual(c.tabs['추천'].pins,['4','2']);
+});
+test('excluded pinned products retain their pin and latent slot after another rank move',()=>{
+ const catalog=orderFixture().filter(product=>product.id!=='9'),c=initialConfig();c.tabs['추천'].pins=['2','4'];c.tabs['추천'].excluded=['2'];
+ reorder(c,catalog,'추천','6',1);
+ assert.deepEqual(orderIds(catalog,c),['4','6','1','3','5']);
+ assert.deepEqual(c.tabs['추천'].pins,['2','4']);
+ c.tabs['추천'].excluded=[];
+ assert.deepEqual(orderIds(catalog,c),['2','4','6','1','3','5']);
+});
+test('excluded manual products keep their latent slot through visible reordering and restore',()=>{
+ const catalog=orderFixture().filter(product=>product.id!=='9'),c=initialConfig();c.tabs['추천'].manual=['3','1','5','2','4','6'];c.tabs['추천'].excluded=['1'];
+ reorder(c,catalog,'추천','6',0);
+ assert.deepEqual(orderIds(catalog,c),['6','3','5','2','4']);
+ assert.deepEqual(c.tabs['추천'].manual,['6','1','3','5','2','4']);
+ c.tabs['추천'].excluded=[];
+ assert.deepEqual(orderIds(catalog,c),['6','1','3','5','2','4']);
+});
+test('sold-out hidden pins and excluded manual slots survive together when reordered',()=>{
+ const catalog=orderFixture().filter(product=>product.id!=='9'),c=initialConfig();Object.assign(c.tabs['추천'],{pins:['2','3','4'],manual:['6','5','1'],excluded:['5'],hideSoldout:true});
+ reorder(c,catalog,'추천','1',2);
+ assert.deepEqual(orderIds(catalog,c),['2','4','1','6']);
+ assert.deepEqual(c.tabs['추천'].pins,['2','3','4']);
+ c.tabs['추천'].excluded=[];c.tabs['추천'].hideSoldout=false;
+ assert.deepEqual(orderIds(catalog,c),['2','3','4','1','5','6']);
+});
+test('out-of-category pin and manual slots survive moves and later reclassification',()=>{
+ const catalog=orderFixture(),c=initialConfig();Object.assign(c.tabs['피어싱'],{pins:['2','9','4'],manual:['6','9','3','1','5','2','4']});
+ reorder(c,catalog,'피어싱','4',0);
+ assert.deepEqual(orderIds(catalog,c,'피어싱'),['4','2','6','3','1','5']);
+ assert.deepEqual(c.tabs['피어싱'].pins,['4','9','2']);
+ assert.equal(c.tabs['피어싱'].manual[1],'9');
+ const updated=catalog.map(product=>product.id==='9'?{...product,category:'피어싱',categories:['피어싱']}:product);
+ assert.deepEqual(orderIds(updated,c,'피어싱').slice(0,3),['4','9','2']);
+});
+test('invalid rank inputs, absent products and same-slot moves leave the entire config untouched',()=>{
+ const catalog=orderFixture(),c=initialConfig(),before=structuredClone(c);
+ for(const target of [undefined,null,'0',true,NaN,Infinity,-Infinity,1.5,Number.MAX_SAFE_INTEGER+1]){
+  assert.equal(reorder(c,catalog,'추천','1',target),c);assert.deepEqual(c,before);
+ }
+ reorder(c,catalog,'추천','missing',1);reorder(c,catalog,'추천','1',0);reorder(c,catalog,'추천','1',-99);
+ assert.deepEqual(c,before);assert.deepEqual(c.tabs['추천'].manual,[]);
+ c.tabs['추천'].pins=['1'];const pinnedBefore=structuredClone(c);
+ reorder(c,catalog,'추천','1',99);reorder(c,catalog,'추천','2',-99);
+ assert.deepEqual(c,pinnedBefore);
+});
 test('sort without manual changes affects the entire product pool',()=>{
  const c=initialConfig();autoArrange(c,'추천','priceAsc');const rows=resolveList(data,'추천',c);
  assert.equal(rows.length,data.length);assert.ok(rows.every((p,i)=>i===0||rows[i-1].price<=p.price));
