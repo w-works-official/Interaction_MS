@@ -9,7 +9,7 @@ const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').repl
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
 const tick=()=>new Promise(resolve=>setTimeout(resolve,25));
-async function boot({url='https://mockup.example/?view=admin',withModelContext=false}={}){
+async function boot({url='https://mockup.example/?view=admin&adminPage=list',withModelContext=false}={}){
  const errors=[],console=new VirtualConsole();console.on('jsdomError',error=>errors.push(error.message));
  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:console});
  const w=dom.window,d=w.document,tools=new Map();
@@ -147,7 +147,7 @@ test('curation undo and redo follow recent tab changes without touching other ta
 });
 
 test('admin URL restores category, status and search, keeps them synchronized, and replaces invalid state with defaults',async()=>{
- const h=await boot({url:'https://mockup.example/?view=admin&adminTab='+encodeURIComponent('반지')+'&adminFilter=excluded&adminQ=2084730'});
+ const h=await boot({url:'https://mockup.example/?view=admin&adminPage=list&adminTab='+encodeURIComponent('반지')+'&adminFilter=excluded&adminQ=2084730'});
  try{
   const {d,click,search}=h;
   const params=()=>new URL(h.w.location.href).searchParams;
@@ -162,7 +162,7 @@ test('admin URL restores category, status and search, keeps them synchronized, a
   assert.equal(params().get('adminTab'),'추천');assert.equal(params().get('adminFilter'),'all');assert.equal(params().get('adminQ'),null);
   assert.equal(d.querySelector('#admin-search').value,'');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
- const fallback=await boot({url:'https://mockup.example/?view=admin&adminTab=unknown&adminFilter=unknown'});
+ const fallback=await boot({url:'https://mockup.example/?view=admin&adminPage=list&adminTab=unknown&adminFilter=unknown'});
  try{
   const params=new URL(fallback.w.location.href).searchParams;
   assert.equal(fallback.d.querySelector('[data-action="admin-tab"][aria-pressed="true"]').dataset.tab,'추천');
