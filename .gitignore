@@ -7,3 +7,5 @@ node_modules/
 *.tgz
 /outputs/makeshop-preview-test/
 /outputs/pinkrocket_makeshop_preview_test_v1.zip
+/outputs/makeshop-main-preview/
+/outputs/pinkrocket_makeshop_main_preview.zip

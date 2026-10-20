@@ -193,6 +193,36 @@ test('remote image failure leaves an accessible product card and detail flow',as
  }finally{dom.window.close();}
 });
 
+test('product photo and name open a real Makeshop detail iframe with no mock product fields',async()=>{
+ const {dom,d}=await boot();try{
+  const first=d.querySelector('[data-product="2085891"] .photo-link');first.focus();first.click();
+  const frame=d.querySelector('.native-product-frame');
+  assert.equal(frame.src,'https://pink-rocket.com/shop/shopdetail.html?branduid=2085891');
+  assert.equal(d.querySelector('.drawer').getAttribute('aria-label'),'상품 상세');
+  assert.equal(d.querySelector('.quickview-photo,#demo-quantity,[data-action="demo-add"]'),null);
+  assert.equal(d.querySelector('.native-detail-toolbar a').href,frame.src);assert.equal(d.body.style.overflow,'hidden');
+  d.querySelector('.drawer [data-action="close"]').click();assert.equal(d.querySelector('.drawer'),null);assert.equal(d.body.style.overflow,'');assert.equal(d.activeElement,first);
+  d.querySelector('[data-product="2085889"] .product-name').click();
+  assert.notEqual(d.querySelector('.native-product-frame'),frame);
+  assert.match(d.querySelector('.native-product-frame').src,/branduid=2085889$/);
+ }finally{dom.window.close();}
+});
+
+test('small-screen real detail uses the Makeshop mobile route and detached loads cannot overwrite a new drawer',async()=>{
+ const {dom,w,d}=await boot();try{
+  Object.defineProperty(w,'innerWidth',{value:390,configurable:true});
+  d.querySelector('[data-product="2085891"] .photo-link').click();const old=d.querySelector('.native-product-frame');
+  assert.equal(old.src,'https://pink-rocket.com/m/product.html?branduid=2085891');
+  assert.ok(!old.sandbox?.contains?.('allow-top-navigation'));
+  d.querySelector('.drawer [data-action="close"]').click();
+  d.querySelector('[data-product="2085889"] .photo-link').click();
+  const status=d.querySelector('[data-detail-status]');old.dispatchEvent(new w.Event('load'));
+  assert.equal(status.textContent,'메이크샵 상세를 불러오는 중입니다.');
+  d.querySelector('.native-product-frame').dispatchEvent(new w.Event('error'));
+  assert.match(status.textContent,/새 창에서 열기/);
+ }finally{dom.window.close();}
+});
+
 test('drag follows the finger, previews the actual next photo and distinguishes short from long',async()=>{
  const {dom,w,d}=await boot();try{
   const photo=()=>d.querySelector('[data-gallery="2085891"]');
