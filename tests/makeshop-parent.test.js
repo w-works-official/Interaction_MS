@@ -123,6 +123,19 @@ test('PC and mobile detail/wishlist/cart requests navigate only the parent nativ
  }
 });
 
+test('product requests display the verified PC/mobile native detail from its top without requiring action controls',()=>{
+ for(const mobile of [false,true]){
+  const h=boot({url:mobile?'https://www.pink-rocket.com/m/':'https://www.pink-rocket.com/shop/main.html'});try{
+   h.hello();const requestId=h.send('product','2085891'),url='https://www.pink-rocket.com'+(mobile?'/m/product.html':'/shop/shopdetail.html')+'?branduid=2085891',scrolls=[];
+   assert.equal(h.native.src,url);assert.equal(h.dialog().hidden,false);assert.deepEqual(h.navigations,[]);
+   const loaded=loadNative(h,{mobile,form:false,wish:false,cart:false,beforeLoad:doc=>{doc.defaultView.scrollTo=(...args)=>scrolls.push(args);}});
+   assert.equal(loaded.doc.URL,url);assert.deepEqual(scrolls,[[0,0]]);assert.equal(loaded.doc.activeElement,loaded.doc.body);
+   assert.match(h.status(),/2085891.*원본 상품 상세/);assert.doesNotMatch(h.status(),/버튼.*찾지 못|성공|저장됐/);
+   assert.equal(h.last('status').requestId,requestId);assert.deepEqual(loaded.calls,[]);assert.deepEqual(h.errors,[]);
+  }finally{h.close();}
+ }
+});
+
 test('native cart navigation rejects unresolved virtual tags, foreign/javascript links and malformed paths',()=>{
  for(const cartHref of ['<!--/link_basket/-->','javascript:alert(1)','https://foreign.example/shop/basket.html','','#cart','/',' /shop/basket.html','/shop/\nbasket.html','https://user:password@www.pink-rocket.com/shop/basket.html']){
   const h=boot({cartHref});try{h.hello();h.send('cart');assert.equal(h.last('accepted'),undefined,'invalid native URL is rejected before accepted');h.d.querySelector('[data-native-cart]').click();assert.deepEqual(h.navigations,[],cartHref);assert.match(h.status(),/장바구니 링크/);assert.deepEqual(h.errors,[]);}finally{h.close();}

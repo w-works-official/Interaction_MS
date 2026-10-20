@@ -45,15 +45,14 @@ test('bridge mode never displays local account state or mutates demo favorites/c
   assert.match(d.querySelector('#makeshop-connection').textContent,/연결됨/);
  }finally{dom.window.close();}
 });
-test('native options use exact product ID and remove the demo quantity and add controls',async()=>{
+test('a product click opens the actual parent detail directly without a mock product drawer',async()=>{
  const {dom,d,messages,init}=await boot({platform:'mobile'});try{
   init();d.querySelector('[data-product="2085891"] [data-action="quickview"]').click();
   assert.equal(d.querySelector('#demo-quantity'),null);assert.equal(d.querySelector('[data-action="demo-add"]'),null);
-  d.querySelector('[data-action="native-options"]').click();
-  assert.equal(messages.at(-1).data.action,'options');assert.equal(messages.at(-1).data.id,'2085891');
+  assert.equal(messages.at(-1).data.action,'product');assert.equal(messages.at(-1).data.id,'2085891');
   assert.equal(d.querySelector('.drawer'),null);
-  d.querySelector('[data-product="2085891"] [data-action="quickview"]').click();
-  d.querySelector('[data-action="native-detail"]').click();assert.equal(messages.at(-1).data.action,'detail');
+  d.querySelector('[data-product="2085889"] .product-name').click();
+  assert.equal(messages.at(-1).data.action,'product');assert.equal(messages.at(-1).data.id,'2085889');
  }finally{dom.window.close();}
 });
 test('header account menus route to Makeshop rather than opening the demo drawer/filter',async()=>{
