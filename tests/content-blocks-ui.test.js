@@ -6,7 +6,8 @@ import {initialConfig} from '../dist/model.js';
 
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
 const tick=()=>new Promise(resolve=>setTimeout(resolve,25));
@@ -18,7 +19,7 @@ async function boot({url='https://mockup.example/?view=admin&adminPage=banners',
  w.localStorage.setItem(draftKey,JSON.stringify(seed));w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});w.scrollTo=()=>{};
  w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const node=d.querySelector(selector);assert.ok(node,selector);node.click();await tick();};
  const fill=async values=>{const form=d.querySelector('#banner-form');assert.ok(form);for(const [name,value] of Object.entries(values)){
   const control=form.querySelector(`[name="${name}"]`);assert.ok(control,name);

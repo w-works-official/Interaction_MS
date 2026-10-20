@@ -6,7 +6,8 @@ import {initialConfig,normalizeCatalog,validateConfig} from '../dist/model.js';
 
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const raw=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url),'utf8')),catalog=normalizeCatalog(raw);
 const first=catalog[0],second=catalog[1],far=catalog.at(-1),customId='cat_photo_picks',members=[first.id,second.id,far.id];
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1',tick=()=>new Promise(resolve=>setTimeout(resolve,25));
@@ -19,7 +20,7 @@ async function boot({url='https://mockup.example/?view=shop',draft=initialConfig
  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc}),w=dom.window,d=w.document;
  w.localStorage.setItem(draftKey,JSON.stringify(draft));w.localStorage.setItem(publishedKey,JSON.stringify(published));
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(raw)});w.scrollTo=()=>{};w.matchMedia=()=>({matches:true});w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  return {w,d,errors,click,set,products:()=>[...d.querySelectorAll('#product-feed [data-product]')].map(node=>node.dataset.product),
