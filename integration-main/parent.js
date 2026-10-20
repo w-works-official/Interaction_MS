@@ -31,8 +31,8 @@
   const platform = root.dataset.platform;
   const mobile = platform === 'mobile';
   const wishUrl = new URL(mobile ? '/m/wishlist.html' : '/shop/mypage.html?mypage_type=mywishlist', location.origin);
-  const actions = ['hello', 'detail', 'wish', 'options', 'wishlist', 'cart'];
-  const productActions = ['detail', 'wish', 'options'];
+  const actions = ['hello', 'product', 'detail', 'wish', 'options', 'wishlist', 'cart'];
+  const productActions = ['product', 'detail', 'wish', 'options'];
   let session = '', lastRequest = 0, ready = false, expectedLoad = false;
   let active = null, nativeTimer = null, handshakeTimer = null;
   wishlist.setAttribute('href', wishUrl.href);
@@ -144,6 +144,11 @@
         '요청한 상품과 같은 출처의 상세를 확인하지 못했습니다. 이동·프레임 제한 여부를 원본 상세에서 확인하세요.');
       return;
     }
+    if (request.action === 'product') {
+      try { nativeFrame.contentWindow.scrollTo(0, 0); } catch (_) {}
+      note(request, '상품 ID ' + request.id + '의 메이크샵 원본 상품 상세입니다. 실제 옵션·현재 가격·품절 여부를 이 화면에서 확인하세요.');
+      return;
+    }
     const controls = controlsFor(doc);
     const button = visibleControl(request.action === 'wish' ? controls.wishButtons : controls.cartButtons);
     if (!nativeControlValid(button, doc)) {
@@ -251,7 +256,7 @@
     if (productActions.includes(data.action) && !detailUrl(data.id)) {
       note(request, '상품 ID가 올바르지 않아 요청하지 않았습니다.'); return;
     }
-    if (data.action === 'wish' || data.action === 'options') {
+    if (data.action === 'product' || data.action === 'wish' || data.action === 'options') {
       reply('accepted', request, '상품 ID ' + data.id + '의 요청을 받았습니다. 실제 계정 반영을 뜻하지 않습니다.');
       openNative(request); return;
     }
