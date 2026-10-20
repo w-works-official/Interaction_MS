@@ -13,9 +13,11 @@ function boot({url='https://www.pink-rocket.com/shop/main.html',cartHref,header=
  const page=new URL(url),mobile=page.pathname.startsWith('/m/');
  if(platform===undefined)platform=mobile?'mobile':'pc';
  if(cartHref===undefined)cartHref=mobile?'/m/basket.html':'/shop/basket.html';
- const errors=[],messages=[],navigations=[],timers=new Map(),vc=new VirtualConsole();vc.on('jsdomError',error=>errors.push(error.message));
+ const errors=[],messages=[],navigations=[],nativeNavigations=[],timers=new Map(),vc=new VirtualConsole();vc.on('jsdomError',error=>errors.push(error.message));
  const dom=new JSDOM(`<!doctype html>${header}<main id="pr-makeshop-main" data-platform="${escapeAttribute(platform)}"><p data-main-status></p><iframe data-shop-frame></iframe><section data-native-dialog hidden><p data-native-status></p><button data-native-close>닫기</button><a data-native-open>상세</a><a data-native-wishlist>찜</a><a data-native-cart href="${escapeAttribute(cartHref)}">장바구니</a><iframe data-native-frame></iframe></section></main>`,{url,runScripts:'outside-only',virtualConsole:vc});
- const w=dom.window,d=w.document,root=d.querySelector('#pr-makeshop-main'),frame=d.querySelector('[data-shop-frame]'),native=d.querySelector('[data-native-frame]');
+ const w=dom.window,d=w.document,root=d.querySelector('#pr-makeshop-main'),frame=d.querySelector('[data-shop-frame]');
+ const nativeSrc=Object.getOwnPropertyDescriptor(w.HTMLIFrameElement.prototype,'src');
+ Object.defineProperty(w.HTMLIFrameElement.prototype,'src',{...nativeSrc,set(value){if(this.hasAttribute('data-native-frame'))nativeNavigations.push(String(value));nativeSrc.set.call(this,value);}});
  let nextRequest=0,nextTimer=0;
  if(!crypto)Object.defineProperty(w,'crypto',{value:null});
  w.setTimeout=callback=>{timers.set(++nextTimer,callback);return nextTimer;};w.clearTimeout=id=>timers.delete(id);
@@ -30,7 +32,7 @@ function boot({url='https://www.pink-rocket.com/shop/main.html',cartHref,header=
   return requestId;
  };
  const hello=()=>send('hello',undefined,{requestId:1});
- return {w,d,root,frame,native,errors,messages,navigations,timers,session,send,hello,
+ return {w,d,root,frame,get native(){return root.querySelector('[data-native-frame]');},errors,messages,navigations,nativeNavigations,timers,session,send,hello,
   status:()=>d.querySelector('[data-native-status]').textContent,
   mainStatus:()=>d.querySelector('[data-main-status]'),
   dialog:()=>d.querySelector('[data-native-dialog]'),
@@ -200,12 +202,46 @@ test('replacement, closing and iframe reload invalidate old native requests and 
  const h=boot();try{
   h.hello();h.frame.dispatchEvent(new h.w.Event('load'));h.send('options','2085891');const first=loadNative(h);
   h.send('wish','2085889');assert.match(h.native.src,/branduid=2085889$/);assert.deepEqual(first.calls,[]);
-  h.d.querySelector('[data-native-close]').click();assert.equal(h.dialog().hidden,true);assert.equal(h.native.src,'about:blank');assert.equal(h.timers.size,0);
+  h.d.querySelector('[data-native-close]').click();assert.equal(h.dialog().hidden,true);assert.match(h.native.src,/branduid=2085889$/);assert.equal(h.timers.size,0);
   assert.equal(h.frame.inert,false);assert.equal(h.d.activeElement,h.frame);
   const previous=h.session();h.send('options','2085891');h.frame.dispatchEvent(new h.w.Event('load'));assert.notEqual(h.session(),previous);assert.equal(h.root.dataset.bridgeState,'loading');assert.equal(h.dialog().hidden,true);
   h.send('hello',undefined,{requestId:1,session:previous});assert.equal(h.root.dataset.bridgeState,'loading');
   h.hello();const next=h.session();h.frame.dispatchEvent(new h.w.Event('load'));assert.equal(h.session(),next);assert.equal(h.root.dataset.bridgeState,'ready');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
+});
+
+test('each open uses a fresh native context and obsolete frame events cannot affect its request',()=>{
+ const h=boot();try{
+  assert.deepEqual(h.nativeNavigations,[],'initial session leaves the unused detail frame alone');
+  const initial=h.native;h.hello();h.send('options','2085891');assert.notEqual(h.native,initial);assert.equal(initial.isConnected,false);
+  assert.deepEqual(h.nativeNavigations,['https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085891']);
+  const previous=h.native,old=loadNative(h);h.nativeNavigations.length=0;h.send('wish','2085889');
+  assert.deepEqual(h.nativeNavigations,['https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085889']);
+  assert.notEqual(h.native,previous);assert.equal(previous.isConnected,false);assert.notEqual(h.native.contentDocument,old.doc);
+  const loading=h.status();previous.dispatchEvent(new h.w.Event('load'));previous.dispatchEvent(new h.w.Event('error'));
+  assert.equal(h.status(),loading);assert.equal(h.timers.size,1,'obsolete load/error cannot clear the current timeout');assert.deepEqual(old.calls,[]);
+  const next=loadNative(h);h.nativeNavigations.length=0;h.d.querySelector('[data-native-close]').click();
+  assert.deepEqual(h.nativeNavigations,[],'closing invalidates the request without navigating the hidden frame');
+  assert.equal(h.dialog().hidden,true);next.wishButton.click();assert.deepEqual(next.calls,[],'closed request cannot invoke an old native control');
+  h.d.querySelector('[data-native-close]').click();assert.deepEqual(h.nativeNavigations,[],'closing an already closed dialog does not navigate');
+  const closed=h.native;h.send('options','2085891');assert.notEqual(h.native,closed);assert.equal(closed.isConnected,false);
+  assert.deepEqual(h.nativeNavigations,['https://www.pink-rocket.com/shop/shopdetail.html?branduid=2085891']);assert.deepEqual(h.errors,[]);
+ }finally{h.close();}
+});
+
+test('PC/mobile paste artifacts embed the current parent and shared helper without stale build placeholders',()=>{
+ for(const [file,platform] of [['01_MAIN_IFRAME_PC.txt','pc'],['02_MAIN_IFRAME_MOBILE.txt','mobile']]){
+  const paste=fs.readFileSync(new URL('../integration-main/'+file,import.meta.url),'utf8');
+  const dom=new JSDOM(paste);
+  try{
+   const d=dom.window.document,scripts=[...d.querySelectorAll('script')];assert.equal(scripts.length,1,file);
+   assert.equal(scripts[0].textContent.trim().replaceAll('\r\n','\n'),script.trim().replaceAll('\r\n','\n'),file+' must be regenerated after parent/helper changes');
+   assert.equal(d.querySelector('#pr-makeshop-main').dataset.platform,platform);assert.ok(d.querySelector('[data-main-status]'));
+   assert.equal(d.querySelector('[data-native-cart]').getAttribute('href'),'<!--/link_basket/-->');
+   assert.match(paste,/PINKROCKET_MAIN_IFRAME_PREVIEW_START/);assert.match(paste,/PINKROCKET_MAIN_IFRAME_PREVIEW_END/);
+   assert.doesNotMatch(paste,/DETAIL_URL_HELPER_PLACEHOLDER|PLATFORM_PLACEHOLDER|PARENT_SCRIPT|pinkrocket-preview-v1|pr-preview-test-v1/);
+  }finally{dom.window.close();}
+ }
 });
 
 test('handshake timeout and frame errors keep the main inert and a late valid hello can recover',()=>{
@@ -222,7 +258,7 @@ test('Escape from inside the same-origin native detail closes the modal and rest
  const h=boot();try{
   h.hello();h.send('wish','2085891');const loaded=loadNative(h,{mobile:true,wishOutside:true});
   loaded.doc.dispatchEvent(new h.w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
-  assert.equal(h.dialog().hidden,true);assert.equal(h.frame.inert,false);assert.equal(h.d.activeElement,h.frame);assert.equal(h.native.src,'about:blank');assert.deepEqual(loaded.calls,[]);assert.deepEqual(h.errors,[]);
+  assert.equal(h.dialog().hidden,true);assert.equal(h.frame.inert,false);assert.equal(h.d.activeElement,h.frame);assert.match(h.native.src,/branduid=2085891$/);assert.deepEqual(loaded.calls,[]);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 
