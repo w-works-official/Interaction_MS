@@ -4,8 +4,10 @@
 html:has(#pr-makeshop-main),body:has(#pr-makeshop-main){box-sizing:border-box;min-width:0!important;width:100%!important;max-width:none!important;height:100%!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff}
 body:has(#pr-makeshop-main) #wrap,body:has(#pr-makeshop-main) #contents,body:has(#pr-makeshop-main) #container,body:has(#pr-makeshop-main) #contentWrapper,body:has(#pr-makeshop-main) #contentWrap,body:has(#pr-makeshop-main) #content,body:has(#pr-makeshop-main) #main_contentWrapper,body:has(#pr-makeshop-main) #main_contentWrap,body:has(#pr-makeshop-main) #main_content{min-width:0!important;max-width:none!important;width:100%!important;height:auto!important;min-height:0!important;padding:0!important;margin:0!important}
 body:has(#pr-makeshop-main) #header,body:has(#pr-makeshop-main) #footer,body:has(#pr-makeshop-main) #top_banner,body:has(#pr-makeshop-main) .btn_toggle_area,body:has(#pr-makeshop-main) .leftMenu,body:has(#pr-makeshop-main) .hide_left1,body:has(#pr-makeshop-main) .hide_left1_bg,body:has(#pr-makeshop-main) .hide_right1,body:has(#pr-makeshop-main) #allfinder-ctr,body:has(#pr-makeshop-main) #allfinder-layer{display:none!important}
+/* Makeshop preview can inject an empty click-blocking layer above the replacement main. */
+body:has(#pr-makeshop-main)>#overlay_layer:empty{display:none!important}
 #pr-makeshop-main,#pr-makeshop-main *{box-sizing:border-box}
-#pr-makeshop-main{position:fixed;inset:0;z-index:1000;width:100%;height:100vh;height:100dvh;min-width:0;margin:0;padding:0;background:#fff;color:#252a24;font:14px/1.6 system-ui,'Noto Sans KR',sans-serif;text-align:left}
+#pr-makeshop-main{position:fixed;inset:0;z-index:1002!important;width:100%;height:100vh;height:100dvh;min-width:0;margin:0;padding:0;background:#fff;color:#252a24;font:14px/1.6 system-ui,'Noto Sans KR',sans-serif;text-align:left}
 #pr-makeshop-main [hidden]{display:none!important}
 #pr-makeshop-main [data-shop-frame]{display:block;width:100%;height:100%;min-width:0;margin:0;border:0;background:#fff}
 #pr-makeshop-main [data-main-status]{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;z-index:1;transform:translateX(-50%);width:calc(100% - 32px);max-width:720px;margin:0;padding:10px 14px;border:1px solid #cbd7be;border-radius:6px;background:#fffffff5;box-shadow:0 3px 18px #14200b1a;color:#405333;font-size:13px;line-height:1.8;text-align:left;overflow-wrap:anywhere}
@@ -20,24 +22,34 @@ body:has(#pr-makeshop-main) #header,body:has(#pr-makeshop-main) #footer,body:has
 #pr-makeshop-main [data-native-frame]{display:block;flex:1 1 auto;width:100%;min-width:0;min-height:0;border:1px solid #e0e5d9;background:#fff}
 #pr-makeshop-main .pr-native-links{display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding-top:9px}
 #pr-makeshop-main .pr-native-links a{min-height:36px;font-size:12px;padding:6px 9px}
+#pr-makeshop-main [data-native-auth]{flex:1 1 auto;min-height:180px;padding:24px 12px;overflow:auto}
+#pr-makeshop-main [data-native-auth] p{margin:0 0 16px;line-height:1.8}
+#pr-makeshop-main .pr-auth-actions{display:flex;flex-wrap:wrap;gap:8px}
+#pr-makeshop-main [data-native-login]{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:9px 16px;border:1px solid #252a24;border-radius:5px;background:#252a24;color:#fff;font:inherit;text-decoration:none}
 @media(max-width:600px){#pr-makeshop-main [data-native-dialog]{padding:0}#pr-makeshop-main .pr-native-panel{padding:10px;border:0;border-radius:0}#pr-makeshop-main .pr-native-heading h2{font-size:14px}#pr-makeshop-main [data-native-status]{font-size:12px}#pr-makeshop-main .pr-native-note{font-size:11px}#pr-makeshop-main .pr-native-links{gap:5px;padding-bottom:env(safe-area-inset-bottom)}#pr-makeshop-main .pr-native-links a{flex:1 1 7rem}}
 </style>
-<div id="pr-makeshop-main" data-platform="PLATFORM_PLACEHOLDER">
+<div id="pr-makeshop-main" data-platform="PLATFORM_PLACEHOLDER" data-code-version="20261020-product-wish-v5">
   <iframe data-shop-frame title="PINKROCKET 상품 탐색" inert sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox" referrerpolicy="strict-origin-when-cross-origin"></iframe>
   <p data-main-status role="status" aria-live="polite">메인 화면을 불러오는 중입니다.</p>
   <section data-native-dialog role="dialog" aria-modal="true" aria-labelledby="pr-native-title" hidden>
     <div class="pr-native-panel">
       <div class="pr-native-heading">
-        <h2 id="pr-native-title">메이크샵 상품 상세·옵션</h2>
+        <h2 id="pr-native-title">상품 상세</h2>
         <button type="button" data-native-close aria-label="상품 상세·옵션 닫기">닫기</button>
       </div>
       <p data-native-status role="status" aria-live="polite">상품 상세를 준비합니다.</p>
-      <p class="pr-native-note">옵션·수량과 찜·장바구니는 아래 실제 메이크샵 화면에서 확인하세요. 버튼 실행만으로 계정 저장 성공을 확인하지 않습니다.</p>
+      <section data-native-auth aria-label="새 창에서 로그인" hidden>
+        <p>네이버·카카오 로그인은 새 창에서 진행해주세요.<br>로그인을 마치면 이 미리보기로 돌아와 상품을 다시 열 수 있어요.</p>
+        <div class="pr-auth-actions">
+          <a data-native-login target="_blank" rel="noopener">새 창에서 로그인 ↗</a>
+          <button type="button" data-native-retry>로그인 후 상품 다시 열기</button>
+        </div>
+      </section>
       <iframe data-native-frame title="메이크샵 실제 상품 상세와 옵션" referrerpolicy="same-origin"></iframe>
       <nav class="pr-native-links" aria-label="메이크샵 원본 화면">
         <a data-native-open target="_blank" rel="noopener">원본 상품 상세 열기</a>
         <a data-native-wishlist target="_blank" rel="noopener">실제 찜 목록 확인</a>
-        <a data-native-cart href="<!--/link_basket/-->" target="_blank" rel="noopener">실제 장바구니 확인</a>
+        <a data-native-cart target="_blank" rel="noopener">실제 장바구니 확인</a>
       </nav>
     </div>
   </section>
