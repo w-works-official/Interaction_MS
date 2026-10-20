@@ -29,6 +29,9 @@ Standalone preview buttons keep the local demo basket/favorites. The explicit Ma
 
 ## Copied-skin main handoff
 
+2026-10-20 V5: main hearts use the original product-level `makeshopWishlist.send()` transport instead of clicking the detail's option-validating `send_wish()`. A separate `integration-main/product-wishlist.js` adapter reads the account list, toggles one UID once, then reads the list again before publishing confirmed add/remove state to the child. It does not bind native UI handlers or construct its own XHR/fetch. Uncertain writes are never retried automatically. Current syntax checks and 182 tests pass; Chrome local mocks confirmed option-free add/remove and heart state. Actual account writes and copied-skin verification remain unexecuted. Older detail-wish descriptions below are historical.
+
+
 Product photo/name clicks now display the actual Makeshop detail inside a panel, replacing the fabricated product-information drawer and demo quantity controls. Standalone preview embeds the real PC/mobile page by ID; connected mode sends `product` to the same-origin parent detail dialog. The new-window link is an explicit fallback. No native cart/wishlist button is invoked automatically.
 
 The user pastes and previews the code in Makeshop; the agent does not edit or save the Makeshop screen. Back up the copied PC/Mobile main HTML, then replace that main HTML with the matching `integration-main/01_MAIN_IFRAME_PC.txt` or `02_MAIN_IFRAME_MOBILE.txt`. Keep CSS/JS tabs. These are full replacement shells, unlike the old additive three-product PoC. See `integration-main/00_README_KO.txt` for rollback and verification.

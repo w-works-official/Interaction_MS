@@ -1,6 +1,7 @@
 """Generate the copied Makeshop main-page preview shells without changing a shop."""
 
 from pathlib import Path
+import json
 import re
 import zipfile
 
@@ -28,6 +29,18 @@ def generate():
     if parent.count(helper_marker) != 1:
         raise ValueError('Expected exactly one DETAIL_URL_HELPER_PLACEHOLDER in parent.js')
     parent = parent.replace(helper_marker, matches[0])
+    css_marker = 'DETAIL_VIEW_CSS_PLACEHOLDER'
+    if parent.count(css_marker) != 1:
+        raise ValueError('Expected one DETAIL_VIEW_CSS_PLACEHOLDER in parent.js')
+    parent = parent.replace(css_marker, json.dumps((BASE / 'detail-view.css').read_text(encoding='utf-8'), ensure_ascii=False))
+    wish_marker = 'PRODUCT_WISHLIST_ADAPTER_PLACEHOLDER'
+    if parent.count(wish_marker) != 1:
+        raise ValueError('Expected one PRODUCT_WISHLIST_ADAPTER_PLACEHOLDER in parent.js')
+    wish_source = (BASE / 'product-wishlist.js').read_text(encoding='utf-8')
+    export_pattern = r'^export (?=function createProductWishlistAdapter\()'
+    if len(re.findall(export_pattern, wish_source, re.MULTILINE)) != 1:
+        raise ValueError('Expected the standalone product wishlist adapter export')
+    parent = parent.replace(wish_marker, re.sub(export_pattern, '', wish_source, flags=re.MULTILINE).rstrip())
     parent = re.sub(r'</script', r'<\\/script', parent, flags=re.IGNORECASE)
 
     shell = (BASE / 'shell.html').read_text(encoding='utf-8')
@@ -39,7 +52,7 @@ def generate():
     files = {}
     for platform, name in PLATFORMS:
         content = shell.replace('PLATFORM_PLACEHOLDER', platform).replace('PARENT_SCRIPT', parent)
-        if any(marker in content for marker in [helper_marker, 'PLATFORM_PLACEHOLDER', 'PARENT_SCRIPT']):
+        if any(marker in content for marker in [helper_marker, css_marker, wish_marker, 'PLATFORM_PLACEHOLDER', 'PARENT_SCRIPT']):
             raise ValueError(f'Unresolved generation marker in {name}')
         if content.count(f'id="pr-makeshop-main" data-platform="{platform}"') != 1:
             raise ValueError(f'Platform marker is missing or duplicated in {name}')

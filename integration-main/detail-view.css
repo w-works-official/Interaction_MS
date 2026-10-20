@@ -1,0 +1,372 @@
+/* Inject only after the parent verifies the same-origin product-detail document.
+   Sources: PC/shopdetail.{html,css}, Mobile/shopdetail.{html,css}, common.css
+   and their header.1/footer.1 files under C:/2026_Work/Makeshop/.
+   Native option/payment/popup visibility and form controls remain native. */
+html[data-pr-detail-view],
+html[data-pr-detail-view] body {
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff;
+}
+html[data-pr-detail-view] {
+  overflow-x: clip !important;
+  scroll-padding-top: 56px;
+}
+html[data-pr-detail-view] :is(#wrap, #container, #contents, #contentWrapper, #contentWrap, #content) {
+  box-sizing: border-box;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* Site navigation and the explicit ADN recommendation slots are not product content.
+   Do not hide #overlay_layer, .fixedMask, .snsSharePop, coupon or option containers. */
+html[data-pr-detail-view] :is(#header, #footer, #top_banner, #sideMenu,
+  #allfinder-ctr, #allfinder-layer, #all-finder-layer, .leftMenu,
+  .hide_left1, .hide_left1_bg, .hide_right1, .btn_close_right, .btn_toggle_area,
+  #suggestad_wrap_container, #suggestad_mobie_wrap_container) {
+  display: none !important;
+}
+
+/* PC common.css uses 1240px minimum document width and a 1320px #content.
+   The product's 700px photo / 570px info columns become fluid here. */
+html[data-pr-detail-view] #productDetail {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding: 12px 16px 32px;
+}
+html[data-pr-detail-view] #productDetail .page-body {
+  margin-top: 0 !important;
+}
+html[data-pr-detail-view] #productDetail .thumb-info {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  width: 100%;
+  height: auto !important;
+  min-width: 0;
+}
+html[data-pr-detail-view] #productDetail .thumb-info::after {
+  display: none;
+}
+html[data-pr-detail-view] #productDetail .thumb-info > .thumb-wrap {
+  grid-column: 1;
+}
+html[data-pr-detail-view] #productDetail .thumb-info > form,
+html[data-pr-detail-view] #productDetail .thumb-info > .info {
+  grid-column: 2;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+html[data-pr-detail-view] #productDetail .thumb-info :is(.thumb-wrap, .thumb, .info) {
+  box-sizing: border-box;
+  float: none !important;
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
+}
+html[data-pr-detail-view] #productDetail .thumb-info .thumb-wrap img {
+  max-width: 100% !important;
+  height: auto;
+}
+html[data-pr-detail-view] #productDetail .thumb-wrap :is(.prdSlideBn, .prd_banner, .swiper-slide) {
+  max-width: 100% !important;
+}
+html[data-pr-detail-view] #productDetail .thumb-info .info .tit-prd {
+  padding-top: 0;
+  overflow-wrap: anywhere;
+}
+
+/* These blocks were placed at top:600/800/810px in the original PC layout. */
+html[data-pr-detail-view] #productDetail .thumb-info :is(.member_benefit, .info_defalt),
+html[data-pr-detail-view] #productDetail .thumb-info .info > .tb-left:has(.d_wish) {
+  position: relative !important;
+  inset: auto !important;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  margin-block: 16px;
+}
+html[data-pr-detail-view] #productDetail .thumb-info .member_benefit {
+  overflow: auto;
+}
+html[data-pr-detail-view] #productDetail .thumb-info .info > .tb-left:has(.d_wish) {
+  min-height: 40px;
+}
+
+/* Keep .buyWrap's original bottom:-1000px / .active state and the mobile
+   .option_area/.option_tk/.buy_on display rules; only constrain their size. */
+html[data-pr-detail-view] #productDetail .buyWrap {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  max-height: 85vh;
+  max-height: 85dvh;
+  padding-inline: 16px !important;
+  overflow-y: auto;
+}
+html[data-pr-detail-view] #productDetail .buyBtn {
+  box-sizing: border-box;
+  gap: 8px;
+  flex-wrap: wrap;
+  height: auto;
+  padding: 8px 12px;
+}
+html[data-pr-detail-view] #productDetail .buyBtn > a {
+  box-sizing: border-box;
+  flex: 1 1 20%;
+  float: none;
+  width: auto;
+  min-width: 0;
+  margin: 0;
+}
+html[data-pr-detail-view] #productDetail :is(.table-opt, .prd-btns, .hideWrap) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+html[data-pr-detail-view] #productDetail .table-opt :is(select, input, textarea, .tb-left) {
+  box-sizing: border-box;
+  max-width: 100% !important;
+}
+html[data-pr-detail-view] #productDetail .table-opt :is(select, textarea) {
+  min-width: 0;
+}
+html[data-pr-detail-view] #productDetail .table-opt .opt-wrap dl {
+  box-sizing: border-box;
+  width: 100% !important;
+  padding-inline: 0 !important;
+}
+html[data-pr-detail-view] #productDetail .table-opt .opt-wrap :is(dt, dd) {
+  box-sizing: border-box;
+  float: none !important;
+  width: 100% !important;
+  max-width: 100%;
+  margin-inline: 0 !important;
+}
+html[data-pr-detail-view] #productDetail .prd-btns .btn_subs {
+  max-width: 100%;
+}
+
+/* Product/review/Q&A navigation is retained; remove widths and header offsets. */
+html[data-pr-detail-view] :is(.shopdetailBoard, .shopdetailBoard2) {
+  display: flex;
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
+}
+html[data-pr-detail-view] :is(.shopdetailBoard, .shopdetailBoard2) > div {
+  display: flex;
+  box-sizing: border-box;
+  width: 100% !important;
+  min-width: 0;
+}
+html[data-pr-detail-view] :is(.shopdetailBoard, .shopdetailBoard2) a {
+  box-sizing: border-box;
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto !important;
+  margin-inline: 0 !important;
+  padding-inline: 6px;
+  font-size: clamp(12px, 1.4vw, 16px);
+}
+html[data-pr-detail-view] :is(.shopdetailBoard, .shopdetailBoard2):is(.fixed, .headerfixed, .Sact, .Tact),
+html[data-pr-detail-view] #productDetail .detailTab.fixed {
+  top: 0 !important;
+  left: 0;
+  right: 0;
+  margin-top: 0 !important;
+}
+html[data-pr-detail-view] #productDetail .detailTab {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100%;
+}
+html[data-pr-detail-view] #productDetail .detailTab :is(ul, ul li, a) {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+html[data-pr-detail-view] #productDetail .detailTab ul {
+  display: flex;
+  width: 100%;
+  padding-left: 0;
+}
+html[data-pr-detail-view] #productDetail .detailTab ul li {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+  margin-left: 0;
+}
+html[data-pr-detail-view] #productDetail .detailTab a {
+  width: 25%;
+}
+html[data-pr-detail-view] #productDetail .detailTab ul li a {
+  width: 100%;
+}
+
+/* Descriptive images, real reviews and notices stay in the document. */
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage, #powerReview, #mPowerreview) {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage) :is(img, video, object, iframe) {
+  box-sizing: border-box;
+  max-width: 100% !important;
+}
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage) img {
+  height: auto !important;
+}
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage) :is(div, table) {
+  box-sizing: border-box;
+  max-width: 100% !important;
+}
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage) table {
+  width: 100% !important;
+}
+html[data-pr-detail-view] :is(#sdArea, .shopdetailImage) td {
+  overflow-wrap: anywhere;
+}
+html[data-pr-detail-view] #productDetail .table-slide {
+  max-width: 100%;
+  overflow-x: auto;
+}
+html[data-pr-detail-view] #productDetail .table-slide .paging-wrap,
+html[data-pr-detail-view] #productDetail .review-write textarea {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100%;
+}
+html[data-pr-detail-view] :is(.related-product-area, .related-product-area .relatedPrdTitle h3) {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 100%;
+}
+html[data-pr-detail-view] .relateSlider .slick-track {
+  min-width: 0;
+}
+html[data-pr-detail-view] :is(#sizeChart, .size-chart-cont) {
+  box-sizing: border-box;
+  max-width: calc(100vw - 24px);
+}
+
+/* The mobile source already has fluid native option controls. Preserve their
+   visibility classes, scroll containers and fixed purchase actions. */
+html[data-pr-detail-view] .shopdetail {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-top: 0;
+  padding-bottom: 80px;
+}
+html[data-pr-detail-view] .shopdetail :is(.shopdetailInfoTop, .shopdetailInfoBottom, .shopdetailInfoValue, .shopdetailItem) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+}
+html[data-pr-detail-view] .shopdetail .shopdetailInfoTop img {
+  max-width: 100%;
+  height: auto;
+}
+html[data-pr-detail-view] .shopdetail .shopdetailBoard.fixed {
+  margin-top: 0;
+}
+/* Makeshop leaves these absolute popup hosts in the page while hidden. Their
+   original 936px content width plus padding must not enlarge a narrow document. */
+html[data-pr-detail-view] :is(#detailpage, #MK_basketpage) {
+  box-sizing: border-box !important;
+  min-width: 0 !important;
+  max-width: calc(100% - 24px) !important;
+  overflow-x: auto;
+}
+
+/* Native PowerReview summary: retain the real score, chart and review photos. */
+html[data-pr-detail-view] #powerReview .PR15N01-info {
+  box-sizing: border-box !important;
+  display: grid !important;
+  grid-template-columns: minmax(8rem, .75fr) minmax(0, 1.5fr) minmax(5rem, .6fr);
+  gap: 16px;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  padding: 16px !important;
+}
+html[data-pr-detail-view] #powerReview .PR15N01-info > :is(.score, .chart, .photo) {
+  box-sizing: border-box;
+  position: static !important;
+  float: none !important;
+  min-width: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+html[data-pr-detail-view] #powerReview .PR15N01-info .chart li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+html[data-pr-detail-view] #powerReview .PR15N01-info .chart li .tit {
+  flex: 0 0 4rem;
+  width: auto;
+}
+html[data-pr-detail-view] #powerReview .PR15N01-info .chart li .bar {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto !important;
+  max-width: 100%;
+  margin-right: 2rem;
+}
+html[data-pr-detail-view] #powerReview .PR15N01-info .photo :is(p, img) {
+  box-sizing: border-box;
+  max-width: 100% !important;
+}
+@media (max-width: 900px) {
+  html[data-pr-detail-view] #productDetail .thumb-info {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  html[data-pr-detail-view] #productDetail .thumb-info > .thumb-wrap,
+  html[data-pr-detail-view] #productDetail .thumb-info > form,
+  html[data-pr-detail-view] #productDetail .thumb-info > .info {
+    grid-column: 1;
+  }
+}
+@media (max-width: 600px) {
+  html[data-pr-detail-view] #powerReview .PR15N01-info {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  html[data-pr-detail-view] #productDetail {
+    padding: 10px 12px 96px;
+  }
+  html[data-pr-detail-view] #productDetail .buyWrap {
+    padding-inline: 12px !important;
+  }
+  html[data-pr-detail-view] #productDetail .buyBtn > a {
+    flex-basis: 42%;
+  }
+  html[data-pr-detail-view] #productDetail .hideWrap {
+    padding-block: 12px;
+  }
+  html[data-pr-detail-view] #productDetail .thumb-info .info .tit-prd {
+    font-size: 18px;
+  }
+}
