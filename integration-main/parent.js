@@ -4,7 +4,7 @@
   if (!root || root.dataset.started) return;
   const frame = root.querySelector('[data-shop-frame]');
   const dialog = root.querySelector('[data-native-dialog]');
-  const nativeFrame = root.querySelector('[data-native-frame]');
+  let nativeFrame = root.querySelector('[data-native-frame]');
   const status = root.querySelector('[data-native-status]');
   const mainStatus = root.querySelector('[data-main-status]');
   const close = root.querySelector('[data-native-close]');
@@ -12,6 +12,8 @@
   const wishlist = root.querySelector('[data-native-wishlist]');
   const cart = root.querySelector('[data-native-cart]');
   if (![frame, dialog, nativeFrame, status, mainStatus, close, open, wishlist, cart].every(Boolean)) return;
+  const nativeTemplate = nativeFrame.cloneNode(false);
+  nativeTemplate.removeAttribute('src');
   root.dataset.started = '1';
   frame.inert = true;
 
@@ -69,7 +71,6 @@
     if (nativeTimer !== null) window.clearTimeout(nativeTimer);
     nativeTimer = null;
     dialog.hidden = true;
-    nativeFrame.src = 'about:blank';
     open.removeAttribute('href');
     frame.inert = !ready;
     if (previous && ready) frame.focus();
@@ -111,14 +112,21 @@
     open.setAttribute('href', url.href);
     dialog.hidden = false;
     frame.inert = true;
-    nativeFrame.src = url.href;
+    const next = nativeTemplate.cloneNode(false);
+    bindNativeFrame(next);
+    next.src = url.href;
+    const previous = nativeFrame;
+    nativeFrame = next;
+    previous.replaceWith(next);
     close.focus();
     note(request, '상품 ID ' + request.id + '의 메이크샵 원본 상세를 불러오는 중입니다. 자동 찜·담기는 실행하지 않습니다.');
     nativeTimer = window.setTimeout(() => {
       if (active === request) note(request, '상세를 불러오지 못했거나 iframe 표시가 제한됐습니다. 원본 상세 열기로 확인하세요.');
     }, 12000);
   }
-  nativeFrame.addEventListener('load', () => {
+  function bindNativeFrame(target) {
+  target.addEventListener('load', event => {
+    if (event.currentTarget !== nativeFrame || !active || active.session !== session) return;
     const request = active;
     if (!request) return;
     if (nativeTimer !== null) window.clearTimeout(nativeTimer);
@@ -162,11 +170,14 @@
       '원본 찜 버튼을 직접 눌러주세요. 로그인 안내와 찜 목록에서 실제 반영 여부를 확인하세요.' :
       '원본 상세에서 옵션·수량을 선택한 뒤 원본 장바구니 버튼을 직접 눌러주세요. 실제 상품·옵션·수량은 장바구니 목록에서 확인하세요.');
   });
-  nativeFrame.addEventListener('error', () => {
+  target.addEventListener('error', event => {
+    if (event.currentTarget !== nativeFrame || !active || active.session !== session) return;
     if (nativeTimer !== null) window.clearTimeout(nativeTimer);
     nativeTimer = null;
     if (active) note(active, '상세 iframe을 불러오지 못했습니다. 원본 상세 열기로 확인하세요.');
   });
+  }
+  bindNativeFrame(nativeFrame);
   close.addEventListener('click', () => closeNative());
   open.addEventListener('click', event => {
     event.preventDefault();
