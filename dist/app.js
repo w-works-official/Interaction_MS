@@ -24,12 +24,12 @@ const makeshopBridge=createMakeshopBridge();
 // Account actions stay on Makeshop. A missing/invalid bridge must never become a demo write.
 function createMakeshopBridge(){
  const params=new URLSearchParams(location.search),enabled=params.get('bridge')==='makeshop';
- const bridge={enabled,ready:false,platform:params.get('platform'),message:'메이크샵 연결 확인 중',request};
+ const bridge={enabled,ready:false,platform:params.get('platform'),message:'메이크샵 연결 확인 중',wishlistState:'unknown',wishlistIds:[],wishBusy:false,request};
  if(!enabled)return bridge;
  const parentOrigin=params.get('parentOrigin'),session=params.get('session'),channel='pinkrocket-makeshop-v1';
  const allowedParents=['https://pink-rocket.com','https://www.pink-rocket.com'];
  const valid=window.parent!==window&&allowedParents.includes(parentOrigin)&&['pc','mobile'].includes(bridge.platform)&&/^\d{1,10}(?:-\d{1,10}){3}$/.test(session||'');
- let sequence=0,helloId=0,helloTimer,attempts=0;
+ let sequence=0,helloId=0,helloTimer,attempts=0,latestWishId=0,initialSnapshotOpen=true;
  const pending=new Map();
  function update(message){bridge.message=message;const el=document.getElementById('makeshop-connection');if(el)el.textContent=message;app.dataset.makeshop=bridge.ready?'connected':'unavailable';}
  function send(data){window.parent.postMessage({channel,session,...data},parentOrigin);}
@@ -37,9 +37,34 @@ function createMakeshopBridge(){
   if(!bridge.ready){toast(bridge.message);return false;}
   if(!['product','detail','wish','options','wishlist','cart'].includes(action))return false;
   if(['product','detail','wish','options'].includes(action)&&!catalog.some(p=>p.id===id))return false;
+  if(action==='wish'&&bridge.wishBusy)return false;
   const requestId=++sequence;
-  const timer=setTimeout(()=>{if(pending.delete(requestId))toast('메이크샵의 응답을 확인하지 못했습니다. 열린 상세나 목록을 확인하세요.');},8000);
-  pending.set(requestId,timer);send({action,requestId,...(id?{id}:{})});return true;
+  const entry={action,id,timer:null,accepted:false,snapshot:false};
+  entry.timer=setTimeout(()=>{
+   if(!pending.delete(requestId))return;
+   if(action==='wish'){bridge.wishBusy=false;bridge.wishlistState='unknown';bridge.wishlistIds=[];syncMakeshopHearts();}
+   toast('메이크샵의 응답을 확인하지 못했습니다. 열린 상세나 목록을 확인하세요.');
+  },action==='wish'?45000:8000);
+  pending.set(requestId,entry);
+  if(action==='wish'){latestWishId=requestId;initialSnapshotOpen=false;bridge.wishBusy=true;syncMakeshopHearts();}
+  send({action,requestId,...(id?{id}:{})});return true;
+ }
+ function receiveWishlist(data){
+  const entry=pending.get(data.requestId),initial=data.requestId===helloId&&initialSnapshotOpen&&!latestWishId;
+  if(data.platform!==bridge.platform||(!initial&&!(entry?.action==='wish'&&data.requestId===latestWishId)))return;
+  if(!['ready','login','busy','error','unknown'].includes(data.state))return;
+  const known=data.state==='ready'||data.state==='login';
+  if(known){
+   if(!Array.isArray(data.ids)||Array.from(data.ids).some(id=>typeof id!=='string'||!/^[1-9]\d*$/.test(id))||new Set(data.ids).size!==data.ids.length)return;
+   if(data.state==='login'&&data.ids.length)return;
+  }else if(data.ids!==undefined)return;
+  if(data.id!==undefined&&(initial||data.id!==entry.id))return;
+  if(data.selected!==undefined&&(!known||data.id!==entry?.id||typeof data.selected!=='boolean'||data.selected!==(data.state==='ready'&&data.ids.includes(data.id))))return;
+  bridge.wishlistState=data.state;bridge.wishlistIds=known?[...data.ids]:[];
+  if(initial&&data.state!=='busy')initialSnapshotOpen=false;
+  if(entry&&data.state!=='busy')entry.snapshot=true;
+  const messages={ready:'실제 관심상품 상태를 불러왔습니다.',login:'찜하려면 로그인이 필요합니다.',busy:'찜을 처리하는 중입니다.',error:'찜 상태를 확인하지 못했습니다. 실제 목록에서 확인하세요.',unknown:'찜 상태를 확인하지 못했습니다. 실제 목록에서 확인하세요.'};
+  update('메이크샵 연결됨 · '+messages[data.state]);syncMakeshopHearts();
  }
  if(!valid){update('메이크샵 메인용 코드에서 연결 정보를 확인하세요.');return bridge;}
  window.addEventListener('message',event=>{
@@ -47,10 +72,22 @@ function createMakeshopBridge(){
   if(event.source!==window.parent||event.origin!==parentOrigin||!data||data.channel!==channel||data.session!==session||!Number.isSafeInteger(data.requestId))return;
   if(data.action==='init'){
    if(data.requestId!==helloId||data.platform!==bridge.platform)return;
-   clearTimeout(helloTimer);bridge.ready=true;update('메이크샵 연결됨 · 실제 찜·장바구니 상태는 메이크샵 목록에서 확인하세요.');return;
+   clearTimeout(helloTimer);bridge.ready=true;update('메이크샵 연결됨 · 찜 상태를 확인하는 중입니다.');return;
   }
+  if(bridge.ready&&data.action==='wishlist-state'){receiveWishlist(data);return;}
   if(!bridge.ready||!['accepted','status'].includes(data.action)||!pending.has(data.requestId))return;
-  clearTimeout(pending.get(data.requestId));pending.delete(data.requestId);
+  const entry=pending.get(data.requestId);
+  if(data.action==='accepted'&&entry.action==='wish'){
+   if(entry.accepted)return;
+   entry.accepted=true;
+  }else{
+   clearTimeout(entry.timer);pending.delete(data.requestId);
+   if(entry.action==='wish'){
+    bridge.wishBusy=false;
+    if(!entry.snapshot){bridge.wishlistState='unknown';bridge.wishlistIds=[];}
+    syncMakeshopHearts();
+   }
+  }
   if(typeof data.message==='string')toast(data.message.slice(0,300));
  });
  function hello(){
@@ -61,6 +98,20 @@ function createMakeshopBridge(){
  }
  hello();return bridge;
 }
+function favoritePresentation(p){
+ const native=makeshopBridge.enabled,state=native?makeshopBridge.wishlistState:'ready',known=state==='ready'||state==='login',selected=native?state==='ready'&&makeshopBridge.wishlistIds.includes(p.id):favorites.includes(p.id);
+ const label=native?(state==='login'?'로그인 후 찜하기':state==='busy'?'메이크샵 찜 처리 중':known?(selected?'찜 취소':'찜 추가'):'메이크샵 찜 상태 미확인'):(selected?'찜 취소':'찜 추가');
+ return {state,known,selected,disabled:native&&makeshopBridge.wishBusy,label:(p.displayName||p.name)+' '+label};
+}
+function favoriteButtonHTML(p){const f=favoritePresentation(p);return `<button class="photo-heart ${f.selected?'active':''}" data-action="favorite" data-id="${p.id}" data-wishlist-state="${f.state}" aria-label="${esc(f.label)}" ${f.known?`aria-pressed="${f.selected}"`:''} ${f.disabled?'disabled':''}>${icon('heart')}</button>`;}
+function syncMakeshopHearts(){
+ document.querySelectorAll('[data-action="favorite"][data-id]').forEach(button=>{
+  const p=catalog.find(item=>item.id===button.dataset.id);if(!p)return;const f=favoritePresentation(p);
+  button.classList.toggle('active',f.selected);button.dataset.wishlistState=f.state;button.setAttribute('aria-label',f.label);button.disabled=f.disabled;
+  if(f.known)button.setAttribute('aria-pressed',String(f.selected));else button.removeAttribute('aria-pressed');
+ });
+}
+function currentFavorites(){return makeshopBridge.enabled?(makeshopBridge.wishlistState==='ready'?makeshopBridge.wishlistIds:[]):favorites;}
 function toast(message){const el=document.getElementById('toast');el.textContent=message;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3300);}
 function read(key,fallback){try{return JSON.parse(localStorage.getItem(key))??fallback;}catch{return fallback;}}
 function write(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{toast('브라우저 저장 공간이 부족합니다. 작은 이미지를 쓰거나 구성 파일을 내보내세요.');return false;}}
@@ -75,11 +126,11 @@ ${blockZoneHTML('top')}<header class="shop-header"><div class="header-main"><but
 <div class="browse-tools">${discoveryHTML(s)}<div class="filter-chips" aria-label="소재 필터">${MATERIALS.map(m=>`<button class="chip ${m===s.material?'active':''}" data-action="material" data-material="${m}" aria-pressed="${m===s.material}">${m==='전체'?'모든 소재':m}</button>`).join('')}</div></div><div class="filter-bar"><span id="result-count" class="result-count" aria-live="polite"></span><label class="sort-label"><span class="sr-only">상품 정렬</span><select id="shop-sort" class="sort-select" aria-label="상품 정렬">${Object.entries({curated:'추천순',match:'태그 추천순',newest:'신상품순 · 시연',priceAsc:'낮은 가격순',priceDesc:'높은 가격순'}).map(([value,label])=>`<option value="${value}" ${s.sort===value?'selected':''}>${label}</option>`).join('')}</select></label></div>${blockZoneHTML('before-feed')}<div class="catalog-grid"><div id="product-feed" data-block-zone="feed" class="feed" aria-label="${esc(tab)} 상품 목록" data-tab-swipe></div></div><div id="more-wrap" class="more-wrap"></div>${blockZoneHTML('bottom')}</main>
 <footer class="shop-footer"><div><img class="footer-logo" src="./assets/skin/logo-pc.png" alt="PINKROCKET"><p>CS Center<br><a href="https://pf.kakao.com/_lxgBed/friend" target="_blank" rel="noopener">핑크로켓 카카오톡 ↗</a></p></div><div><p>${makeshopBridge.enabled?'메이크샵 미리보기 · 상품 정보는 조회 시점의 사본입니다.<br>옵션·현재 가격·찜·장바구니는 메이크샵에서 확인합니다.':'상품 목록은 조회 시점의 사본이며 상세는 실제 메이크샵 화면입니다.<br>목록의 찜·장바구니 표시는 이 브라우저의 데모입니다.'}</p>${makeshopBridge.enabled?`<p id="makeshop-connection" role="status">${esc(makeshopBridge.message)}</p>`:''}<button data-action="view-admin" style="margin-top:.7rem;text-decoration:underline">메인 운영자 화면</button></div></footer><nav class="bottom-nav" aria-label="빠른 메뉴"><button data-action="home" class="${tab==='추천'&&!s.favoritesOnly?'active':''}">${icon('home')}<span>추천</span></button><button data-action="open-categories">${icon('grid')}<span>카테고리</span></button><button data-action="toggle-favorites" class="${s.favoritesOnly?'active':''}">${icon('heart')}<span>찜</span></button><button data-action="open-cart">${icon('bag')}<span>장바구니</span></button></nav>`;}
 function cachedList(cache,key,compute){if(cache.has(key))return cache.get(key);const result=compute();cache.set(key,result);if(cache.size>4)cache.delete(cache.keys().next().value);return result;}
-function visibleProducts(){const config=currentConfig(),s=tabStates[tab],{photoPreview,...discovery}=s.discovery,key=JSON.stringify([tab,config.tabs[tab],rankingFor(config,tab),config.productEdits,s.query,s.material,s.sort,s.favoritesOnly,favorites,discovery]);return cachedList(browseCache,key,()=>browseProducts(catalog,tab,config,{...s,favorites}));}
+function visibleProducts(){const config=currentConfig(),s=tabStates[tab],favorites=currentFavorites(),{photoPreview,...discovery}=s.discovery,key=JSON.stringify([tab,config.tabs[tab],rankingFor(config,tab),config.productEdits,s.query,s.material,s.sort,s.favoritesOnly,favorites,discovery]);return cachedList(browseCache,key,()=>browseProducts(catalog,tab,config,{...s,favorites}));}
 function workspaceList(config){const key=JSON.stringify([adminTab,config.tabs[adminTab],rankingFor(config),config.productEdits]);return cachedList(workspaceRankCache,key,()=>resolveList(catalog,adminTab,config));}
 function discoveryHTML(s){const d=s.discovery;return `<details class="discovery" ${discoveryOpen?'open':''}><summary aria-label="상세 필터 열기">${icon('grid')}<span>필터</span><span id="discovery-summary"></span></summary><div class="filter-backdrop" data-action="close-filters"></div><div class="discovery-body" role="dialog" aria-modal="true" aria-label="상품 필터"><div class="filter-sheet-heading"><div><h2>상품 필터</h2></div><button data-action="close-filters" aria-label="필터 닫기">${icon('close')}</button></div>${TAG_GROUPS.map(g=>`<div class="tag-row"><h2>${g.label}</h2><div class="tag-options">${g.options.map(tag=>`<button data-action="discovery-tag" data-group="${g.key}" data-tag="${esc(tag)}" class="tag-option ${d.tags[g.key]?.includes(tag)?'selected':''}" aria-pressed="${!!d.tags[g.key]?.includes(tag)}">${esc(tag)}</button>`).join('')}</div></div>`).join('')}<div class="tag-row"><h2>가격 범위</h2><div class="price-inputs"><label><span class="sr-only">최저 가격</span><input id="discovery-min" type="number" min="0" inputmode="numeric" placeholder="최저 가격" value="${esc(d.min)}"></label><span>~</span><label><span class="sr-only">최고 가격</span><input id="discovery-max" type="number" min="0" inputmode="numeric" placeholder="최고 가격" value="${esc(d.max)}"></label><span>원</span>${[['5천 원 이하','5000'],['1만 원 이하','10000']].map(([label,max])=>`<button class="tag-option" data-action="price-preset" data-max="${max}">${label}</button>`).join('')}</div></div><div class="tag-row"><h2>사진 색감</h2><div class="photo-discovery"><label class="photo-upload">사진으로 비슷한 색 찾기<input id="discovery-photo" type="file" accept="image/*" aria-label="색감으로 찾을 사진 선택"></label>${d.photoPreview?`<img src="${esc(d.photoPreview)}" alt="선택한 색감 참고 사진"><button class="tag-option" data-action="clear-photo">사진 빼기 ×</button>`:''}<span>사진은 이 브라우저에서만 처리합니다.</span></div></div><div class="discovery-actions"><label><input type="checkbox" id="discovery-strict" ${d.strict?'checked':''}>선택한 태그가 일치하는 상품만</label><label>추천 범위 <select id="discovery-cap" aria-label="추천 상품 수">${[[0,'전체'],[500,'500개'],[1000,'1,000개']].map(([n,label])=>`<option value="${n}" ${d.cap===n?'selected':''}>${label}</option>`).join('')}</select></label><button class="tag-reset" data-action="reset-discovery">탐색 조건 초기화</button></div><p class="discovery-note">기본은 선택 조건과 가까운 순서입니다. 여러 태그를 고를 수 있고, 가격 범위는 목록에 적용됩니다. 사진 검색은 색감을 비교합니다.</p><div class="filter-apply"><button data-action="reset-discovery">초기화</button><button class="apply-filters" data-action="close-filters"><span id="filter-preview-count"></span> 상품 보기</button></div></div></details>`;}
 function updateDiscoverySummary(){const d=tabStates[tab].discovery,el=app.querySelector('#discovery-summary');if(!el)return;const tags=TAG_GROUPS.flatMap(g=>d.tags[g.key]||[]);const count=tags.length+(d.min!==''||d.max!==''?1:0)+(d.photoTone?1:0);el.textContent=count||'';el.hidden=!count;el.title=[...tags,d.min!==''||d.max!==''?'가격 조건':'',d.photoTone?'사진 색감':''].filter(Boolean).join(' · ');}
-function productHTML(p){const index=photoState.get(p.id)||0;return `<article class="product-card" data-product="${p.id}"><div class="product-photo" data-gallery="${p.id}"><button class="photo-link" data-action="quickview" data-id="${p.id}" aria-label="${esc(p.displayName||p.name)} 상세 보기"><img src="${esc(p.images[index]||p.images[0]||'')}" alt="${esc(p.name)} 사진 ${index+1}" loading="lazy" decoding="async" draggable="false"></button><button class="photo-heart ${!makeshopBridge.enabled&&favorites.includes(p.id)?'active':''}" data-action="favorite" data-id="${p.id}" aria-label="${esc(p.displayName||p.name)} ${makeshopBridge.enabled?'메이크샵 찜 열기':favorites.includes(p.id)?'찜 취소':'찜 추가'}" ${makeshopBridge.enabled?'':`aria-pressed="${favorites.includes(p.id)}"`}>${icon('heart')}</button>${p.images.length>1?`<button class="photo-arrow prev" data-action="slide" data-id="${p.id}" data-delta="-1" aria-label="이전 사진">${icon('left')}</button><button class="photo-arrow next" data-action="slide" data-id="${p.id}" data-delta="1" aria-label="다음 사진">${icon('right')}</button><span class="photo-dots" role="img" aria-label="사진 ${p.images.length}장 중 ${index+1}번째">${p.images.map((_,i)=>`<i class="${i===index?'on':''}" aria-hidden="true"></i>`).join('')}</span>`:''}${p.soldout?'<span class="soldout">SOLD OUT</span>':''}</div><div class="product-meta"><button class="product-name" data-action="quickview" data-id="${p.id}">${esc(p.displayName||p.name)}</button><div class="product-bottom"><span class="price">${won(p.price)}</span><button class="quick-add" data-action="quickview" data-id="${p.id}" aria-label="${esc(p.displayName||p.name)} 상세 보기">${icon('plus')}<span>상세 보기</span></button></div></div></article>`;}
+function productHTML(p){const index=photoState.get(p.id)||0;return `<article class="product-card" data-product="${p.id}"><div class="product-photo" data-gallery="${p.id}"><button class="photo-link" data-action="quickview" data-id="${p.id}" aria-label="${esc(p.displayName||p.name)} 상세 보기"><img src="${esc(p.images[index]||p.images[0]||'')}" alt="${esc(p.name)} 사진 ${index+1}" loading="lazy" decoding="async" draggable="false"></button>${favoriteButtonHTML(p)}${p.images.length>1?`<button class="photo-arrow prev" data-action="slide" data-id="${p.id}" data-delta="-1" aria-label="이전 사진">${icon('left')}</button><button class="photo-arrow next" data-action="slide" data-id="${p.id}" data-delta="1" aria-label="다음 사진">${icon('right')}</button><span class="photo-dots" role="img" aria-label="사진 ${p.images.length}장 중 ${index+1}번째">${p.images.map((_,i)=>`<i class="${i===index?'on':''}" aria-hidden="true"></i>`).join('')}</span>`:''}${p.soldout?'<span class="soldout">SOLD OUT</span>':''}</div><div class="product-meta"><button class="product-name" data-action="quickview" data-id="${p.id}">${esc(p.displayName||p.name)}</button><div class="product-bottom"><span class="price">${won(p.price)}</span><button class="quick-add" data-action="quickview" data-id="${p.id}" aria-label="${esc(p.displayName||p.name)} 상세 보기">${icon('plus')}<span>상세 보기</span></button></div></div></article>`;}
 function blockZoneHTML(zone){return `<section class="block-zone" data-block-zone="${zone}" hidden><div class="block-zone-grid"></div></section>`;}
 function bannerHTML(value){
  const b=normalizeContentBlock(value),classes=`content-block block-type-${b.type} block-width-pc-${b.widthPc} block-width-mobile-${b.widthMobile}${b.newRow?' block-new-row':''}`;
@@ -561,7 +612,7 @@ function bindDrag(){
     };
   });
 }
-window.addEventListener('storage',event=>{if(event.key===KEYS.published){published=removeStarterBanners(loadConfig(KEYS.published,published));if(view==='shop'&&!previewMode)render();}if(event.key===KEYS.favorites){favorites=read(KEYS.favorites,[]).filter(id=>catalog.some(p=>p.id===id));if(view==='shop')render();}if(event.key===KEYS.draft&&previewMode){draft=removeStarterBanners(loadConfig(KEYS.draft,draft));render();}});
+window.addEventListener('storage',event=>{if(event.key===KEYS.published){published=removeStarterBanners(loadConfig(KEYS.published,published));if(view==='shop'&&!previewMode)render();}if(event.key===KEYS.favorites){favorites=read(KEYS.favorites,[]).filter(id=>catalog.some(p=>p.id===id));if(view==='shop'&&!makeshopBridge.enabled)render();}if(event.key===KEYS.draft&&previewMode){draft=removeStarterBanners(loadConfig(KEYS.draft,draft));render();}});
 async function registerBrowserTools(){
   const registry=document.modelContext;if(typeof registry?.registerTool!=='function')return;
   try{
