@@ -25,13 +25,23 @@ The customer feed progressively reveals records; sort/filter/search resolve the 
 
 LocalStorage holds draft, published mockup config, history, favorites and demo basket. This is not a shared production database and is not a Makeshop account session. `storage` events keep the published view in sync across tabs of the same browser. Source Site access is owner-private; the admin itself has no separate production login.
 
-Actual product detail buttons open the existing Makeshop product page. No shopping-account write, checkout, order, admin setting, skin or platform API call is made by the prototype. Options are not fabricated; the quick view has only a clearly labelled demo quantity control.
+Standalone preview buttons keep the local demo basket/favorites. The explicit Makeshop bridge mode uses a copied-skin parent shell to open actual product details and native account lists. Customers select real options and press the original buttons inside the detail view; the bridge neither fabricates options nor treats a click as confirmed storage. No skin/admin/checkout/order changes are made by this code generator.
+
+## Copied-skin main handoff
+
+The user pastes and previews the code in Makeshop; the agent does not edit or save the Makeshop screen. Back up the copied PC/Mobile main HTML, then replace that main HTML with the matching `integration-main/01_MAIN_IFRAME_PC.txt` or `02_MAIN_IFRAME_MOBILE.txt`. Keep CSS/JS tabs. These are full replacement shells, unlike the old additive three-product PoC. See `integration-main/00_README_KO.txt` for rollback and verification.
+
+Run `python integration-main/build.py` to reproduce the files and ignored `outputs/pinkrocket_makeshop_main_preview.zip`. The build embeds the actual shared detail-URL helper. Both parents use the same external responsive app, an explicit platform, independent viewport scrolling and a same-origin native detail dialog. A fixed frontend origin, exact message source, session, increasing request ID and valid product ID gate requests. The frontend stays inert before handshake and during the native dialog. Bridge failures never fall back to a demo write. Native wishlist/cart success still requires checking the real account lists; this handoff does not claim Makeshop live integration QA.
+
+Third-party iframe storage may be partitioned or blocked. Standalone admin localStorage and embedded localStorage are not a shared datastore; shared storage/auth remains deferred. GitHub Pages remains a screen preview host.
 
 ## Original skin mapping
 
 The 14 original CP949 attachments are preserved under `reference-skin/`. Their product loops and category/header/footer structure inform the new UI. The old shared product list (`item-cont2`, `itemList`), fixed 1024px visibility modes, duplicated search presentation and slider initialization are replaced with a single responsive browsing view. The new 3:4 image stage preserves source images with object-fit contain; no distorted stretching.
 
 ## Verification
+
+2026-10-20: syntax checks and all **142** tests pass (117 prior + 6 bridge-child + 19 parent/artifact regressions). The new checks cover the message boundary, explicit platform, stale/closed native requests, real-control selectors and selected values, timeouts, session rotation and generated-paste/source equality. Actual Chrome local mock QA used separate localhost origins with response-only address substitution; it confirmed handshake, product requests and a mock option A / quantity 2 click. This is not Makeshop login/account-write/CSP verification or physical-touch QA.
 
 2026-10-19 latest: syntax checks and all **117** tests pass, including 12 ranking-model, 14 workbench-UI and two motion regressions in addition to the prior 89. Actual Chrome on isolated port 4176 covered operator-to-workbench edits, large/multiple photos, tags, weights/reasons, atomic JSON apply/undo, side-by-side published/draft photos, customer 8-to-14 progressive reveal with unique IDs, photo dots and actual category-transition transform/opacity. Customer iframe widths 1528/390px retained 4/2 columns and no overflow. Photo-account writes, automatic AI image analysis and physical-touch QA remain outside this verification. Older results below are retained as revision history.
 
@@ -55,7 +65,7 @@ Optional feature-detected browser tools expose local-demo state and rank changes
 
 ## Production follow-up
 
-Connect catalog acquisition/refresh, real launch dates and rank data, multi-image automation, shared secure storage, operator authentication/authorization, robust publish/version history, Makeshop message bridge and iframe size synchronization. Keep product ID as the cross-system key.
+Connect catalog acquisition/refresh, real launch dates and rank data, multi-image automation, shared secure storage, operator authentication/authorization, robust publish/version history and actual Makeshop copied-skin verification. The main iframe uses a fixed viewport height rather than document auto-height. Keep product ID as the cross-system key.
 
 
 Design source: Google Drive PC folder https://drive.google.com/drive/folders/1Pr3pVNirVM2FfWUsiOmX7bcdIV16l22a and Mobile folder https://drive.google.com/drive/folders/13ZdIJL5e28bXe1wozFd8Tiza0mCt1v56 (files modified 2026-10-15). UTF-8 copies of CP949 source are retained in reference-current-skin; these are design references only, never executed. Third-party trackers, remote scripts, dynamic promotion banners, and unverified sales/review figures are not imported. Product discovery categories and 3:4 images retain the agreed new interaction model. The old responsive sample in reference-skin is historical and no longer the design baseline.
