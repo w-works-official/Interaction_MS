@@ -8,20 +8,21 @@ const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').repl
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const tick=()=>new Promise(resolve=>setTimeout(resolve,20));
 const session='123456789-987654321-11223344-55667788',parentOrigin='https://pink-rocket.com';
-async function boot({parent=parentOrigin,platform='pc',embedded=true,token=session}={}){
+async function boot({parent=parentOrigin,platform='pc',embedded=true,token=session,fastWishTimeout=false}={}){
  const messages=[],errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const params=new URLSearchParams({frame:'1',bridge:'makeshop',parentOrigin:parent,platform,session:token});
  const dom=new JSDOM(html,{url:'https://w-works-official.github.io/Interaction_MS/?'+params,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
  const w=dom.window,host={postMessage:(data,origin)=>messages.push({data,origin})};
  if(embedded)Object.defineProperty(w,'parent',{value:host,configurable:true});
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});w.scrollTo=()=>{};
+ if(fastWishTimeout){const timeout=w.setTimeout.bind(w);w.setTimeout=(fn,delay,...args)=>timeout(fn,delay===45000?1:delay,...args);}
  w.CSS??={};w.CSS.escape=s=>String(s).replace(/[^\w-]/g,'');
  w.localStorage.setItem('pr-studio-favorites-v1',JSON.stringify(['2085891']));
  w.localStorage.setItem('pr-studio-cart-v1',JSON.stringify([{id:'2085891',quantity:2}]));
- w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${app}\nwindow.__filterNativeFavorites=()=>{tabStates[tab].favoritesOnly=true;renderFeed();};})();`);await tick();
  const receive=(data,origin=parentOrigin,source=host)=>w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'pinkrocket-makeshop-v1',session,...data},origin,source}));
  const init=()=>receive({action:'init',requestId:1,platform});
- return {dom,w,d:w.document,host,messages,errors,receive,init};
+ return {dom,w,d:w.document,host,messages,errors,receive,init,filterFavorites:()=>w.__filterNativeFavorites()};
 }
 test('connected child authenticates init and sends account requests only to its exact parent',async()=>{
  const {dom,d,messages,receive,init,errors}=await boot();try{
@@ -79,6 +80,104 @@ test('only authenticated replies for pending requests can change the action feed
   receive({action:'accepted',requestId,message:'fake'},'https://evil.example');assert.notEqual(d.querySelector('#toast').textContent,'fake');
   receive({action:'accepted',requestId:999,message:'fake'});assert.notEqual(d.querySelector('#toast').textContent,'fake');
   receive({action:'accepted',requestId,message:'기존 상세에서 찜 버튼을 누르세요.'});assert.match(d.querySelector('#toast').textContent,/기존 상세/);
+  receive({action:'status',requestId,message:'요청 결과를 확인해주세요.'});assert.equal(d.querySelector('#toast').textContent,'요청 결과를 확인해주세요.');
   receive({action:'status',requestId,message:'late duplicate'});assert.notEqual(d.querySelector('#toast').textContent,'late duplicate');
+ }finally{dom.window.close();}
+});
+
+const snapshot=(requestId,ids,extra={})=>({action:'wishlist-state',requestId,platform:'pc',state:'ready',ids,...extra});
+const heartFor=(d,id)=>d.querySelector(`[data-product="${id}"] [data-action="favorite"]`);
+
+test('a verified native snapshot updates hearts in place and survives later card rendering',async()=>{
+ const {dom,w,d,receive,init,errors}=await boot();try{
+  init();
+  const before=w.localStorage.getItem('pr-studio-favorites-v1'),cart=w.localStorage.getItem('pr-studio-cart-v1');
+  d.querySelector('[data-product="2085891"] [data-action="slide"][data-delta="1"]').click();
+  const card=d.querySelector('[data-product="2085891"]'),image=card.querySelector('img'),src=image.src,feed=d.querySelector('#product-feed');
+  const later=catalog[10].id;
+  receive(snapshot(1,['2085889',later]));
+  assert.equal(d.querySelector('#product-feed'),feed);assert.equal(d.querySelector('[data-product="2085891"]'),card);
+  assert.equal(card.querySelector('img'),image);assert.equal(image.src,src);assert.equal(card.querySelector('.photo-dots .on').previousElementSibling!==null,true);
+  assert.equal(heartFor(d,'2085891').classList.contains('active'),false);assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false');
+  assert.equal(heartFor(d,'2085889').classList.contains('active'),true);assert.equal(heartFor(d,'2085889').getAttribute('aria-pressed'),'true');
+  assert.match(heartFor(d,'2085889').getAttribute('aria-label'),/찜 취소$/);
+  d.querySelector('[data-action="load-more"]').click();
+  assert.equal(heartFor(d,later).classList.contains('active'),true);assert.equal(heartFor(d,later).getAttribute('aria-pressed'),'true');
+  assert.equal(w.localStorage.getItem('pr-studio-favorites-v1'),before);assert.equal(w.localStorage.getItem('pr-studio-cart-v1'),cart);
+  assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
+});
+
+test('native snapshots reject foreign, stale and malformed account data without changing confirmed hearts',async()=>{
+ const {dom,d,receive,init}=await boot();try{
+  init();
+  const invalid=[
+   snapshot(999,['2085891']),snapshot(1,['2085891'],{platform:'mobile'}),snapshot(1,['2085891'],{session:'wrong'}),
+   snapshot(1,['2085891','2085891']),snapshot(1,[2085891]),snapshot(1,Array(1)),snapshot(1,['0']),snapshot(1,['02085891']),snapshot(1,['2085891x']),
+   snapshot(1,[],{state:'login',ids:['2085891']}),snapshot(1,[],{state:'unexpected'}),snapshot(1,['2085891'],{selected:true})
+  ];
+  receive(snapshot(1,['2085891']),'https://evil.example');receive(snapshot(1,['2085891']),parentOrigin,{});
+  for(const data of invalid){receive(data);assert.equal(heartFor(d,'2085891').classList.contains('active'),false);assert.equal(heartFor(d,'2085891').hasAttribute('aria-pressed'),false);}
+  receive(snapshot(1,['2085891']));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'true');
+  receive(snapshot(1,[]));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'true','a duplicate initial snapshot cannot overwrite confirmed state');
+ }finally{dom.window.close();}
+});
+
+test('wish accepted retains its pending request for the real snapshot and status ends it without a demo write',async()=>{
+ const {dom,w,d,messages,receive,init}=await boot();try{
+  init();receive(snapshot(1,[]));const before=w.localStorage.getItem('pr-studio-favorites-v1');
+  heartFor(d,'2085891').click();const requestId=messages.at(-1).data.requestId;
+  assert.equal(heartFor(d,'2085891').disabled,true);assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false','sending a request never fills a heart');
+  receive({action:'accepted',requestId,message:'처리 중입니다.'});
+  receive(snapshot(requestId,['2085891'],{id:'2085889',selected:true}));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false');
+  receive(snapshot(requestId,['2085891'],{id:'2085891',selected:false}));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false');
+  receive(snapshot(requestId,['2085891'],{id:'2085891',selected:true}));
+  assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'true');assert.equal(heartFor(d,'2085891').disabled,true);
+  receive({action:'status',requestId,message:'실제 목록에서 등록을 확인했습니다.'});assert.equal(heartFor(d,'2085891').disabled,false);
+  heartFor(d,'2085891').click();const nextId=messages.at(-1).data.requestId;
+  receive(snapshot(requestId,[]));receive(snapshot(1,[]));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'true','old request and hello snapshots are stale');
+  receive({action:'wishlist-state',requestId:nextId,platform:'pc',state:'busy',id:'2085891'});
+  assert.equal(heartFor(d,'2085891').classList.contains('active'),false);assert.equal(heartFor(d,'2085891').hasAttribute('aria-pressed'),false);
+  receive(snapshot(nextId,[],{id:'2085891',selected:false}));receive({action:'status',requestId:nextId,message:'실제 목록에서 해제를 확인했습니다.'});
+  assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false');assert.equal(heartFor(d,'2085891').disabled,false);
+  receive(snapshot(nextId,['2085891']));assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false','a completed request cannot fill the heart again');
+  assert.equal(w.localStorage.getItem('pr-studio-favorites-v1'),before);assert.equal(messages.filter(x=>x.data.action==='wish').length,2);
+ }finally{dom.window.close();}
+});
+
+test('login and unconfirmed native states never display demo favorites as an account result',async()=>{
+ const {dom,w,d,messages,receive,init}=await boot();try{
+  init();receive(snapshot(1,[],{state:'login'}));
+  assert.equal(heartFor(d,'2085891').getAttribute('aria-pressed'),'false');assert.match(heartFor(d,'2085891').getAttribute('aria-label'),/로그인/);
+  const card=d.querySelector('[data-product="2085891"]');
+  w.localStorage.setItem('pr-studio-favorites-v1',JSON.stringify(['2085889']));
+  w.dispatchEvent(new w.StorageEvent('storage',{key:'pr-studio-favorites-v1'}));
+  assert.equal(d.querySelector('[data-product="2085891"]'),card);assert.equal(heartFor(d,'2085889').classList.contains('active'),false);
+  for(const state of ['error','unknown']){
+   heartFor(d,'2085891').click();const requestId=messages.at(-1).data.requestId;
+   receive({action:'wishlist-state',requestId,platform:'pc',state,id:'2085891'});receive({action:'status',requestId,message:'반영 여부를 확인해주세요.'});
+   assert.equal(heartFor(d,'2085891').classList.contains('active'),false);assert.equal(heartFor(d,'2085891').hasAttribute('aria-pressed'),false);
+   assert.match(heartFor(d,'2085891').getAttribute('aria-label'),/미확인/);assert.equal(heartFor(d,'2085891').disabled,false);
+  }
+ }finally{dom.window.close();}
+});
+
+test('the favorites filter uses only the confirmed native list while connected',async()=>{
+ const {dom,d,receive,init,filterFavorites}=await boot();try{
+  init();receive(snapshot(1,['2085889']));filterFavorites();
+  assert.deepEqual([...d.querySelectorAll('[data-product]')].map(card=>card.dataset.product),['2085889']);
+  assert.equal(d.querySelector('[data-product="2085891"]'),null,'the local demo favorite must not enter the native filter');
+  assert.equal(heartFor(d,'2085889').getAttribute('aria-pressed'),'true');
+ }finally{dom.window.close();}
+});
+
+test('a wish timeout releases its controls and ignores a late account snapshot',async()=>{
+ const {dom,d,messages,receive,init}=await boot({fastWishTimeout:true});try{
+  init();receive(snapshot(1,[]));heartFor(d,'2085891').click();const requestId=messages.at(-1).data.requestId;
+  assert.equal(heartFor(d,'2085891').disabled,true);await tick();
+  assert.equal(heartFor(d,'2085891').disabled,false);assert.equal(heartFor(d,'2085891').hasAttribute('aria-pressed'),false);
+  receive(snapshot(requestId,['2085891'],{id:'2085891',selected:true}));
+  assert.equal(heartFor(d,'2085891').classList.contains('active'),false);assert.match(d.querySelector('#toast').textContent,/응답을 확인하지 못/);
+  assert.equal(messages.filter(x=>x.data.action==='wish').length,1,'a timeout must never resend the native request');
  }finally{dom.window.close();}
 });
