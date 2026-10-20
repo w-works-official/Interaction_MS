@@ -5,7 +5,8 @@ import {JSDOM,VirtualConsole} from 'jsdom';
 
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
 const tick=()=>new Promise(resolve=>setTimeout(resolve,25));
@@ -16,7 +17,7 @@ async function boot({url='https://mockup.example/?view=admin&adminPage=list',wit
  if(withModelContext)d.modelContext={registerTool:async tool=>{tools.set(tool.name,tool);}};
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});w.scrollTo=()=>{};
  w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const node=d.querySelector(selector);assert.ok(node,selector);node.click();await tick();};
  const search=async value=>{const input=d.querySelector('#admin-search');input.value=value;input.dispatchEvent(new w.Event('input',{bubbles:true}));await tick();};
  const changeRank=async(id,value)=>{const input=d.querySelector(`[data-rank="${id}"]`);assert.ok(input);input.value=String(value);input.dispatchEvent(new w.Event('change',{bubbles:true}));await tick();};

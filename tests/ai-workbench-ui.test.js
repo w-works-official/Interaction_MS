@@ -6,7 +6,8 @@ import {initialConfig} from '../dist/model.js';
 
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
 const tick=()=>new Promise(resolve=>setTimeout(resolve,25));
@@ -17,7 +18,7 @@ async function boot({url='https://mockup.example/?view=admin&adminPage=workbench
  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:console}),w=dom.window,d=w.document;
  w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));if(config)w.localStorage.setItem(draftKey,JSON.stringify(config));
  w.fetch=async url=>{fetchCalls.push(String(url));return {ok:true,json:async()=>structuredClone(catalog)};};w.scrollTo=()=>{};
- w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  const fill=async(formSelector,values)=>{for(const [name,value] of Object.entries(values))await set(`${formSelector} [name="${name}"]`,value);};
@@ -32,9 +33,9 @@ async function batchText(h,batch){await h.set('#ai-batch-json',JSON.stringify(ba
 test('human overview and AI workbench share a draft while legacy list links keep the curation screen',async()=>{
  const h=await boot({url:'https://mockup.example/?view=admin'}),{d,click}=h;
  try{
-  const before=h.saved(),publicBefore=h.published();assert.equal(d.querySelector('.studio-heading h1').textContent,'메인 운영');assert.ok(d.querySelector('#direction-form'));assert.equal(d.querySelector('.product-table'),null);
+  const before=h.saved(),publicBefore=h.published();assert.equal(d.querySelector('.studio-heading h1').textContent,'메인 운영');assert.ok(d.querySelector('#direction-form'));assert.equal(d.querySelector('.product-table'),null);assert.equal(d.querySelector('#direction-form [name="brief"]'),null);assert.doesNotMatch(d.querySelector('.operator-overview').textContent,/AI에게 전달할 작업 지시|작업 지시를 저장/);
   await click('[data-action="admin-mode"][data-mode="ai"]');assert.equal(d.querySelector('.studio-heading h1').textContent,'AI 작업대');assert.ok(d.querySelector('#workbench-search'));
-  for(const view of ['photos','rules','results'])assert.ok(d.querySelector(`[data-action="workbench-view"][data-workbench-view="${view}"]`));
+  for(const view of ['photos','rules','results'])assert.ok(d.querySelector(`[data-action="workbench-view"][data-workbench-view="${view}"]`));assert.equal(d.querySelector('.workbench-guide'),null);
   await click('[data-action="admin-mode"][data-mode="operator"]');assert.ok(d.querySelector('#direction-form'));
   await h.save();assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),publicBefore);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
@@ -42,14 +43,14 @@ test('human overview and AI workbench share a draft while legacy list links keep
  try{assert.ok(legacy.d.querySelector('.product-table'));assert.equal(legacy.d.querySelectorAll('[data-row-id]').length,60);assert.deepEqual(legacy.errors,[]);}finally{legacy.close();}
 });
 
-test('human direction applies only an explicit local draft change and never calls a model API',async()=>{
- const config=initialConfig();config.tabs['추천'].pins=[catalog[0].id];config.banners=[legacyBlock];
+test('human ranking controls apply only an explicit local draft change and preserve legacy instructions without displaying them',async()=>{
+ const config=initialConfig();config.tabs['추천'].pins=[catalog[0].id];config.banners=[legacyBlock];config.ranking['추천'].brief='보존할 이전 작업 지시';
  const h=await boot({url:'https://mockup.example/?view=admin',config}),{d}=h;
  try{
   const before=h.saved(),publicBefore=h.published();
-  await h.fill('#direction-form',{brief:'데일리 상품을 먼저 확인',diversity:3,enabled:true,respectPins:true});
+  assert.equal(d.querySelector('#direction-form [name="brief"]'),null);assert.doesNotMatch(d.querySelector('#app').textContent,/보존할 이전 작업 지시/);await h.fill('#direction-form',{diversity:3,enabled:true,respectPins:true});
   assert.deepEqual(h.saved(),before);await h.submit('#direction-form');await h.save();
-  assert.equal(h.saved().ranking['추천'].brief,'데일리 상품을 먼저 확인');assert.equal(h.saved().ranking['추천'].diversity,3);assert.equal(h.saved().ranking['추천'].enabled,true);
+  assert.equal(h.saved().ranking['추천'].brief,'보존할 이전 작업 지시');assert.equal(h.saved().ranking['추천'].diversity,3);assert.equal(h.saved().ranking['추천'].enabled,true);
   assert.deepEqual(h.saved().tabs,before.tabs);assert.deepEqual(h.saved().banners,before.banners);assert.deepEqual(h.published(),publicBefore);
   assert.equal(d.querySelector('#workspace-result').getAttribute('role'),'status');assert.equal(h.fetchCalls.length,1);assert.match(h.fetchCalls[0],/assets\/catalog\.json/);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
@@ -92,15 +93,15 @@ test('photo comparison limits selection to four products and gallery controls us
 });
 
 test('score rule and combination forms feed explained draft results while keeping pinned curation intact',async()=>{
- const config=initialConfig(),target=catalog.at(-1).id,pinned=catalog[0].id;config.tabs['추천'].pins=[pinned];config.productEdits={[target]:{tags:{motif:['하트'],style:['심플']},note:'점수 검증용 검토',reviewStatus:'reviewed'}};
+ const config=initialConfig(),target=catalog.at(-1).id,pinned=catalog[0].id;config.tabs['추천'].pins=[pinned];config.ranking['추천'].brief='이전 저장 문구';config.productEdits={[target]:{tags:{motif:['하트'],style:['심플']},note:'점수 검증용 검토',reviewStatus:'reviewed'}};
  const h=await boot({config}),{d,click}=h;
  try{
   const publicBefore=h.published(),tabsBefore=h.saved().tabs;await click('[data-action="workbench-view"][data-workbench-view="rules"]');
   await click('[data-action="add-ranking-rule"]');let row=d.querySelector('#rule-rows .ranking-rule-row');assert.ok(row);const id=row.dataset.ruleId;
   await h.set(`[data-rule-id="${id}"] [name="rule-group"]`,'motif','change');await h.set(`[data-rule-id="${id}"] [name="rule-tag"]`,'하트','change');await h.set(`[data-rule-id="${id}"] [name="rule-weight"]`,15);
   const combinations=[{id:'heart-simple',conditions:[{group:'motif',tag:'하트'},{group:'style',tag:'심플'}],weight:25}];
-  await h.fill('#ranking-form',{enabled:true,brief:'하트와 심플 조합 우선',diversity:0,respectPins:true,combinations:JSON.stringify(combinations)});await h.submit('#ranking-form');await h.save();
-  const saved=h.saved().ranking['추천'];assert.equal(saved.rules.length,1);assert.equal(saved.rules[0].tag,'하트');assert.equal(saved.rules[0].weight,15);assert.deepEqual(saved.combinations,combinations);
+  assert.equal(d.querySelector('#ranking-form [name="brief"]'),null);await h.fill('#ranking-form',{enabled:true,diversity:0,respectPins:true,combinations:JSON.stringify(combinations)});await h.submit('#ranking-form');await h.save();
+  const saved=h.saved().ranking['추천'];assert.equal(saved.brief,'이전 저장 문구');assert.equal(saved.rules.length,1);assert.equal(saved.rules[0].tag,'하트');assert.equal(saved.rules[0].weight,15);assert.deepEqual(saved.combinations,combinations);
   await click('[data-action="workbench-view"][data-workbench-view="results"]');const results=[...d.querySelectorAll('[data-rank-product]')];assert.ok(results.length);assert.equal(results[0].dataset.rankProduct,pinned);
   const targetRow=d.querySelector(`[data-rank-product="${target}"]`);assert.ok(targetRow);assert.ok(Number(targetRow.dataset.score)>=40);assert.ok(targetRow.textContent.includes('하트'));assert.ok(targetRow.textContent.includes('심플'));assert.ok(targetRow.querySelector('[data-rank-delta]'));
   assert.deepEqual(h.saved().tabs,tabsBefore);assert.deepEqual(h.published(),publicBefore);assert.deepEqual(h.errors,[]);
@@ -138,15 +139,15 @@ test('AI batch validation rejects wrong tabs, unknown products and invalid weigh
  }finally{h.close();}
 });
 
-test('workspace undo and redo span direction and photo metadata without altering blocks, curation or public data',async()=>{
- const config=initialConfig();config.tabs['추천'].pins=[catalog[0].id];config.banners=[legacyBlock];
+test('workspace undo and redo span diversity and photo metadata without altering legacy instructions, blocks, curation or public data',async()=>{
+ const config=initialConfig();config.tabs['추천'].pins=[catalog[0].id];config.banners=[legacyBlock];config.ranking['추천'].brief='보존할 기존 문구';
  const h=await boot({url:'https://mockup.example/?view=admin',config}),{click,d}=h,id=catalog[1].id;
  try{
-  const before=h.saved(),publicBefore=h.published();await h.fill('#direction-form',{brief:'임시 진열 방향'});await h.submit('#direction-form');
+  const before=h.saved(),publicBefore=h.published();await h.fill('#direction-form',{diversity:3});await h.submit('#direction-form');
   await click('[data-action="admin-mode"][data-mode="ai"]');await inspect(h,id);await h.fill('#product-review-form',{note:'임시 사진 메모',reviewStatus:'needs-review'});await h.submit('#product-review-form');await h.save();assert.ok(h.saved().productEdits[id]);
-  await click('[data-action="undo-workspace"]');await h.save();assert.equal(h.saved().productEdits[id],undefined);assert.equal(h.saved().ranking['추천'].brief,'임시 진열 방향');
+  await click('[data-action="undo-workspace"]');await h.save();assert.equal(h.saved().productEdits[id],undefined);assert.equal(h.saved().ranking['추천'].diversity,3);assert.equal(h.saved().ranking['추천'].brief,'보존할 기존 문구');
   await click('[data-action="undo-workspace"]');await h.save();assert.deepEqual(h.saved().ranking,before.ranking);assert.deepEqual(h.saved().productEdits,before.productEdits);
-  await click('[data-action="redo-workspace"]');await h.save();assert.equal(h.saved().ranking['추천'].brief,'임시 진열 방향');assert.equal(h.saved().productEdits[id],undefined);
+  await click('[data-action="redo-workspace"]');await h.save();assert.equal(h.saved().ranking['추천'].diversity,3);assert.equal(h.saved().ranking['추천'].brief,'보존할 기존 문구');assert.equal(h.saved().productEdits[id],undefined);
   assert.deepEqual(h.saved().tabs,before.tabs);assert.deepEqual(h.saved().banners,before.banners);assert.deepEqual(h.published(),publicBefore);assert.equal(d.querySelector('#workspace-result').getAttribute('role'),'status');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
@@ -156,7 +157,7 @@ test('malformed combination JSON cannot partially save score rules and rule remo
  try{
   const before=h.saved(),publicBefore=h.published();await click('[data-action="workbench-view"][data-workbench-view="rules"]');
   await click('[data-action="add-ranking-rule"]');const id=d.querySelector('.ranking-rule-row').dataset.ruleId;
-  await h.fill('#ranking-form',{brief:'적용되면 안 되는 규칙',combinations:'{invalid-json'});await h.submit('#ranking-form');await h.save();assert.deepEqual(h.saved(),before);
+  await h.fill('#ranking-form',{combinations:'{invalid-json'});await h.submit('#ranking-form');await h.save();assert.deepEqual(h.saved(),before);
   await click(`[data-action="remove-ranking-rule"][data-rule-id="${id}"]`);assert.equal(d.querySelector(`[data-rule-id="${id}"]`),null);
   await h.save();assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),publicBefore);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
@@ -195,21 +196,21 @@ test('opening another product in the large-photo drawer does not retarget the se
  }finally{h.close();}
 });
 
-test('applying photo metadata preserves unapplied score weights and the human direction brief',async()=>{
+test('applying photo metadata preserves unapplied score weights and diversity while legacy instructions remain hidden',async()=>{
  const config=initialConfig(),id=catalog[0].id;
  config.ranking={...config.ranking,'추천':ranking({brief:'저장된 방향',rules:[{id:'pending-rule',group:'motif',tag:'하트',weight:5}]})};
  const h=await boot({url:'https://mockup.example/?view=admin',config}),{d,click}=h;
  try{
-  const publicBefore=h.published();await h.fill('#direction-form',{brief:'적용 전 사람의 방향 메모'});
+  const publicBefore=h.published();assert.equal(d.querySelector('#direction-form [name="brief"]'),null);await h.fill('#direction-form',{diversity:6});
   await click('[data-action="admin-mode"][data-mode="ai"]');await click('[data-action="workbench-view"][data-workbench-view="rules"]');
   await h.set('[data-rule-id="pending-rule"] [name="rule-weight"]',99);
   await click('[data-action="workbench-view"][data-workbench-view="photos"]');await inspect(h,id);
   await h.fill('#product-review-form',{note:'저장할 사진 검토 메모',reviewStatus:'reviewed'});await h.submit('#product-review-form');
   await click('[data-action="workbench-view"][data-workbench-view="rules"]');assert.equal(d.querySelector('[data-rule-id="pending-rule"] [name="rule-weight"]').value,'99');
   await h.save();assert.equal(h.saved().ranking['추천'].rules[0].weight,5);assert.equal(h.saved().ranking['추천'].brief,'저장된 방향');assert.equal(h.saved().productEdits[id].note,'저장할 사진 검토 메모');
-  await click('[data-action="admin-mode"][data-mode="operator"]');assert.equal(d.querySelector('#direction-form [name="brief"]').value,'적용 전 사람의 방향 메모');
+  await click('[data-action="admin-mode"][data-mode="operator"]');assert.equal(d.querySelector('#direction-form [name="diversity"]').value,'6');assert.equal(d.querySelector('#direction-form [name="brief"]'),null);
   await click('[data-action="admin-mode"][data-mode="ai"]');await click('[data-action="workbench-view"][data-workbench-view="rules"]');
-  await h.submit('#ranking-form');await h.save();assert.equal(h.saved().ranking['추천'].rules[0].weight,99);
+  await h.submit('#ranking-form');await h.save();assert.equal(h.saved().ranking['추천'].rules[0].weight,99);assert.equal(h.saved().ranking['추천'].brief,'저장된 방향');
   assert.deepEqual(h.published(),publicBefore);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });

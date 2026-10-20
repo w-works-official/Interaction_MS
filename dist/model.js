@@ -42,7 +42,9 @@ export function normalizeCatalog(raw) {
 }
 export function migrateSavedConfig(value,catalog) {
   if(!value||value.schema!==1||!value.tabs)throw Error('지원하지 않는 구성 파일입니다.');
+  const customerCode=normalizeCustomerCode(value.customerCode);
   const config=clone(value),defaults=initialConfig(),ids=new Set(catalog.map(p=>p.id));
+  config.customerCode=customerCode;
   if(Array.isArray(config.categories))config.categories=config.categories.map(category=>category&&typeof category==='object'?{...category,...(Array.isArray(category.productIds)?{productIds:category.productIds.filter(id=>ids.has(id))}:{})}:category);
   config.categories=normalizeCategories(config.categories,catalog);
   for(const tab of categoryIds(config)){
@@ -56,7 +58,34 @@ export function validDetail(url) {
   try {const u=new URL(url);return u.protocol==='https:'&&['www.pink-rocket.com','pink-rocket.com'].includes(u.hostname)&&/^\/(shop\/shopdetail|m\/product)\.html$/.test(u.pathname);}catch{return false;}
 }
 export function initialConfig() {
-  return {schema:1,categories:defaultCategories(),tabs:Object.fromEntries(TABS.map(tab=>[tab,defaultCategoryCuration(tab)])),banners:[],ranking:Object.fromEntries(TABS.map(tab=>[tab,defaultRanking()])),productEdits:{}};
+  return {schema:1,categories:defaultCategories(),tabs:Object.fromEntries(TABS.map(tab=>[tab,defaultCategoryCuration(tab)])),banners:[],ranking:Object.fromEntries(TABS.map(tab=>[tab,defaultRanking()])),productEdits:{},customerCode:normalizeCustomerCode()};
+}
+function customerCodeByteLength(text){
+  let bytes=0;
+  for(let index=0;index<text.length;index++){
+    const unit=text.charCodeAt(index);
+    if(unit<0x80)bytes++;
+    else if(unit<0x800)bytes+=2;
+    else if(unit>=0xd800&&unit<=0xdbff&&index+1<text.length&&text.charCodeAt(index+1)>=0xdc00&&text.charCodeAt(index+1)<=0xdfff){bytes+=4;index++;}
+    else bytes+=3;
+  }
+  return bytes;
+}
+export function normalizeCustomerCode(value){
+  const result={enabled:false,html:'',css:'',js:''};
+  if(value===undefined)return result;
+  if(!value||typeof value!=='object'||![Object.prototype,null].includes(Object.getPrototypeOf(value)))throw Error('고객 화면 코드는 일반 객체로 입력하세요.');
+  const descriptors=Object.getOwnPropertyDescriptors(value),allowed=new Set(Object.keys(result));
+  for(const key of Reflect.ownKeys(descriptors)){
+    const descriptor=descriptors[key];
+    if(!allowed.has(key)||!Object.hasOwn(descriptor,'value'))throw Error('고객 화면 코드에 알 수 없는 필드가 있습니다.');
+    result[key]=descriptor.value;
+  }
+  if(typeof result.enabled!=='boolean'||['html','css','js'].some(key=>typeof result[key]!=='string'||result[key].includes('\0')))throw Error('고객 화면 코드의 사용 여부·문자열 형식을 확인하세요.');
+  const limits={html:200*1024,css:100*1024,js:200*1024},sizes=Object.fromEntries(Object.keys(limits).map(key=>[key,customerCodeByteLength(result[key])]));
+  if(Object.keys(limits).some(key=>sizes[key]>limits[key])||Object.values(sizes).reduce((sum,size)=>sum+size,0)>500*1024)throw Error('고객 화면 코드는 HTML 200KB·CSS 100KB·JS 200KB, 합계 500KB 이하여야 합니다.');
+  if(result.enabled&&!result.html.trim())throw Error('고객 화면 코드를 사용하려면 HTML을 입력하세요.');
+  return result;
 }
 function defaultCategoryCuration(id){return {sort:id==='신상'?'newest':'recommended',manual:[],pins:[],excluded:[],hideSoldout:false};}
 function defaultCategoryFilters(){return {groups:TAG_GROUPS.map(group=>group.key),material:true,price:true,photo:true};}
@@ -215,7 +244,9 @@ export function composeFeed(items,banners,tab,{filtered=false}={}) {
 }
 export function validateConfig(value,catalog) {
   if(!value||value.schema!==1||!value.tabs||!Array.isArray(value.banners)||value.banners.length>100)throw Error('지원하지 않는 구성 파일입니다.');
+  const customerCode=normalizeCustomerCode(value.customerCode);
   const config=clone(value);const ids=new Set(catalog.map(p=>p.id));
+  config.customerCode=customerCode;
   config.categories=normalizeCategories(config.categories,catalog);
   const tabs=categoryIds(config),knownTabs=new Set(tabs);
   if(Object.keys(config.tabs).some(tab=>!knownTabs.has(tab)))throw Error('알 수 없는 카테고리 진열 설정입니다.');

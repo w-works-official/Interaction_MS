@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const tick=()=>new Promise(r=>setTimeout(r,25));
 async function boot({historyDenied=false,oldBanners=false,animate=false,reducedMotion=false}={}){
@@ -16,7 +17,7 @@ async function boot({historyDenied=false,oldBanners=false,animate=false,reducedM
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});
  w.scrollTo=()=>{};if(historyDenied)w.history.replaceState=()=>{throw new w.DOMException('Blocked in embedded page','SecurityError');};if(oldBanners){const config={schema:1,tabs:Object.fromEntries(['추천','신상','피어싱','귀걸이','반지','목걸이','헤어'].map(t=>[t,{sort:'recommended',manual:[],pins:[],excluded:[],hideSoldout:false}])),banners:[{id:'edit-01',type:'editorial',title:'Old banner',subtitle:'Old',after:6,span:2,tabs:['추천'],enabled:true,tone:'ink',image:'',link:''}]};w.localStorage.setItem('pr-studio-published-v1',JSON.stringify(config));w.localStorage.setItem('pr-studio-draft-v1',JSON.stringify(config));}w.CSS??={};w.CSS.escape=s=>String(s).replace(/[^\w-]/g,'');
  w.scrollTo=(...args)=>scrollCalls.push(args);
- w.eval(`(()=>{${model}\n${app}\n})();`);
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);
  await tick();return {dom,w,d:w.document,errors,animations,scrollCalls};
 }
 test('real app category clicks update active tab, count and actual product IDs',async()=>{

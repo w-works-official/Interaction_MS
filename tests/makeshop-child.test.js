@@ -4,7 +4,8 @@ import fs from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const tick=()=>new Promise(resolve=>setTimeout(resolve,20));
 const session='123456789-987654321-11223344-55667788',parentOrigin='https://pink-rocket.com';
@@ -19,7 +20,7 @@ async function boot({parent=parentOrigin,platform='pc',embedded=true,token=sessi
  w.CSS??={};w.CSS.escape=s=>String(s).replace(/[^\w-]/g,'');
  w.localStorage.setItem('pr-studio-favorites-v1',JSON.stringify(['2085891']));
  w.localStorage.setItem('pr-studio-cart-v1',JSON.stringify([{id:'2085891',quantity:2}]));
- w.eval(`(()=>{${model}\n${app}\nwindow.__filterNativeFavorites=()=>{tabStates[tab].favoritesOnly=true;renderFeed();};})();`);await tick();
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\nwindow.__filterNativeFavorites=()=>{tabStates[tab].favoritesOnly=true;renderFeed();};})();`);await tick();
  const receive=(data,origin=parentOrigin,source=host)=>w.dispatchEvent(new w.MessageEvent('message',{data:{channel:'pinkrocket-makeshop-v1',session,...data},origin,source}));
  const init=()=>receive({action:'init',requestId:1,platform});
  return {dom,w,d:w.document,host,messages,errors,receive,init,filterFavorites:()=>w.__filterNativeFavorites()};

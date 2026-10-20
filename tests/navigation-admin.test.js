@@ -6,7 +6,8 @@ import {initialConfig,TABS,TAG_GROUPS} from '../dist/model.js';
 
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
-const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/,'');
+const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
 const tick=()=>new Promise(resolve=>setTimeout(resolve,25));
@@ -22,7 +23,7 @@ async function boot({config=initialConfig(),url='https://mockup.example/?view=ad
  w.localStorage.setItem(draftKey,JSON.stringify(config));w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));
  w.fetch=async url=>{fetchCalls.push(String(url));return {ok:true,json:async()=>structuredClone(catalog)};};w.scrollTo=()=>{};
  w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  const page=name=>click(`.studio-nav [data-page="${name}"]`);
@@ -42,9 +43,9 @@ test('undoing category creation and redoing restores its latest curation and ran
  const h=await boot();try{
   const id=catalog[0].id;await startCustom(h);await h.set(field('productText'),id);await h.click(action('nav-apply-category',customId));
   await h.page('list');await h.click(`[data-action="admin-tab"][data-tab="${customId}"]`);await h.click(`[data-action="pin"][data-id="${id}"]`);
-  await h.page('overview');await h.set('#direction-form [name="brief"]','복구할 작업 지시');await h.click('#direction-form button[type="submit"]');
+  await h.page('overview');assert.equal(h.d.querySelector('#direction-form [name="brief"]'),null);await h.set('#direction-form [name="diversity"]',6);await h.click('#direction-form button[type="submit"]');
   await h.page('categories');await h.click(action('nav-undo'));await h.save();assert.ok(!category(h.saved(),customId));
-  await h.click(action('nav-redo'));await h.save();assert.deepEqual(h.saved().tabs[customId].pins,[id]);assert.equal(h.saved().ranking[customId].brief,'복구할 작업 지시');assert.deepEqual(h.errors,[]);
+  await h.click(action('nav-redo'));await h.save();assert.deepEqual(h.saved().tabs[customId].pins,[id]);assert.equal(h.saved().ranking[customId].diversity,6);assert.equal(h.saved().ranking[customId].brief,'');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 
@@ -52,7 +53,7 @@ test('category editor boots from its URL and validates a new manual category ato
  const h=await boot();try{
   const before=h.saved(),published=h.published();
   assert.equal(h.d.querySelector('.studio-heading h1').textContent,'카테고리·필터');assert.deepEqual(h.rows(),TABS);
-  assert.equal(h.d.querySelector('#category-result').getAttribute('role'),'status');assert.equal(h.d.querySelector('#category-form').dataset.categoryId,'추천');
+  assert.equal(h.d.querySelector('#category-result').getAttribute('role'),'status');assert.equal(h.d.querySelector('#category-form').dataset.categoryId,'추천');assert.equal(h.d.querySelector(field('note')),null);assert.doesNotMatch(h.d.querySelector('.navigation-editor').textContent,/운영 지시/);
   await startCustom(h);assert.deepEqual(h.saved(),before);assert.ok(!h.rows().includes(customId));
   await h.set(field('productText'),`${catalog[0].id},9999999999`);await h.click(action('nav-apply-category',customId));
   assert.equal(h.d.querySelector('#category-result').dataset.state,'error');assert.match(h.d.querySelector('#category-result').textContent,/상품 ID/);
@@ -131,17 +132,17 @@ test('JSON approval expires after a separate draft mutation and cannot overwrite
 });
 
 test('category undo changes categories only and preserves later curation, ranking, blocks and other tabs',async()=>{
- const config=initialConfig();config.tabs['반지'].pins=[catalog[1].id];config.ranking['반지'].brief='다른 탭의 지시';
+ const config=initialConfig();config.tabs['반지'].pins=[catalog[1].id];config.ranking['반지'].brief='다른 탭의 지시';config.ranking['추천'].brief='보존할 이전 지시';
  config.banners=[{id:'nav-preserved-block',type:'notice',title:'기존 안내',subtitle:'유지',after:1,span:2,tabs:['추천'],enabled:true,tone:'cream',image:'',link:''}];
  const h=await boot({config});try{
   const before=h.saved();await h.set(field('label'),'카테고리만 취소');await h.click(action('nav-apply-category','추천'));
   await h.page('list');await h.set('#admin-search',catalog[0].id);await h.click(`[data-action="pin"][data-id="${catalog[0].id}"]`);
-  await h.page('overview');await h.set('#direction-form [name="brief"]','취소 뒤에도 남을 새 지시');await h.click('#direction-form button[type="submit"]');
+  await h.page('overview');await h.set('#direction-form [name="diversity"]',6);await h.click('#direction-form button[type="submit"]');
   await h.page('banners');await h.click('[data-action="edit-banner"][data-id="nav-preserved-block"]');await h.set('#banner-form [name="title"]','나중에 수정한 안내');await h.click('#banner-form button[type="submit"]');
   await h.save();const newer=h.saved();await h.page('categories');await h.click(action('nav-undo'));await h.save();const undone=h.saved();
   assert.deepEqual(undone.categories,before.categories);assert.deepEqual(undone.tabs,newer.tabs);assert.deepEqual(undone.ranking,newer.ranking);assert.deepEqual(undone.banners,newer.banners);
   assert.deepEqual(undone.tabs['반지'],before.tabs['반지']);assert.deepEqual(undone.ranking['반지'],before.ranking['반지']);assert.ok(undone.tabs['추천'].pins.includes(catalog[0].id));
-  assert.equal(undone.ranking['추천'].brief,'취소 뒤에도 남을 새 지시');assert.equal(undone.banners[0].title,'나중에 수정한 안내');assert.deepEqual(h.errors,[]);
+  assert.equal(undone.ranking['추천'].brief,'보존할 이전 지시');assert.equal(undone.ranking['추천'].diversity,6);assert.equal(undone.banners[0].title,'나중에 수정한 안내');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 
@@ -156,14 +157,15 @@ test('undo cannot remove a custom category that a subsequently applied block ref
  }finally{h.close();}
 });
 
-test('unapplied category input survives switching while clean undo and redo synchronize the visible form',async()=>{
- const h=await boot();try{
-  const before=h.saved();await h.set(field('label'),'보관된 미적용 이름');await h.set(field('note'),'작성 중인 운영 지시');await h.set(field('filter-photo'),false,'change');
-  await h.click(action('nav-select-category','신상'));await h.set(field('note'),'다른 카테고리의 미적용 지시');await h.click(action('nav-select-category','추천'));
-  assert.equal(h.d.querySelector(field('label')).value,'보관된 미적용 이름');assert.equal(h.d.querySelector(field('note')).value,'작성 중인 운영 지시');assert.equal(h.d.querySelector(field('filter-photo')).checked,false);
+test('unapplied category inputs survive switching and replay while legacy notes remain hidden and preserved',async()=>{
+ const config=initialConfig();category(config,'추천').note='보존할 기존 운영 메모';category(config,'신상').note='다른 분류의 기존 메모';
+ const h=await boot({config});try{
+  const before=h.saved();assert.equal(h.d.querySelector(field('note')),null);assert.doesNotMatch(h.d.querySelector('.navigation-editor').textContent,/보존할 기존 운영 메모/);await h.set(field('label'),'보관된 미적용 이름');await h.set(field('filter-photo'),false,'change');
+  await h.click(action('nav-select-category','신상'));await h.set(field('label'),'다른 분류의 미적용 이름');await h.click(action('nav-select-category','추천'));
+  assert.equal(h.d.querySelector(field('label')).value,'보관된 미적용 이름');assert.equal(h.d.querySelector(field('note')),null);assert.equal(h.d.querySelector(field('filter-photo')).checked,false);
   await h.save();assert.deepEqual(h.saved(),before);await h.click(action('nav-apply-category','추천'));await h.click(action('nav-undo'));
-  assert.equal(h.d.querySelector(field('label')).value,category(before,'추천').label);assert.equal(h.d.querySelector(field('note')).value,category(before,'추천').note);assert.equal(h.d.querySelector(field('filter-photo')).checked,true);
-  await h.click(action('nav-redo'));assert.equal(h.d.querySelector(field('label')).value,'보관된 미적용 이름');assert.equal(h.d.querySelector(field('note')).value,'작성 중인 운영 지시');
-  await h.click(action('nav-select-category','신상'));assert.equal(h.d.querySelector(field('note')).value,'다른 카테고리의 미적용 지시');assert.deepEqual(h.errors,[]);
+  assert.equal(h.d.querySelector(field('label')).value,category(before,'추천').label);assert.equal(h.d.querySelector(field('note')),null);assert.equal(h.d.querySelector(field('filter-photo')).checked,true);
+  await h.click(action('nav-redo'));assert.equal(h.d.querySelector(field('label')).value,'보관된 미적용 이름');await h.save();assert.equal(category(h.saved(),'추천').note,'보존할 기존 운영 메모');
+  await h.click(action('nav-select-category','신상'));assert.equal(h.d.querySelector(field('label')).value,'다른 분류의 미적용 이름');assert.equal(h.d.querySelector(field('note')),null);await h.click(action('nav-apply-category','신상'));await h.save();assert.equal(category(h.saved(),'신상').note,'다른 분류의 기존 메모');assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
