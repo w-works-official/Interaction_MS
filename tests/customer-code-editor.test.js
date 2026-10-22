@@ -7,6 +7,8 @@ import {initialConfig} from '../dist/model.js';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const storefrontRuntime=fs.readFileSync(new URL('../dist/storefront.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const productImagesRuntime=fs.readFileSync(new URL('../dist/product-images.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1',workingKey='pr-studio-code-working-v1';
@@ -20,7 +22,7 @@ async function boot({config=initialConfig(),working,resize=false}={}){
  w.fetch=async url=>{fetchCalls.push(String(url));return {ok:true,json:async()=>structuredClone(catalog)};};w.scrollTo=()=>{};
  if(resize)w.ResizeObserver=class{constructor(callback){this.callback=callback;this.disconnected=false;observers.push(this);}observe(target){this.target=target;}disconnect(){this.disconnected=true;}};
  w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${storefrontRuntime}\n${productImagesRuntime}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  const session=()=>{
@@ -41,7 +43,7 @@ test('editor language tabs preserve separate buffers and local working save neve
   await code(h,'html','<main id="my-layout">직접 편집한 화면</main>');await code(h,'css','main { color: #123456; }');await code(h,'js','window.customerMarker = 7;');
   await h.click(`${action('code-language')}[data-language="html"]`);assert.equal(h.input().value,'<main id="my-layout">직접 편집한 화면</main>');
   await h.click(action('code-save'));assert.deepEqual(h.working(),{enabled:false,html:'<main id="my-layout">직접 편집한 화면</main>',css:'main { color: #123456; }',js:'window.customerMarker = 7;'});
-  await h.save();assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),published);assert.equal(h.w.customerMarker,undefined);assert.equal(h.fetchCalls.length,1);assert.deepEqual(h.errors,[]);
+  await h.save();assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),published);assert.equal(h.w.customerMarker,undefined);assert.equal(h.fetchCalls.length,2);assert.match(h.fetchCalls[1],/assets\/product-images\.json/);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
  const stored={enabled:true,html:'<p>저장한 편집본 우선</p>',css:'p{color:red}',js:''},loaded=await boot({working:stored});try{assert.equal(loaded.input().value,stored.html);assert.equal(loaded.d.querySelector('#customer-code-enabled').checked,true);assert.equal(loaded.saved().customerCode.enabled,false);}finally{loaded.close();}
 });
@@ -101,7 +103,7 @@ test('preview RPC receives real catalog results while product, wish, wishlist an
   session.receive({type:'request',requestId:1,action:'list',options:{category:'추천',query:catalog[0].id,offset:0,limit:24}});await tick();const listed=sent.find(item=>item.requestId===1);assert.equal(listed.ok,true);assert.deepEqual(Array.from(listed.data.products,item=>item.id),[catalog[0].id]);
   for(const [index,actionName]of ['product','wish','wishlist','cart'].entries())session.receive({type:'request',requestId:index+2,action:actionName,...(['product','wish'].includes(actionName)?{id:catalog[0].id}:{})});
   await tick();for(const requestId of [2,3,4,5]){const result=sent.find(item=>item.requestId===requestId);assert.equal(result.ok,true);assert.equal(result.data.preview,true);assert.equal(result.data.confirmed,false);}
-  assert.equal(h.d.querySelector('#overlay-root').children.length,0);assert.equal(h.w.localStorage.getItem('pr-studio-favorites-v1'),favorites);assert.equal(h.w.localStorage.getItem('pr-studio-cart-v1'),cart);assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),published);assert.equal(h.fetchCalls.length,1);assert.deepEqual(h.errors,[]);
+  assert.equal(h.d.querySelector('#overlay-root').children.length,0);assert.equal(h.w.localStorage.getItem('pr-studio-favorites-v1'),favorites);assert.equal(h.w.localStorage.getItem('pr-studio-cart-v1'),cart);assert.deepEqual(h.saved(),before);assert.deepEqual(h.published(),published);assert.equal(h.fetchCalls.length,2);assert.match(h.fetchCalls[1],/assets\/product-images\.json/);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 

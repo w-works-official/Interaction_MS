@@ -1,0 +1,13 @@
+/* Generated native adapter overrides. Shared content: dist/storefront.js. */
+#header .logo .storefront-brand,#footer .logo .storefront-brand{display:inline-block;color:inherit;text-decoration:none;font:inherit}
+#header .logo .storefront-brand{font-family:Montserrat,'Noto Sans KR',sans-serif;font-weight:900;font-size:clamp(1.15rem,1.8vw,1.3rem)}
+#header .search-toggle{display:inline-flex;align-items:center;justify-content:center;order:5;border:0;background:transparent;color:inherit;font:inherit;min-width:44px;min-height:44px;cursor:pointer}
+#header .menu [data-storefront-category]{white-space:nowrap}
+#aside .navCategory nav>ul>li>a{display:block}
+.searchArea{z-index:101}
+.searchArea .search{width:min(100%,720px);margin-inline:auto}
+.storefront-sort select{max-width:100%;min-height:40px}
+.scroll_bt_tll .-top_sc{display:inline-flex;align-items:center;justify-content:center;width:50px;height:50px;border:0;border-radius:50%;background:#fff;color:#121212;font-size:22px;cursor:pointer}
+.scroll_bt_tll .-basket_sc{display:inline-flex;align-items:center;justify-content:center;min-width:50px;min-height:44px;background:#fff;color:#121212;text-decoration:none}
+.storefront-hero picture,.storefront-hero picture img{display:block;width:100%}
+@media(max-width:1024px){#header .search-toggle{margin-left:auto}#header .logo{display:block}.searchArea .search{width:100%;padding-inline:20px}.scroll_bt_tll .-top_sc{width:44px;height:44px}}

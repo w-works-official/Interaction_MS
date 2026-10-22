@@ -7,6 +7,8 @@ import {initialConfig,TABS,TAG_GROUPS} from '../dist/model.js';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const storefrontRuntime=fs.readFileSync(new URL('../dist/storefront.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const productImagesRuntime=fs.readFileSync(new URL('../dist/product-images.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
@@ -23,7 +25,7 @@ async function boot({config=initialConfig(),url='https://mockup.example/?view=ad
  w.localStorage.setItem(draftKey,JSON.stringify(config));w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));
  w.fetch=async url=>{fetchCalls.push(String(url));return {ok:true,json:async()=>structuredClone(catalog)};};w.scrollTo=()=>{};
  w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
+ w.eval(`(()=>{${model}\n${storefrontRuntime}\n${productImagesRuntime}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  const page=name=>click(`.studio-nav [data-page="${name}"]`);
@@ -61,7 +63,7 @@ test('category editor boots from its URL and validates a new manual category ato
   await h.set(field('productText'),`${catalog[0].id}, ${catalog[1].id}\n${catalog[0].id}`);await h.click(action('nav-apply-category',customId));
   assert.ok(h.rows().includes(customId));assert.deepEqual(h.saved(),before,'apply does not silently save');
   await h.save();assert.deepEqual(category(h.saved(),customId).productIds,[catalog[0].id,catalog[1].id]);assert.equal(category(h.saved(),customId).mode,'manual');
-  assert.deepEqual(h.published(),published);assert.equal(h.fetchCalls.length,1);assert.deepEqual(h.errors,[]);
+  assert.deepEqual(h.published(),published);assert.equal(h.fetchCalls.length,2);assert.match(h.fetchCalls[1],/assets\/product-images\.json/);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 

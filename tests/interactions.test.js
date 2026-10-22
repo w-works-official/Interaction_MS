@@ -5,6 +5,8 @@ import {JSDOM,VirtualConsole} from 'jsdom';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const storefrontRuntime=fs.readFileSync(new URL('../dist/storefront.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const productImagesRuntime=fs.readFileSync(new URL('../dist/product-images.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const tick=()=>new Promise(r=>setTimeout(r,25));
@@ -17,7 +19,7 @@ async function boot({historyDenied=false,oldBanners=false,animate=false,reducedM
  w.fetch=async()=>({ok:true,json:async()=>structuredClone(catalog)});
  w.scrollTo=()=>{};if(historyDenied)w.history.replaceState=()=>{throw new w.DOMException('Blocked in embedded page','SecurityError');};if(oldBanners){const config={schema:1,tabs:Object.fromEntries(['추천','신상','피어싱','귀걸이','반지','목걸이','헤어'].map(t=>[t,{sort:'recommended',manual:[],pins:[],excluded:[],hideSoldout:false}])),banners:[{id:'edit-01',type:'editorial',title:'Old banner',subtitle:'Old',after:6,span:2,tabs:['추천'],enabled:true,tone:'ink',image:'',link:''}]};w.localStorage.setItem('pr-studio-published-v1',JSON.stringify(config));w.localStorage.setItem('pr-studio-draft-v1',JSON.stringify(config));}w.CSS??={};w.CSS.escape=s=>String(s).replace(/[^\w-]/g,'');
  w.scrollTo=(...args)=>scrollCalls.push(args);
- w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);
+ w.eval(`(()=>{${model}\n${storefrontRuntime}\n${productImagesRuntime}\n${runtime}\n${app}\n})();`);
  await tick();return {dom,w,d:w.document,errors,animations,scrollCalls};
 }
 test('real app category clicks update active tab, count and actual product IDs',async()=>{
@@ -100,9 +102,9 @@ test('restricted embedded history cannot break category clicks',async()=>{
 });
 test('default banners are removed even from previous browser saves; original-style header remains',async()=>{
  const {dom,d,w}=await boot({oldBanners:true});try{
-  assert.equal(d.querySelector('.wordmark img').alt,'PINKROCKET');
-  assert.match(d.querySelector('.wordmark img').getAttribute('src'),/logo-pc/);
-  assert.match(d.querySelector('.wordmark source').getAttribute('srcset'),/logo-mobile/);
+  assert.equal(d.querySelector('.wordmark').textContent,'PINKROCKET');
+  assert.equal(d.querySelectorAll('.wordmark').length,1);
+  assert.equal(d.querySelector('.wordmark picture'),null);
   assert.equal(d.querySelectorAll('.edit-intro,.feed-banner,.feed-notice').length,0);
   assert.equal(JSON.parse(w.localStorage.getItem('pr-studio-published-v1')).banners.length,0);
  }finally{dom.window.close();}
@@ -329,5 +331,51 @@ test('reduced motion keeps category updates immediate without scheduling a slide
   d.querySelector('[data-action="tab"][data-tab="반지"]').click();
   assert.equal(d.querySelector('.category-tabs .active').dataset.tab,'반지');assert.ok(d.querySelectorAll('[data-product]').length>0);
   await tick();assert.equal(animations.length,0);assert.equal(d.querySelector('#app').classList.contains('category-transition'),false);
+ }finally{dom.window.close();}
+});
+
+
+test('shared storefront renders a single brand and one image source per banner',async()=>{
+ const {dom,d,errors}=await boot();try{
+  assert.equal(d.querySelectorAll('.shop-header .wordmark').length,1);
+  assert.equal(d.querySelectorAll('.storefront-hero').length,1);
+  assert.equal(d.querySelectorAll('.storefront-hero-slide').length,4);
+  for(const slide of d.querySelectorAll('.storefront-hero-slide')){assert.equal(slide.querySelectorAll('img').length,1);assert.equal(slide.querySelectorAll('source').length,0);}
+  assert.equal(d.querySelectorAll('#shop-search').length,1);
+  assert.equal(d.querySelectorAll('.category-tabs [data-action="tab"]').length,8);
+  d.querySelector('[data-action="storefront-hero"][data-index="2"]').click();
+  assert.equal(d.querySelector('.storefront-hero-track').style.transform,'translateX(-200%)');
+  assert.equal(d.querySelector('.storefront-hero .current-page').textContent,'3');
+  assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
+});
+
+test('search hides and restores the opening without replacing or blurring the search field',async()=>{
+ const {dom,w,d,errors}=await boot();try{
+  const opening=()=>[...d.querySelectorAll('.storefront-hero,.storefront-category-tiles')];
+  assert.equal(opening().length,2);assert.ok(opening().every(section=>!section.hidden));
+  const search=d.querySelector('#shop-search'),hero=d.querySelector('.storefront-hero');
+  search.focus();search.value='2084924';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(d.querySelector('#shop-search'),search);assert.equal(d.activeElement,search);
+  assert.equal(d.querySelector('.storefront-hero'),hero);assert.ok(opening().every(section=>section.hidden));
+  assert.equal(d.querySelectorAll('[data-product]').length,1);
+  d.querySelector('[data-action="material"][data-material="전체"]').click();
+  assert.equal(opening().length,2);assert.ok(opening().every(section=>section.hidden));
+  const nextSearch=d.querySelector('#shop-search');nextSearch.focus();nextSearch.value='';nextSearch.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(d.querySelector('#shop-search'),nextSearch);assert.equal(d.activeElement,nextSearch);
+  assert.ok(opening().every(section=>!section.hidden));
+  d.querySelector('.category-tabs [data-tab="귀걸이"]').click();
+  assert.equal(opening().length,0);assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
+});
+
+test('hero and category tile gestures cannot switch product category',async()=>{
+ const {dom,w,d,errors}=await boot();try{
+  const hero=d.querySelector('.storefront-hero');swipe(w,hero,-400);
+  assert.equal(d.querySelector('.category-tabs button.active').dataset.tab,'추천');
+  assert.equal(d.querySelector('.storefront-hero-track').style.transform,'translateX(-100%)');
+  swipe(w,d.querySelector('.storefront-category-tiles'),-400);
+  assert.equal(d.querySelector('.category-tabs button.active').dataset.tab,'추천');
+  assert.deepEqual(errors,[]);
  }finally{dom.window.close();}
 });

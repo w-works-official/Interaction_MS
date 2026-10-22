@@ -7,6 +7,8 @@ import {initialConfig,validateConfig,normalizeCatalog} from '../dist/model.js';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const storefrontRuntime=fs.readFileSync(new URL('../dist/storefront.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const productImagesRuntime=fs.readFileSync(new URL('../dist/product-images.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const raw=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url),'utf8')),catalog=normalizeCatalog(raw);
 const first=catalog[0],second=catalog[1],far=catalog.at(-1),categoryId='cat_machine',secret='PRIVATE_CODE_OR_NOTE_SENTINEL';
@@ -22,7 +24,7 @@ async function boot({config=configuration(),view='photos'}={}){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',error=>errors.push(error.message));
  const dom=new JSDOM(html,{url:`https://mockup.example/?view=admin&adminPage=workbench&adminTab=${categoryId}&workbenchView=${view}`,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc}),w=dom.window,d=w.document;
  w.localStorage.setItem(draftKey,JSON.stringify(config));w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));w.fetch=async()=>({ok:true,json:async()=>structuredClone(raw)});w.scrollTo=()=>{};w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');
- w.eval(`(()=>{${model}\n${runtime}\n${app}\nwindow.__appendMachineAudit=appendWorkspaceAudit;window.__changeMachineDraft=index=>{draft.ranking[adminTab].diversity=index%11;workspaceRevision++;markDirty();syncWorkbenchMachine();};window.__changeMachineCode=()=>{draft.customerCode.js+='/* private next revision */';markDirty();};})();`);await tick();
+ w.eval(`(()=>{${model}\n${storefrontRuntime}\n${productImagesRuntime}\n${runtime}\n${app}\nwindow.__appendMachineAudit=appendWorkspaceAudit;window.__changeMachineDraft=index=>{draft.ranking[adminTab].diversity=index%11;workspaceRevision++;markDirty();syncWorkbenchMachine();};window.__changeMachineCode=()=>{draft.customerCode.js+='/* private next revision */';markDirty();};})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  return {w,d,errors,click,set,state:()=>JSON.parse(d.querySelector('#workbench-state').textContent),

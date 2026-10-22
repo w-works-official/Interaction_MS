@@ -7,6 +7,8 @@ import {initialConfig} from '../dist/model.js';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 const model=fs.readFileSync(new URL('../dist/model.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const runtime=fs.readFileSync(new URL('../dist/customer-code.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const storefrontRuntime=fs.readFileSync(new URL('../dist/storefront.js',import.meta.url),'utf8').replace(/^export /gm,'');
+const productImagesRuntime=fs.readFileSync(new URL('../dist/product-images.js',import.meta.url),'utf8').replace(/^export /gm,'');
 const app=fs.readFileSync(new URL('../dist/app.js',import.meta.url),'utf8').replace(/^import .*;\r?\n/gm,'');
 const catalog=JSON.parse(fs.readFileSync(new URL('../dist/assets/catalog.json',import.meta.url)));
 const draftKey='pr-studio-draft-v1',publishedKey='pr-studio-published-v1';
@@ -18,7 +20,7 @@ async function boot({url='https://mockup.example/?view=admin&adminPage=workbench
  const dom=new JSDOM(html,{url,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:console}),w=dom.window,d=w.document;
  w.localStorage.setItem(publishedKey,JSON.stringify(initialConfig()));if(config)w.localStorage.setItem(draftKey,JSON.stringify(config));
  w.fetch=async url=>{fetchCalls.push(String(url));return {ok:true,json:async()=>structuredClone(catalog)};};w.scrollTo=()=>{};
- w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');w.eval(`(()=>{${model}\n${runtime}\n${app}\n})();`);await tick();
+ w.CSS??={};w.CSS.escape=value=>String(value).replace(/[^\w-]/g,'');w.eval(`(()=>{${model}\n${storefrontRuntime}\n${productImagesRuntime}\n${runtime}\n${app}\n})();`);await tick();
  const click=async selector=>{const control=d.querySelector(selector);assert.ok(control,selector);control.click();await tick();};
  const set=async(selector,value,event='input')=>{const control=d.querySelector(selector);assert.ok(control,selector);if(control.type==='checkbox')control.checked=!!value;else control.value=String(value);control.dispatchEvent(new w.Event(event,{bubbles:true}));await tick();};
  const fill=async(formSelector,values)=>{for(const [name,value] of Object.entries(values))await set(`${formSelector} [name="${name}"]`,value);};
@@ -52,7 +54,7 @@ test('human ranking controls apply only an explicit local draft change and prese
   assert.deepEqual(h.saved(),before);await h.submit('#direction-form');await h.save();
   assert.equal(h.saved().ranking['추천'].brief,'보존할 이전 작업 지시');assert.equal(h.saved().ranking['추천'].diversity,3);assert.equal(h.saved().ranking['추천'].enabled,true);
   assert.deepEqual(h.saved().tabs,before.tabs);assert.deepEqual(h.saved().banners,before.banners);assert.deepEqual(h.published(),publicBefore);
-  assert.equal(d.querySelector('#workspace-result').getAttribute('role'),'status');assert.equal(h.fetchCalls.length,1);assert.match(h.fetchCalls[0],/assets\/catalog\.json/);assert.deepEqual(h.errors,[]);
+  assert.equal(d.querySelector('#workspace-result').getAttribute('role'),'status');assert.equal(h.fetchCalls.length,2);assert.match(h.fetchCalls[1],/assets\/product-images\.json/);assert.match(h.fetchCalls[0],/assets\/catalog\.json/);assert.deepEqual(h.errors,[]);
  }finally{h.close();}
 });
 
