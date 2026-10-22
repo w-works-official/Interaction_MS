@@ -2,6 +2,16 @@
 
 Customer browse feed and curation admin prototype. Built from the interaction requirements and structure of the supplied Makeshop design skin; it does not run Makeshop virtual tags outside Makeshop.
 
+## Current responsive handoff — 2026-10-22
+
+The customer preview now follows the supplied responsive skin's white/black header, large banner and category tiles. `dist/storefront.js` is the single source for shared banner images/copy/links, brand and menu settings. Each banner uses one common image at every width by default; a separate mobile crop is optional. Existing category/search/filter/curation/admin/account-bridge behavior and 3:4 galleries remain. Grid columns follow available container width: 2 → 3 → 4.
+
+`integration-responsive/` contains the preserved UTF-8 original and generated 14-file native copied-skin handoff. Read [the application guide](integration-responsive/README_KO.md), then regenerate with `python -B integration-responsive/build.py --native-platform pc` after changing shared settings. It preserves native product/price/company tags, uses one search form and one sort control, and removes duplicated PC/mobile content configuration. Do not combine that native main with the alternative whole-main iframe shell. The external original skin and live Makeshop administrator have not been changed. Native server rendering, other native templates and account writes still require copied-skin QA.
+
+The product-ID photo manifest is `dist/assets/product-images.json`; `createProductImageLookup()` returns a synchronous cached `getProductImages(id)` function. It hydrates after the first feed paint, with existing-photo fallback. The current snapshot contains 2,379 products and 2,387 actual image URLs, including four previously verified multi-image products. Full-catalog extra-image collection has not been completed. See [the importer guide](scripts/PRODUCT_IMAGES_GUIDE.md). No per-card live request or guessed filename is used.
+
+Cloudflare email verification and Workers & Pages access are ready; no Cloudflare project, upload or deployment has been created. GitHub Pages remains the screen-preview destination. Browser checks cover actual 390/800/1280px layout metrics, gallery/category/search/filter controls and admin entry; screenshot capture was unavailable, and physical touch/native Makeshop account-write QA remain pending. Historical verification notes below describe earlier revisions.
+
 ## Open and use
 
 - Customer view: root URL. Category tabs (including bracelets/anklets), search, material filters, price sort, favorites, progressive product reveal and image galleries.
