@@ -1,0 +1,521 @@
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link type="text/css" rel="stylesheet" href="//skin.makeshop.co.kr/skin/enough/Swiper11.1.14/swiper-bundle.min.css">
+<script src="//skin.makeshop.co.kr/skin/enough/Swiper11.1.14/swiper-bundle.min.js"></script>
+<script type="text/javascript" src="//image.makeshop.co.kr/makeshop/d3/basic_simple/js/jquery.bxslider.min.js"></script> 
+<!-- bxslider 추가 -->
+
+
+<!--/script_scroll(1)/-->
+<div id="wrap">
+    <!--/include_header(1)/-->
+    <div id="contentWrapper">
+        <!--/include_menu(1)/-->
+        <!-- 메인 비쥬얼 배너 -->
+        <div class="shop-view" data-native-storefront-hero></div>
+        <!-- //메인 비쥬얼 배너 -->
+
+
+        <div class="marquee-container">
+            <div class="marquee">
+                <span>회원가입｜30,000원 웰컴쿠폰북 </span>
+                <span>신규첫구매｜신규체험존 50% </span>
+                <span>카카오톡 채널 추가｜2,000원 쿠폰 </span>
+                <span>회원 등급 혜택｜상시할인&추가적립 ~10%</span>
+                <span>APP 다운시｜10% 쿠폰 혜택</span>
+
+
+                <span>회원가입｜30,000원 웰컴쿠폰북 </span>
+                <span>신규첫구매｜신규체험존 50% </span>
+                <span>카카오톡 채널 추가｜2,000원 쿠폰 </span>
+                <span>회원 등급 혜택｜상시할인&추가적립 ~10%</span>
+                <span>APP 다운시｜10% 쿠폰 혜택</span>
+
+
+                <span>회원가입｜30,000원 웰컴쿠폰북 </span>
+                <span>신규첫구매｜신규체험존 50% </span>
+                <span>카카오톡 채널 추가｜2,000원 쿠폰 </span>
+                <span>회원 등급 혜택｜상시할인&추가적립 ~10%</span>
+                <span>APP 다운시｜10% 쿠폰 혜택</span>
+
+            </div>
+        </div>
+
+        <div class="w1360">
+
+            <div class="shop-view" data-native-storefront-category-tiles></div>
+
+
+
+
+
+            <!--/if_new_product/-->
+
+
+            <div class="mainTitle">
+                <div class="title-txt">
+                    NEW ARRIVALS
+                    <p>새롭게 입고된 신상 아이템</p>
+                </div>
+                <a href="" class="title-more-btn">더보기<i class="fa fa-angle-right"></i></a>
+            </div>
+            
+            
+            
+            
+            <div class="item-wrap2" id="mainNew">
+
+                <div class="item-cont2">
+                    <!--/loop_new_product(80)/-->
+
+                    <div class="itemList more-view-item">
+
+                    <div class="thumb"><a href="<!--/new_product@link/-->"><img src="<!--/new_product@image_s/-->" alt="<!--/notag/new_product@name/-->"><!--/if_new_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+            
+                        <div class="prd-name"><a href="<!--/new_product@link/-->"><!--/new_product@name/--></a></div>
+                        <!--/if_new_product@price_replace/-->
+                        <div class="price"><a href="<!--/new_product@link/-->"><!--/new_product@price_replace/--></a></div>
+                        <!--/else/-->
+                        <!--/if_new_product@price_discount/-->
+                        <!-- 기간할인가 존재 -->
+                        <div class="price"><a href="<!--/new_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/new_product@price_discount/-->원</span><span class="consumer"><!--/if_new_product@price_consumer(+1)/--><!--/number/new_product@price_consumer/-->원<!--/else/--><!--/number/new_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_new_product@usergroup_price/-->
+                        <!-- 가 아니라 그룹할인가 존재 -->
+                        <div class="price"><a href="<!--/new_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/new_product@usergroup_price/-->원</span><span class="consumer"><!--/if_new_product@price_consumer(+1)/--><!--/number/new_product@price_consumer/-->원<!--/else/--><!--/number/new_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_new_product@price_consumer(+1)/-->
+                        <!-- 가 아니라 소비자가 존재 -->
+                        <div class="price"><a href="<!--/new_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/new_product@price_sell/-->원</span><span class="consumer"><!--/number/new_product@price_consumer/-->원</span></a></div>
+                        <!--/else/-->
+                        <!-- 그것도 아니면 그냥 가격 노출 -->
+                        <div class="price"><a href="<!--/new_product@link/-->"><span class="normal"><!--/number/new_product@price_sell/-->원</span></a></div>
+                        <!--/end_if/-->
+                        <!--/end_if/-->
+
+                        <!--/if_new_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/new_product@power_review_count/-->)<!--/if_new_product@order_stock(+100)/--> / 누적판매(<!--/new_product@order_stock/-->)<!--/end_if/--></div>
+                           <!--/else/--><!--/if_new_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/new_product@order_stock/-->)</div><!--/end_if/-->
+                        <!--/end_if/-->
+
+                        <div class="prd-subname"><a href="<!--/new_product@link/-->"><!--/new_product@subname/--></a></div>
+                        
+                        <div class="prd-ico"><a href="<!--/new_product@link/-->"><!--/new_product@icons/--><!--/new_product@subs_icon/--><!--/new_product@promotion_icon/--><!--/new_product@present_icon/--></a></div>
+                    </div>
+                    <!--/end_loop/-->
+                </div>
+
+
+                <div class="more-btn-wrap">
+                    <a href="javascript:void(0);" id="btnMoreNew">MORE VIEW <i class="fa fa-angle-down"></i></a>
+                </div>
+            </div><!-- //item-wrap -->
+            <!--/end_if/-->
+            
+            
+
+
+            
+
+
+
+
+
+            
+            <!--/if_special_product/-->
+
+            <div class="mainTitle">
+                <div class="title-txt">
+                    NEW & HOT
+                    <p>이번주 가장 반응 뜨거운 신상</p>
+                </div>
+                <a href="" class="title-more-btn">더보기<i class="fa fa-angle-right"></i></a>
+            </div>
+
+
+
+            <div class="flexProductList ranking">
+                <!--/loop_special_product(6)/-->
+                <div class="itemList">
+                    <div class="number"><!--/idx/--></div>
+                    <div class="thumb"><a href="<!--/special_product@link/-->"><img src="<!--/special_product@image_s/-->" alt="<!--/notag/special_product@name/-->"><!--/if_special_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+                    <div class="info">
+                        <div class="prd-name"><a href="<!--/special_product@link/-->"><!--/special_product@name/--></a></div>
+                        <!--/if_special_product@price_replace/-->
+                        <div class="price"><a href="<!--/special_product@link/-->"><!--/special_product@price_replace/--></a></div>
+                        <!--/else/-->
+                        <!--/if_special_product@price_discount/-->
+                        <!-- 기간할인가 존재 -->
+                        <div class="price"><a href="<!--/special_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/special_product@price_discount/-->원</span><span class="consumer"><!--/if_special_product@price_consumer(+1)/--><!--/number/special_product@price_consumer/-->원<!--/else/--><!--/number/special_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_special_product@usergroup_price/-->
+                        <!-- 가 아니라 그룹할인가 존재 -->
+                        <div class="price"><a href="<!--/special_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/special_product@usergroup_price/-->원</span><span class="consumer"><!--/if_special_product@price_consumer(+1)/--><!--/number/special_product@price_consumer/-->원<!--/else/--><!--/number/special_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_special_product@price_consumer(+1)/-->
+                        <!-- 가 아니라 소비자가 존재 -->
+                        <div class="price"><a href="<!--/special_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/special_product@price_sell/-->원</span><span class="consumer"><!--/number/special_product@price_consumer/-->원</span></a></div>
+                        <!--/else/-->
+                        <!-- 그것도 아니면 그냥 가격 노출 -->
+                        <div class="price"><a href="<!--/special_product@link/-->"><span class="normal"><!--/number/special_product@price_sell/-->원</span></a></div>
+                        <!--/end_if/-->
+                        <!--/end_if/-->
+                        <!--/if_special_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/special_product@power_review_count/-->)<!--/if_special_product@order_stock(+100)/--> / 누적판매(<!--/special_product@order_stock/-->)<!--/end_if/--></div>
+                           <!--/else/--><!--/if_special_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/special_product@order_stock/-->)</div><!--/end_if/-->
+                        <!--/end_if/-->
+
+
+                        <div class="prd-subname"><a href="<!--/special_product@link/-->"><!--/special_product@subname/--></a></div>
+
+
+
+                        <div class="prd-ico displaynone"><a href="<!--/special_product@link/-->"><!--/special_product@icons/--><!--/special_product@subs_icon/--><!--/special_product@promotion_icon/--><!--/special_product@present_icon/--></a></div>
+                    </div>
+                    <!--/if_special_product@link_wish_toggle/-->
+                    <div class="prd-wish">
+                        <a href="<!--/special_product@link_wish_toggle/-->"><!--/special_product@block_btn_wish/--><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><!--/end_block/--></a>
+                    </div>
+                    <!--/end_if/-->
+                </div>
+                <!--/end_loop/-->
+            </div>
+            <!--/end_if/-->
+            
+            
+
+
+
+         <!--/if_best_product/-->
+
+            <div class="mainTitle">
+                <div class="title-txt">
+                    BEST ITEMS
+                    <p>가장 사랑받은 베스트 아이템</p>
+                </div>
+                <a href="" class="title-more-btn">더보기<i class="fa fa-angle-right"></i></a>
+            </div>
+
+
+            <div class="item-wrap2" id="mainBest">
+                <div class="item-cont2">
+                    <!--/loop_best_product(200)/-->
+
+                    <div class="itemList more-view-item">
+
+                    <div class="thumb"><a href="<!--/best_product@link/-->"><img src="<!--/best_product@image_s/-->" alt="<!--/notag/best_product@name/-->"><!--/if_best_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+            
+                        <div class="prd-name"><a href="<!--/best_product@link/-->"><!--/best_product@name/--></a></div>
+                        <!--/if_best_product@price_replace/-->
+                        <div class="price"><a href="<!--/best_product@link/-->"><!--/best_product@price_replace/--></a></div>
+                        <!--/else/-->
+                        <!--/if_best_product@price_discount/-->
+                        <!-- 기간할인가 존재 -->
+                        <div class="price"><a href="<!--/best_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/best_product@price_discount/-->원</span><span class="consumer"><!--/if_best_product@price_consumer(+1)/--><!--/number/best_product@price_consumer/-->원<!--/else/--><!--/number/best_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_best_product@usergroup_price/-->
+                        <!-- 가 아니라 그룹할인가 존재 -->
+                        <div class="price"><a href="<!--/best_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/best_product@usergroup_price/-->원</span><span class="consumer"><!--/if_best_product@price_consumer(+1)/--><!--/number/best_product@price_consumer/-->원<!--/else/--><!--/number/best_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                        <!--/else_if_best_product@price_consumer(+1)/-->
+                        <!-- 가 아니라 소비자가 존재 -->
+                        <div class="price"><a href="<!--/best_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/best_product@price_sell/-->원</span><span class="consumer"><!--/number/best_product@price_consumer/-->원</span></a></div>
+                        <!--/else/-->
+                        <!-- 그것도 아니면 그냥 가격 노출 -->
+                        <div class="price"><a href="<!--/best_product@link/-->"><span class="normal"><!--/number/best_product@price_sell/-->원</span></a></div>
+                        <!--/end_if/-->
+                        <!--/end_if/-->
+
+
+                        <!--/if_best_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/best_product@power_review_count/-->)<!--/if_best_product@order_stock(+100)/--> / 누적판매(<!--/best_product@order_stock/-->)<!--/end_if/--></div>
+                           <!--/else/--><!--/if_best_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/best_product@order_stock/-->)</div><!--/end_if/-->
+                        <!--/end_if/-->
+
+                        <div class="prd-subname"><a href="<!--/best_product@link/-->"><!--/best_product@subname/--></a></div>
+
+
+
+
+                        <div class="prd-ico"><a href="<!--/best_product@link/-->"><!--/best_product@icons/--><!--/best_product@subs_icon/--><!--/best_product@promotion_icon/--><!--/best_product@present_icon/--></a></div>
+                    </div>
+                    <!--/end_loop/-->
+                </div>
+
+
+                <div class="more-btn-wrap">
+                    <a href="javascript:void(0);" id="btnMoreBest">MORE VIEW <i class="fa fa-angle-down"></i></a>
+                </div>
+            </div><!-- //item-wrap -->
+            <!--/end_if/-->
+            
+            
+            
+
+
+            
+            
+ 
+
+            
+
+
+            
+
+
+            <div class="flexProduct">
+                <!--/if_add28_product/-->
+                <div class="left">
+                
+                    <div class="banner">
+                        <a href="#none">
+                            <img src="//skin.makeshop.co.kr/skin/enough/images/main_banner1.png" alt="banner">
+
+                            <div class="banner-title-wrap">
+                                <div class="title-txt">
+                                    <h5>장마철도 걱정없이</h5>
+                                    <p>전체 써지컬이라 여름철 비/땀/수영도 마음껏</p>
+                                </div>
+                                <span class="banner-more-btn">더보기 <i class="fa fa-angle-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="flexProductList">
+                        <!--/loop_add28_product(4)/-->
+                        <div class="itemList">
+                            <div class="thumb"><a href="<!--/add28_product@link/-->"><img src="<!--/add28_product@image_m/-->" alt="<!--/notag/add28_product@name/-->"><!--/if_add28_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+                            <div class="info">
+                                <div class="prd-name"><a href="<!--/add28_product@link/-->"><!--/add28_product@name/--></a></div>
+
+                                    <!--/if_add28_product@price_replace/-->
+                                <div class="price"><a href="<!--/add28_product@link/-->"><!--/add28_product@price_replace/--></a></div>
+                                <!--/else/-->
+                                <!--/if_add28_product@price_discount/-->
+                                <!-- 기간할인가 존재 -->
+                                <div class="price"><a href="<!--/add28_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add28_product@price_discount/-->원</span><span class="consumer"><!--/if_add28_product@price_consumer(+1)/--><!--/number/add28_product@price_consumer/-->원<!--/else/--><!--/number/add28_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add28_product@usergroup_price/-->
+                                <!-- 가 아니라 그룹할인가 존재 -->
+                                <div class="price"><a href="<!--/add28_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add28_product@usergroup_price/-->원</span><span class="consumer"><!--/if_add28_product@price_consumer(+1)/--><!--/number/add28_product@price_consumer/-->원<!--/else/--><!--/number/add28_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add28_product@price_consumer(+1)/-->
+                                <!-- 가 아니라 소비자가 존재 -->
+                                <div class="price"><a href="<!--/add28_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add28_product@price_sell/-->원</span><span class="consumer"><!--/number/add28_product@price_consumer/-->원</span></a></div>
+                                <!--/else/-->
+                                <!-- 그것도 아니면 그냥 가격 노출 -->
+                                <div class="price"><a href="<!--/add28_product@link/-->"><span class="normal"><!--/number/add28_product@price_sell/-->원</span></a></div>
+                                <!--/end_if/-->
+                                <!--/end_if/-->
+
+                                <!--/if_add28_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/add28_product@power_review_count/-->)<!--/if_add28_product@order_stock(+100)/--> / 누적판매(<!--/add28_product@order_stock/-->)<!--/end_if/--></div>
+                                   <!--/else/--><!--/if_add28_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/add28_product@order_stock/-->)</div><!--/end_if/-->
+                                <!--/end_if/-->
+
+
+                                <div class="prd-subname"><a href="<!--/add28_product@link/-->"><!--/add28_product@subname/--></a></div>
+                                <div class="prd-ico displaynone"><a href="<!--/add28_product@link/-->"><!--/add28_product@icons/--><!--/add28_product@subs_icon/--><!--/add28_product@promotion_icon/--><!--/add28_product@present_icon/--></a></div>
+                            </div>
+                            <!--/if_add28_product@link_wish_toggle/-->
+                            <div class="prd-wish">
+                                <a href="<!--/add28_product@link_wish_toggle/-->"><!--/add28_product@block_btn_wish/--><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><!--/end_block/--></a>
+                            </div>
+                            <!--/end_if/-->
+                        </div>
+                        <!--/end_loop/-->
+                    </div>
+                </div>
+                <!--/end_if/-->
+                
+                
+                
+                <!--/if_add29_product/-->
+                <div class="right">
+
+                    <div class="banner">
+                        <a href="#none">
+                            <img src="//skin.makeshop.co.kr/skin/enough/images/main_banner1.png" alt="banner">
+
+                            <div class="banner-title-wrap">
+                                <div class="title-txt">
+                                    <h5>비비드한 여름의 맛</h5>
+                                    <p>뜨거운 태양속에서 더욱 매력적인 컬러</p>
+                                </div>
+                                <span class="banner-more-btn">더보기 <i class="fa fa-angle-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+  
+                    <div class="flexProductList">
+                        <!--/loop_add29_product(4)/-->
+                        <div class="itemList">
+                            <div class="thumb"><a href="<!--/add29_product@link/-->"><img src="<!--/add29_product@image_m/-->" alt="<!--/notag/add29_product@name/-->"><!--/if_add29_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+                            <div class="info">
+                                <div class="prd-name"><a href="<!--/add29_product@link/-->"><!--/add29_product@name/--></a></div>
+                           
+                                <!--/if_add29_product@price_replace/-->
+                                <div class="price"><a href="<!--/add29_product@link/-->"><!--/add29_product@price_replace/--></a></div>
+                                <!--/else/-->
+                                <!--/if_add29_product@price_discount/-->
+                                <!-- 기간할인가 존재 -->
+                                <div class="price"><a href="<!--/add29_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add29_product@price_discount/-->원</span><span class="consumer"><!--/if_add29_product@price_consumer(+1)/--><!--/number/add29_product@price_consumer/-->원<!--/else/--><!--/number/add29_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add29_product@usergroup_price/-->
+                                <!-- 가 아니라 그룹할인가 존재 -->
+                                <div class="price"><a href="<!--/add29_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add29_product@usergroup_price/-->원</span><span class="consumer"><!--/if_add29_product@price_consumer(+1)/--><!--/number/add29_product@price_consumer/-->원<!--/else/--><!--/number/add29_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add29_product@price_consumer(+1)/-->
+                                <!-- 가 아니라 소비자가 존재 -->
+                                <div class="price"><a href="<!--/add29_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add29_product@price_sell/-->원</span><span class="consumer"><!--/number/add29_product@price_consumer/-->원</span></a></div>
+                                <!--/else/-->
+                                <!-- 그것도 아니면 그냥 가격 노출 -->
+                                <div class="price"><a href="<!--/add29_product@link/-->"><span class="normal"><!--/number/add29_product@price_sell/-->원</span></a></div>
+                                <!--/end_if/-->
+                                <!--/end_if/-->
+
+
+                                <!--/if_add29_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/add29_product@power_review_count/-->)<!--/if_add29_product@order_stock(+100)/--> / 누적판매(<!--/add29_product@order_stock/-->)<!--/end_if/--></div>
+                                  <!--/else/--><!--/if_add29_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/add29_product@order_stock/-->)</div><!--/end_if/-->
+                               <!--/end_if/-->
+
+
+                                <div class="prd-subname"><a href="<!--/add29_product@link/-->"><!--/add29_product@subname/--></a></div>
+                                <div class="prd-ico displaynone"><a href="<!--/add29_product@link/-->"><!--/add29_product@icons/--><!--/add29_product@subs_icon/--><!--/add29_product@promotion_icon/--><!--/add29_product@present_icon/--></a></div>
+                            </div>
+                            <!--/if_add29_product@link_wish_toggle/-->
+                            <div class="prd-wish">
+                                <a href="<!--/add29_product@link_wish_toggle/-->"><!--/add29_product@block_btn_wish/--><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><!--/end_block/--></a>
+                            </div>
+                            <!--/end_if/-->
+                        </div>
+                        <!--/end_loop/-->
+                    </div>
+                </div>
+                <!--/end_if/-->
+            </div>
+
+
+
+
+
+            <div class="flexProduct">
+                <!--/if_add26_product/-->
+                <div class="left">
+
+                    <div class="banner">
+                        <a href="#none">
+                            <img src="//skin.makeshop.co.kr/skin/enough/images/main_banner1.png" alt="banner">
+
+                            <div class="banner-title-wrap">
+                                <div class="title-txt">
+                                    <h5>장마철도 걱정없이</h5>
+                                    <p>전체 써지컬이라 여름철 비/땀/수영도 마음껏</p>
+                                </div>
+                                <span class="banner-more-btn">더보기 <i class="fa fa-angle-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="flexProductList">
+                        <!--/loop_add26_product(4)/-->
+                        <div class="itemList">
+                            <div class="thumb"><a href="<!--/add26_product@link/-->"><img src="<!--/add26_product@image_m/-->" alt="<!--/notag/add26_product@name/-->"><!--/if_add26_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+                            <div class="info">
+                                <div class="prd-name"><a href="<!--/add26_product@link/-->"><!--/add26_product@name/--></a></div>
+
+                                <!--/if_add26_product@price_replace/-->
+                                <div class="price"><a href="<!--/add26_product@link/-->"><!--/add26_product@price_replace/--></a></div>
+                                <!--/else/-->
+                                <!--/if_add26_product@price_discount/-->
+                                <!-- 기간할인가 존재 -->
+                                <div class="price"><a href="<!--/add26_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add26_product@price_discount/-->원</span><span class="consumer"><!--/if_add26_product@price_consumer(+1)/--><!--/number/add26_product@price_consumer/-->원<!--/else/--><!--/number/add26_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add26_product@usergroup_price/-->
+                                <!-- 가 아니라 그룹할인가 존재 -->
+                                <div class="price"><a href="<!--/add26_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add26_product@usergroup_price/-->원</span><span class="consumer"><!--/if_add26_product@price_consumer(+1)/--><!--/number/add26_product@price_consumer/-->원<!--/else/--><!--/number/add26_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add26_product@price_consumer(+1)/-->
+                                <!-- 가 아니라 소비자가 존재 -->
+                                <div class="price"><a href="<!--/add26_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add26_product@price_sell/-->원</span><span class="consumer"><!--/number/add26_product@price_consumer/-->원</span></a></div>
+                                <!--/else/-->
+                                <!-- 그것도 아니면 그냥 가격 노출 -->
+                                <div class="price"><a href="<!--/add26_product@link/-->"><span class="normal"><!--/number/add26_product@price_sell/-->원</span></a></div>
+                                <!--/end_if/-->
+                                <!--/end_if/-->
+
+                                <!--/if_add26_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/add26_product@power_review_count/-->)<!--/if_add26_product@order_stock(+100)/--> / 누적판매(<!--/add26_product@order_stock/-->)<!--/end_if/--></div>
+                                  <!--/else/--><!--/if_add26_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/add26_product@order_stock/-->)</div><!--/end_if/-->
+                                <!--/end_if/-->
+
+
+                                <div class="prd-subname"><a href="<!--/add26_product@link/-->"><!--/add26_product@subname/--></a></div>
+                                <div class="prd-ico displaynone"><a href="<!--/add26_product@link/-->"><!--/add26_product@icons/--><!--/add26_product@subs_icon/--><!--/add26_product@promotion_icon/--><!--/add26_product@present_icon/--></a></div>
+                            </div>
+                            <!--/if_add26_product@link_wish_toggle/-->
+                            <div class="prd-wish">
+                                <a href="<!--/add26_product@link_wish_toggle/-->"><!--/add26_product@block_btn_wish/--><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><!--/end_block/--></a>
+                            </div>
+                            <!--/end_if/-->
+                        </div>
+                        <!--/end_loop/-->
+                    </div>
+                </div>
+                <!--/end_if/-->
+                
+                
+                <!--/if_add27_product/-->
+                <div class="right">
+                
+                    <div class="banner">
+                        <a href="#none">
+                            <img src="//skin.makeshop.co.kr/skin/enough/images/main_banner1.png" alt="banner">
+
+                            <div class="banner-title-wrap">
+                                <div class="title-txt">
+                                    <h5>비비드한 여름의 맛</h5>
+                                    <p>뜨거운 태양속에서 더욱 매력적인 컬러</p>
+                                </div>
+                                <span class="banner-more-btn">더보기 <i class="fa fa-angle-right"></i></span>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="flexProductList">
+                        <!--/loop_add27_product(4)/-->
+                        <div class="itemList">
+                            <div class="thumb"><a href="<!--/add27_product@link/-->"><img src="<!--/add27_product@image_m/-->" alt="<!--/notag/add27_product@name/-->"><!--/if_add27_product@is_soldout/--><div class="soldout_badge">SOLDOUT</div><!--/end_if/--></a></div>
+                            <div class="info">
+                                <div class="prd-name"><a href="<!--/add27_product@link/-->"><!--/add27_product@name/--></a></div>
+                                <!--/if_add27_product@price_replace/-->
+                                <div class="price"><a href="<!--/add27_product@link/-->"><!--/add27_product@price_replace/--></a></div>
+                                <!--/else/-->
+                                <!--/if_add27_product@price_discount/-->
+                                <!-- 기간할인가 존재 -->
+                                <div class="price"><a href="<!--/add27_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add27_product@price_discount/-->원</span><span class="consumer"><!--/if_add27_product@price_consumer(+1)/--><!--/number/add27_product@price_consumer/-->원<!--/else/--><!--/number/add27_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add27_product@usergroup_price/-->
+                                <!-- 가 아니라 그룹할인가 존재 -->
+                                <div class="price"><a href="<!--/add27_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add27_product@usergroup_price/-->원</span><span class="consumer"><!--/if_add27_product@price_consumer(+1)/--><!--/number/add27_product@price_consumer/-->원<!--/else/--><!--/number/add27_product@price_sell/-->원<!--/end_if/--></span></a></div>
+                                <!--/else_if_add27_product@price_consumer(+1)/-->
+                                <!-- 가 아니라 소비자가 존재 -->
+                                <div class="price"><a href="<!--/add27_product@link/-->"><span class="dc_per"></span><span class="normal"><!--/number/add27_product@price_sell/-->원</span><span class="consumer"><!--/number/add27_product@price_consumer/-->원</span></a></div>
+                                <!--/else/-->
+                                <!-- 그것도 아니면 그냥 가격 노출 -->
+                                <div class="price"><a href="<!--/add27_product@link/-->"><span class="normal"><!--/number/add27_product@price_sell/-->원</span></a></div>
+                                <!--/end_if/-->
+                                <!--/end_if/-->
+
+                                <!--/if_add27_product@power_review_count(+1)/--><div class="prd-review">리뷰(<!--/add27_product@power_review_count/-->)<!--/if_add27_product@order_stock(+100)/--> / 누적판매(<!--/add27_product@order_stock/-->)<!--/end_if/--></div>
+                                  <!--/else/--><!--/if_add27_product@order_stock(+100)/--><div class="prd-total">누적판매(<!--/add27_product@order_stock/-->)</div><!--/end_if/-->
+                                <!--/end_if/-->
+
+
+                                <div class="prd-subname"><a href="<!--/add27_product@link/-->"><!--/add27_product@subname/--></a></div>
+                                <div class="prd-ico displaynone"><a href="<!--/add27_product@link/-->"><!--/add27_product@icons/--><!--/add27_product@subs_icon/--><!--/add27_product@promotion_icon/--><!--/add27_product@present_icon/--></a></div>
+                            </div>
+                            <!--/if_add27_product@link_wish_toggle/-->
+                            <div class="prd-wish">
+                                <a href="<!--/add27_product@link_wish_toggle/-->"><!--/add27_product@block_btn_wish/--><i class="fa fa-heart"></i><i class="fa fa-heart-o"></i><!--/end_block/--></a>
+                            </div>
+                            <!--/end_if/-->
+                        </div>
+                        <!--/end_loop/-->
+                    </div>
+                </div>
+                <!--/end_if/-->
+            </div>
+
+
+
+
+
+
+
+        </div><!-- #contentWrapper-->
+
+    </div><!-- .w1360 -->
+    <!--/include_footer(1)/-->
+</div><!-- #wrap -->
