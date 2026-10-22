@@ -1,0 +1,31 @@
+<!-- READ-ONLY DATA ONLY. Copy separately into a copied main preview, then capture its rendered HTML. -->
+<!-- No img/src, script, stylesheet, account request or image download is introduced by this snippet. -->
+<template id="pinkrocket-product-gallery-data" data-coverage="main-new-special-best-only">
+<!--/loop_new_product(80)/-->
+<div data-product-images-id="<!--/new_product@uid/-->" data-gallery-source="new_product">
+<!--/if_new_product@list_photo_gallery/-->
+<!--/loop_new_product@list_photo_gallery/-->
+<span data-product-image-url="<!--/new_product@list_photo_gallery@image/-->" data-product-image-link="<!--/new_product@list_photo_gallery@link/-->"></span>
+<!--/end_loop/-->
+<!--/else/--><span data-product-image-url="<!--/new_product@image_s/-->"></span><!--/end_if/-->
+</div>
+<!--/end_loop/-->
+<!--/loop_special_product(6)/-->
+<div data-product-images-id="<!--/special_product@uid/-->" data-gallery-source="special_product">
+<!--/if_special_product@list_photo_gallery/-->
+<!--/loop_special_product@list_photo_gallery/-->
+<span data-product-image-url="<!--/special_product@list_photo_gallery@image/-->" data-product-image-link="<!--/special_product@list_photo_gallery@link/-->"></span>
+<!--/end_loop/-->
+<!--/else/--><span data-product-image-url="<!--/special_product@image_s/-->"></span><!--/end_if/-->
+</div>
+<!--/end_loop/-->
+<!--/loop_best_product(200)/-->
+<div data-product-images-id="<!--/best_product@uid/-->" data-gallery-source="best_product">
+<!--/if_best_product@list_photo_gallery/-->
+<!--/loop_best_product@list_photo_gallery/-->
+<span data-product-image-url="<!--/best_product@list_photo_gallery@image/-->" data-product-image-link="<!--/best_product@list_photo_gallery@link/-->"></span>
+<!--/end_loop/-->
+<!--/else/--><span data-product-image-url="<!--/best_product@image_s/-->"></span><!--/end_if/-->
+</div>
+<!--/end_loop/-->
+</template>

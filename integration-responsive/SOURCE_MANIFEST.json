@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "sourceDirectory": "C:\\2026_Work\\Makeshop\\반응형",
+  "nativePlatform": "pc",
+  "sharedStorefrontSha256": "627974ff2bcea9c736f7fb39e3b5ab54e0dfc2197288f7f187ceb8d6a1e2e213",
+  "sharedStylesSha256": "798e08233eaa63acdcda764edf8b242fc0918194dffc496c534025c14d74734d",
+  "files": [
+    {
+      "file": "common.css",
+      "originalBytes": 104189,
+      "originalSha256": "0cbf7ff7eba72a4b8fafd9a6c9344aceb66613a19bb185da03278866bc250fab",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/common.css",
+      "apply": "apply/common.css",
+      "snapshotSha256": "f0d8e1021818aa163d5151b134077ab7a5df9d0cbbdc7abf85f11cf8d599954e",
+      "applySha256": "1ca4724a45d92133e355e915059c487ea68164236737f70b2f73305e14928448"
+    },
+    {
+      "file": "common.js",
+      "originalBytes": 1684,
+      "originalSha256": "d1974c3f270909c619c52a1f3c0080488d2b1e03a785fe76d5d6ea8257a896ca",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/common.js",
+      "apply": "apply/common.js",
+      "snapshotSha256": "746618bee8e5d16ecd934a79a40220b9364a0a28d71e836b6b25a481315c4e47",
+      "applySha256": "ba442bb922be12491bb4af7673e1c83c65fbd3f93213ab115c0f3767eb4451bc"
+    },
+    {
+      "file": "footer.1.css",
+      "originalBytes": 5179,
+      "originalSha256": "2d011b2abb902da66c257b5fe71cad501ada74d4aad26ff12a20ee4dc0b862e1",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/footer.1.css",
+      "apply": "apply/footer.1.css",
+      "snapshotSha256": "a48ff2ef8bf1a828c4ae0ab969e13f28c22f1678fcfb5097853caf0d24566ac7",
+      "applySha256": "567f403738659fc85199b521bb9a777336feb61e7850b9937c5afb73c2a4752c"
+    },
+    {
+      "file": "footer.1.html",
+      "originalBytes": 2617,
+      "originalSha256": "1ba52c1d246fcc8549301838035bee304d68866ffdd331594bec2a4937e16f7e",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/footer.1.html",
+      "apply": "apply/footer.1.html",
+      "snapshotSha256": "647221272e276a21f6ec58dbc107e39b4522c0795e44d0787402a7cb3b764cca",
+      "applySha256": "3a9a06297ef8d8ef7bce9e69aaf5b76b83dc18a55c0c514b9fdaf4bcac42ca76"
+    },
+    {
+      "file": "footer.1.js",
+      "originalBytes": 1364,
+      "originalSha256": "422b420e4b2a7b7283cece08f293f32ea5227680c91b299efce481ec6dc3c2c2",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/footer.1.js",
+      "apply": "apply/footer.1.js",
+      "snapshotSha256": "1d26e7dc092d9eff75cc734509aaa8b3ac20458c4e502ec25a719112de93500a",
+      "applySha256": "5d8bd2fb31796d04484dbd4f4e711ed7ae6f9224c07d115f88e9aa544b17d74d"
+    },
+    {
+      "file": "header.1.css",
+      "originalBytes": 19335,
+      "originalSha256": "90e84cec0de20e10b83bc309779511604ac2073f2b52db31a06ea475c77a5bc7",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/header.1.css",
+      "apply": "apply/header.1.css",
+      "snapshotSha256": "e172f0b67bb5abcbd917aab402bd8a3f165efec951b0499ff47909fc9c0c893b",
+      "applySha256": "33a4d38606c8d8a9fa4cb7457dff5d8a6e173b08f7e96a6f2dd4ac371c7b3980"
+    },
+    {
+      "file": "header.1.html",
+      "originalBytes": 9675,
+      "originalSha256": "d5dadcfa77c41950dbbba1273879e67eeed3b3268cf95437c7b6dc5cd0132291",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/header.1.html",
+      "apply": "apply/header.1.html",
+      "snapshotSha256": "f20a0d3a02ba6aff92cecec74309a41e90c21e17d97e878dd9e930960df42ae7",
+      "applySha256": "c423a942357d072eaead97a38b57e4a0de32ecf2c63b1c840586c95839abad91"
+    },
+    {
+      "file": "header.1.js",
+      "originalBytes": 5397,
+      "originalSha256": "f1d97f0d64314624f63a40bf5565d3786f4a330869262614b922ca2941b5b457",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/header.1.js",
+      "apply": "apply/header.1.js",
+      "snapshotSha256": "647592527b53ccca5cb51204c510ccc7237a1346a17997deb02ba1d523218484",
+      "applySha256": "c5640780ead3fa924413c79145c1b4f9ca54595797242a18641ab7c944d72770"
+    },
+    {
+      "file": "main.css",
+      "originalBytes": 16937,
+      "originalSha256": "9425ff77fe168f1b41ddd5fdafbca40e52996366707121e3693390de94c4ae66",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/main.css",
+      "apply": "apply/main.css",
+      "snapshotSha256": "1fb391ce5bb6f4176263e03a743ec8e471b3bfbed0956e88d3444900de075e61",
+      "applySha256": "b1f3eb42077b988e1b4f6f939396cec0aee3fded624b1cbb70e6003c06e12431"
+    },
+    {
+      "file": "main.html",
+      "originalBytes": 38442,
+      "originalSha256": "093793c719ddc90d6ede8191b2936c29a120a9de85bdded3edc2ebb413a75f20",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/main.html",
+      "apply": "apply/main.html",
+      "snapshotSha256": "a9d15f7290c8393d7dcde665a35041a5fd00e63bea015d6501eb7aa2b8012d23",
+      "applySha256": "cc7e77087d20b076ba46a144fda4dea5bb2d87b561906d8646657bac0e3a6a39"
+    },
+    {
+      "file": "main.js",
+      "originalBytes": 4000,
+      "originalSha256": "f24a1bd58d641e9586fdaa290e29bb87c08c4d000eb431fe04279e9df1bd83b9",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/main.js",
+      "apply": "apply/main.js",
+      "snapshotSha256": "8e1a5a6492f24ac63ceefa83c6c92f4e23002f42c2ccc4366c604af83bafd324",
+      "applySha256": "2c56c9be22e349b78d15487233f9d51ea46cfaa820c068223f030a8c49413c65"
+    },
+    {
+      "file": "shopbrand.css",
+      "originalBytes": 18250,
+      "originalSha256": "65104c4f66acc200c9cdbc281e14e95c710ccd8bcc8067ecd82b4a610f728613",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/shopbrand.css",
+      "apply": "apply/shopbrand.css",
+      "snapshotSha256": "9ebe44d4bc17f1cd00f9ab01274663c014e9d6ef0efa4918e7b36d6064934fef",
+      "applySha256": "01933937637ffd807493fedcda1de0aa98f6c428a87d999a0993a44091ab5f7a"
+    },
+    {
+      "file": "shopbrand.html",
+      "originalBytes": 13461,
+      "originalSha256": "c17fabefb57dc7737f63c983b7515e3a7499aba153a4f583d5f04a84ec1c0e20",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/shopbrand.html",
+      "apply": "apply/shopbrand.html",
+      "snapshotSha256": "41707a8cb0fd88f81d8377cda76813544c2db590d4ce25cc37393ac81826325d",
+      "applySha256": "314f4e7191d3d730b13a93f94479c06b9a770a0c29cc99060b26b0afd570c58c"
+    },
+    {
+      "file": "shopbrand.js",
+      "originalBytes": 2830,
+      "originalSha256": "db928c8105d0170701ce7ee4a2ea1c0099e750be7c7b553e17a1ba96d8dc9325",
+      "sourceEncoding": "cp949",
+      "snapshot": "source-utf8/shopbrand.js",
+      "apply": "apply/shopbrand.js",
+      "snapshotSha256": "eadbbc6bbbe48fcf8e308b1d78de8792173c164f4626cd8ed45cb7b0dd903bed",
+      "applySha256": "1900d4d071f40a85306fccfdcd6091cbc75e89036d7abb3fe37efc3544e49508"
+    }
+  ]
+}
